@@ -18,12 +18,6 @@ export const InputField = ({
   errorMessage,
   props,
 }) => {
-  props = {
-    ...props,
-    border: 'none',
-    focusBorderColor: '#c0c0c0',
-    bgColor: '#262626',
-  };
   return (
     <FormControl isInvalid={isInvalid}>
       <FormLabel fontWeight={'medium'}>{label}</FormLabel>
@@ -33,6 +27,16 @@ export const InputField = ({
         value={value}
         onChange={onChange}
         {...props}
+        _hover={{
+          border: '1px',
+          borderColor: '#c0c0c0',
+        }}
+        _focus={{
+          border: '1px',
+          borderColor: '#f2f2f2',
+        }}
+        bgColor={'#262626'}
+        border={'1px solid transparent'}
       />
       {errorMessage && <FormErrorMessage>{errorMessage}</FormErrorMessage>}
       {helperText && <FormHelperText>{helperText}</FormHelperText>}

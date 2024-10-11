@@ -1,5 +1,5 @@
 import { ErrorPage } from '@/components/common';
-import { SignIn, UserLayout } from '@/components/user';
+import { SignIn, UserLayout, SignUp } from '@/components/user';
 
 const routes = [
   {
@@ -10,6 +10,10 @@ const routes = [
       {
         path: 'sign-in',
         element: <SignIn />,
+      },
+      {
+        path: 'sign-up',
+        element: <SignUp />,
       },
     ],
   },
