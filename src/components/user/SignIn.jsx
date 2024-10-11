@@ -1,9 +1,9 @@
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
-import { Separator } from '@/shadcn/components/ui/separator';
 import { InputField } from '../common';
 import { Eye, EyeOff } from 'lucide-react';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 const emptyInput = { email: '', password: '' };
 
@@ -21,7 +21,11 @@ export const SignIn = () => {
 
   return (
     <div className='flex h-[calc(100vh-120px)] w-full items-center justify-center'>
-      <div className='flex flex-col space-y-10 w-full max-w-md px-6  md:px-20 text-primary-text'>
+      <div className='flex flex-col space-y-10 w-full max-w-lg px-8 py-6 md:px-20 text-primary-text'>
+        <h1 className='text-3xl font-semibold text-white text-center'>
+          Sign in to Your Account
+        </h1>
+
         <form
           action='/'
           onSubmit={handleSubmit}
@@ -61,10 +65,22 @@ export const SignIn = () => {
             Sign in
           </Button>
         </form>
-        <Separator />
+        <div className='flex items-center justify-between mt-6'>
+          <hr className='w-full border-gray-600' />
+          <span className='mx-4 text-sm text-gray-400'>OR</span>
+          <hr className='w-full border-gray-600' />
+        </div>
         <Button className='bg-white text-black rounded-full'>
           Sign in with Google
         </Button>
+        <p className='text-sm text-gray-400 mt-4 text-center'>
+          Don&#39;t have an Account ?
+          <Link
+            to={'/sign-up'}
+            className='text-red-500 hover:underline ml-2'>
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -52,12 +52,11 @@ export default {
           5: 'hsl(var(--chart-5))',
         },
 
-        // Adding your custom theme
-        'primary-bg': '#1b1b1b', // Warmer dark background
-        'secondary-bg': '#262626', // Lighter dark for contrast
-        'primary-text': '#f2f2f2', // Warmer white for readability
-        'secondary-text': '#c0c0c0', // Improved contrast for secondary text
-        'muted-text': '#d9d9d9', // Muted text for subtlety
+        'primary-bg': '#121212', // Darker background with slight warmth
+        'secondary-bg': '#1c1c1c', // Darker secondary background for contrast
+        'primary-text': '#e5e5e5', // Slightly brighter for readability against dark background
+        'secondary-text': '#b3b3b3', // Slightly improved contrast for secondary text
+        'muted-text': '#a8a8a8', // A bit more contrast for muted text
         'accent-red': '#ff5252', // Red for CTAs
         'accent-blue': '#5a9bf5', // Blue for secondary actions
         'accent-green': '#00e676', // Green for success
