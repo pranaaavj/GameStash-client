@@ -8,13 +8,11 @@ export default defineConfig({
     react(),
     eslint({
       overrideConfigFile: './eslint.config.js',
-      failOnError: false,
-      failOnWarning: false,
     }),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(import.meta.dirname, './src'), // Correct path for alias
+      '@': path.resolve(import.meta.dirname, './src/'), // Correct path for alias
     },
   },
 });
