@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/shadcn/components/ui/button';
-import { useEffect, useState } from 'react';
-import { InputField } from '../common';
+import { InputField } from '../../components/common';
 import { validateSignUp } from '@/utils';
+import { useEffect, useState } from 'react';
 
 const emptyInput = {
   name: '',
@@ -45,32 +45,38 @@ export const SignUp = () => {
           onSubmit={handleSubmit}>
           <div className='space-y-5'>
             <InputField
-              type='text'
-              value={userInput.name}
-              onChange={handleChange}
-              label='Full Name'
-              name='name'
-              isInvalid={!!validation.name}
-              errorMessage={validation.name}
-            />
-            <InputField
               type='email'
               value={userInput.email}
               onChange={handleChange}
               label='Email'
               name='email'
+              placeHolder='name@work.com'
               isInvalid={!!validation.email}
               errorMessage={validation.email}
             />
-
+            <InputField
+              type='text'
+              value={userInput.name}
+              onChange={handleChange}
+              label='Full Name'
+              name='name'
+              placeHolder='Your Full Name'
+              isInvalid={!!validation.name}
+              errorMessage={validation.name}
+            />
             <InputField
               type='password'
               value={userInput.password}
               onChange={handleChange}
               label='Password'
               name='password'
+              placeHolder=' Your Password'
               isInvalid={!!validation.password}
               errorMessage={validation.password}
+              helperText={
+                !validation.password &&
+                'Password must be at least 6 characters long and include at least one letter and one number'
+              }
             />
             <InputField
               type='password'
@@ -78,6 +84,7 @@ export const SignUp = () => {
               onChange={handleChange}
               label='Confirm Password'
               name='cPassword'
+              placeHolder='Confirm Password'
               isInvalid={!!validation.cPassword}
               errorMessage={validation.cPassword}
             />

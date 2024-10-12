@@ -1,5 +1,6 @@
 import { ErrorPage } from '@/components/common';
-import { SignIn, UserLayout, SignUp } from '@/components/user';
+import { UserLayout } from '@/components/user';
+import { SignIn, SignUp } from '@/pages/user';
 
 const routes = [
   {

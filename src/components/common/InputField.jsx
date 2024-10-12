@@ -17,6 +17,7 @@ export const InputField = ({
   helperText,
   errorMessage,
   props,
+  placeHolder,
 }) => {
   return (
     <FormControl isInvalid={isInvalid}>
@@ -37,6 +38,7 @@ export const InputField = ({
         }}
         bgColor={'#262626'}
         border={'1px solid transparent'}
+        placeholder={placeHolder}
       />
       {errorMessage && <FormErrorMessage>{errorMessage}</FormErrorMessage>}
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
@@ -54,4 +56,5 @@ InputField.propTypes = {
   helperText: PropTypes.string,
   errorMessage: PropTypes.string,
   props: PropTypes.any,
+  placeHolder: PropTypes.string,
 };

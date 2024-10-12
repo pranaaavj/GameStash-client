@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
-import { InputField } from '../common';
+import { InputField } from '../../components/common';
 import { Eye, EyeOff } from 'lucide-react';
+import googleLogo from '../../assets/images/google-logo.png';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
 
 const emptyInput = { email: '', password: '' };
 
@@ -37,6 +38,7 @@ export const SignIn = () => {
               onChange={handleChange}
               label='Email'
               name='email'
+              placeHolder='name@work.com'
               isInvalid={false}
               errorMessage=''
               helperText="We'll never share your email"
@@ -51,6 +53,7 @@ export const SignIn = () => {
                 onChange={handleChange}
                 label='Password'
                 name='password'
+                placeHolder='Your Password'
                 isInvalid={false}
                 errorMessage=''
               />
@@ -70,7 +73,12 @@ export const SignIn = () => {
           <span className='mx-4 text-sm text-gray-400'>OR</span>
           <hr className='w-full border-gray-600' />
         </div>
-        <Button className='bg-white text-black rounded-full'>
+        <Button className='bg-primary-text hover:bg-secondary-text text-black rounded-full'>
+          <img
+            src={googleLogo}
+            alt='google logo'
+            className='w-6 mr-2'
+          />
           Sign in with Google
         </Button>
         <p className='text-sm text-gray-400 mt-4 text-center'>
