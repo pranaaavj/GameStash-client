@@ -10,15 +10,18 @@ export const validateSignUp = (userInput) => {
 
   if (userInput.name == '') validation.name = 'Name cannot be empty';
 
-  if (userInput.email == '') validation.email = 'Email cannot be empty';
-  else if (!emailRegex.test(userInput.email))
+  if (userInput.email == '') {
+    validation.email = 'Email cannot be empty';
+  } else if (!emailRegex.test(userInput.email)) {
     validation.email = 'Please enter a valid email';
+  }
 
-  if (userInput.password == '')
+  if (userInput.password == '') {
     validation.password = 'Password cannot be empty';
-  else if (!passwordRegex.test(userInput.password))
+  } else if (!passwordRegex.test(userInput.password)) {
     validation.password =
       'Password must be at least 6 characters long and include at least one letter and one number';
+  }
 
   return validation;
 };

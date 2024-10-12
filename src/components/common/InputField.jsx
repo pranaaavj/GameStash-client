@@ -21,7 +21,11 @@ export const InputField = ({
 }) => {
   return (
     <FormControl isInvalid={isInvalid}>
-      <FormLabel fontWeight={'medium'}>{label}</FormLabel>
+      <FormLabel
+        fontWeight={'medium'}
+        fontSize={15}>
+        {label}
+      </FormLabel>
       <Input
         name={name}
         type={type}
@@ -39,9 +43,14 @@ export const InputField = ({
         bgColor={'#262626'}
         border={'1px solid transparent'}
         placeholder={placeHolder}
+        fontSize={13}
       />
-      {errorMessage && <FormErrorMessage>{errorMessage}</FormErrorMessage>}
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+      {errorMessage && (
+        <FormErrorMessage fontSize={13}>{errorMessage}</FormErrorMessage>
+      )}
+      {helperText && (
+        <FormHelperText fontSize={13}>{helperText}</FormHelperText>
+      )}
     </FormControl>
   );
 };
