@@ -1,6 +1,11 @@
 import { UserLayout } from '@/components/user';
 import { NotFoundPage } from '@/pages/error';
-import { LoginPage, RegisterPage } from '@/pages/auth';
+import {
+  LoginPage,
+  RegisterPage,
+  SendOtpPage,
+  VerifyOtpPage,
+} from '@/pages/auth';
 
 const routes = [
   {
@@ -17,8 +22,12 @@ const routes = [
         element: <RegisterPage />,
       },
       {
-        path: 'forgot-password',
-        element: <RegisterPage />,
+        path: 'send-otp',
+        element: <SendOtpPage />,
+      },
+      {
+        path: 'verify-otp',
+        element: <VerifyOtpPage />,
       },
     ],
   },

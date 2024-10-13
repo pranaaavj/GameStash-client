@@ -17,7 +17,7 @@ import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
-import { useSignInUserMutation } from '@/redux/api/userApi';
+import { useSignInUserMutation } from '@/redux/api/authApi';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
 
 const emptyInput = { email: '', password: '' };
@@ -62,16 +62,16 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className='flex md:h-[calc(100vh-60px)] w-full items-center justify-center '>
-      <div className='flex flex-col space-y-10 w-full max-w-lg px-8 py-6 md:px-20 text-primary-text'>
-        <h1 className='text-3xl font-semibold text-white text-center font-poppins'>
+    <div className='flex flex-col md:flex-row h-[calc(100vh-60px)] w-full items-center justify-center'>
+      <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md lg:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
+        <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
           Login to Your Account
         </h1>
 
         <form
           onSubmit={handleSubmit}
           className='flex flex-col'>
-          <div className='space-y-5 font-poppins relative'>
+          <div className='space-y-4 sm:space-y-5 font-poppins relative'>
             <InputField
               type='email'
               value={userInput.email}
@@ -88,7 +88,7 @@ export const LoginPage = () => {
 
             <Dialog>
               <DialogTrigger asChild>
-                <p className='z-10 hidden sm:block absolute right-0 text-[11px] top-[105px] font-roboto font-medium hover:text-secondary-text cursor-pointer'>
+                <p className='z-10 hidden sm:block absolute right-0 text-[11px] sm:text-xs top-[85px] sm:top-[105px] font-roboto font-medium hover:text-secondary-text cursor-pointer'>
                   Forgot Password ?
                 </p>
               </DialogTrigger>
@@ -132,7 +132,7 @@ export const LoginPage = () => {
                         console.log(forgotEmail);
                         setForgotEmail('');
                       }}>
-                      Sent OTP
+                      Send OTP
                     </Button>
                   </DialogClose>
                 </div>
@@ -150,7 +150,7 @@ export const LoginPage = () => {
                 isInvalid={!!validation.password}
                 errorMessage={validation.password}
               />
-              <InputRightElement marginTop={'32px'}>
+              <InputRightElement marginTop={'30px'}>
                 <div onClick={() => setShowPass((prev) => !prev)}>
                   {showPass ? <Eye size={'16px'} /> : <EyeOff size={'16px'} />}
                 </div>
@@ -158,7 +158,7 @@ export const LoginPage = () => {
             </InputGroup>
           </div>
 
-          <Button className='bg-accent-red hover:bg-hover-red mt-10 text-lg font-semibold uppercase font-sans'>
+          <Button className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-md sm:text-lg font-semibold uppercase font-sans'>
             Login
           </Button>
         </form>
@@ -169,26 +169,28 @@ export const LoginPage = () => {
             description={error?.data?.message}
           />
         )}
-        <div className='flex items-center justify-between mt-6'>
+        <div className='flex items-center justify-between mt-5 sm:mt-6'>
           <hr className='w-full border-gray-600' />
-          <span className='mx-4 text-sm text-gray-400'>OR</span>
+          <span className='mx-2 sm:mx-4 text-xs sm:text-sm text-gray-400'>
+            OR
+          </span>
           <hr className='w-full border-gray-600' />
         </div>
 
-        <Button className='bg-primary-text hover:bg-secondary-text text-black rounded-full text-md'>
+        <Button className='bg-primary-text hover:bg-secondary-text text-black rounded-full text-sm sm:text-md'>
           <img
             src={googleLogo}
             alt='google logo'
-            className='w-6 mr-2'
+            className='w-5 sm:w-6 mr-2'
           />
           Login with Google
         </Button>
-        <p className='text-sm text-gray-400 mt-4 text-center'>
+        <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Don&#39;t have an Account ?
           <Link
-            to={'/register'}
-            className='text-red-500 hover:underline ml-2 '>
-            Register now
+            to={'/send-otp'}
+            className='text-red-500 hover:underline ml-1 sm:ml-2 '>
+            Create one here
           </Link>
         </p>
         <Toaster position='top-right' />

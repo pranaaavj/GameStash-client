@@ -22,5 +22,5 @@ export function Alert({ Icon, variant, description }) {
 Alert.propTypes = {
   Icon: PropTypes.any,
   variant: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  description: PropTypes.any.isRequired,
 };

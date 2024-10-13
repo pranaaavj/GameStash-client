@@ -18,7 +18,18 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
+    sendOtpUser: builder.mutation({
+      query: (userEmail) => ({
+        url: '/auth/send-otp',
+        method: 'POST',
+        body: { email: userEmail },
+      }),
+    }),
   }),
 });
 
-export const { useSignUpUserMutation, useSignInUserMutation } = authApi;
+export const {
+  useSignUpUserMutation,
+  useSignInUserMutation,
+  useSendOtpUserMutation,
+} = authApi;

@@ -1,3 +1,4 @@
 export { LoginPage } from './LoginPage';
+export { SendOtpPage } from './SendOtpPage';
 export { RegisterPage } from './RegisterPage';
-export { EnterEmailPage } from './EnterEmailPage';
+export { VerifyOtpPage } from './VerifyOtpPage';

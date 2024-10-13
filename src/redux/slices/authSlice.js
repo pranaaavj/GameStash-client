@@ -3,13 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    userEmail: null,
+    authEmail: null,
     otpStatus: null,
     authStatus: null,
   },
   reducers: {
-    setUserEmail: (state, action) => {
-      state.userEmail = action.email;
+    setAuthEmail: (state, action) => {
+      state.authEmail = action.email;
     },
     setOtpStatus: (state, action) => {
       state.otpStatus = action.otpStatus;
@@ -20,6 +20,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAuthStatus, setOtpStatus, setUserEmail } = authSlice.actions;
+export const { setAuthStatus, setOtpStatus, setAuthEmail } = authSlice.actions;
 
 export default authSlice.reducer;

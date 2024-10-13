@@ -6,7 +6,7 @@ import { InputField } from '../../components/common';
 import { useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'sonner';
 import { validateSignUp } from '@/utils';
-import { useSignUpUserMutation } from '@/redux/api/userApi';
+import { useSignUpUserMutation } from '@/redux/api/authApi';
 import { useEffect, useState } from 'react';
 
 const emptyInput = {
@@ -53,16 +53,16 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div className='flex h-[calc(100vh-60px)] w-full items-center justify-center'>
-      <div className='flex flex-col space-y-6 w-full max-w-md px-8 py-6 text-primary-text'>
-        <h1 className='text-3xl font-semibold text-white text-center font-poppins'>
+    <div className='flex sm:h-[calc(100vh-60px)] w-full items-center justify-center'>
+      <div className='flex flex-col space-y-6 w-full max-w-md px-6 sm:px-8 py-4 sm:py-6 text-primary-text'>
+        <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
           Create Your Account
         </h1>
 
         <form
-          className='flex flex-col '
+          className='flex flex-col'
           onSubmit={handleSubmit}>
-          <div className='space-y-5 font-poppins'>
+          <div className='space-y-4 sm:space-y-5 font-poppins'>
             <InputField
               type='email'
               value={userInput.email}
@@ -110,7 +110,7 @@ export const RegisterPage = () => {
             />
           </div>
 
-          <Button className='bg-accent-red hover:bg-accent-blue mt-10 text-white py-2 rounded-lg text-lg font-semibold uppercase'>
+          <Button className='bg-accent-red hover:bg-accent-blue mt-8 sm:mt-10 text-white py-2 rounded-lg text-md sm:text-lg font-semibold uppercase'>
             Register
           </Button>
         </form>
@@ -121,7 +121,7 @@ export const RegisterPage = () => {
             description={error.data.message}
           />
         )}
-        <p className='text-sm text-gray-400 mt-4 text-center'>
+        <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Already have an account?
           <Link
             to={'/login'}
