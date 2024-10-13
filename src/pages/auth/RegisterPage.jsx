@@ -16,7 +16,7 @@ const emptyInput = {
   cPassword: '',
 };
 
-export const SignUp = () => {
+export const RegisterPage = () => {
   const navigate = useNavigate();
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
@@ -55,14 +55,14 @@ export const SignUp = () => {
   return (
     <div className='flex h-[calc(100vh-60px)] w-full items-center justify-center'>
       <div className='flex flex-col space-y-6 w-full max-w-md px-8 py-6 text-primary-text'>
-        <h1 className='text-3xl font-semibold text-white text-center'>
+        <h1 className='text-3xl font-semibold text-white text-center font-poppins'>
           Create Your Account
         </h1>
 
         <form
           className='flex flex-col '
           onSubmit={handleSubmit}>
-          <div className='space-y-5'>
+          <div className='space-y-5 font-poppins'>
             <InputField
               type='email'
               value={userInput.email}
@@ -111,7 +111,7 @@ export const SignUp = () => {
           </div>
 
           <Button className='bg-accent-red hover:bg-accent-blue mt-10 text-white py-2 rounded-lg text-lg font-semibold uppercase'>
-            Sign up
+            Register
           </Button>
         </form>
         {isError && (
@@ -124,9 +124,9 @@ export const SignUp = () => {
         <p className='text-sm text-gray-400 mt-4 text-center'>
           Already have an account?
           <Link
-            to={'/sign-in'}
-            className='text-red-500 hover:underline ml-2'>
-            Sign in
+            to={'/login'}
+            className='text-red-500 hover:underline ml-2 font-sans'>
+            Login now
           </Link>
         </p>
         <Toaster position='top-right' />

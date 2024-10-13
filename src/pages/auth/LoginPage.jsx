@@ -1,6 +1,5 @@
 import { Button } from '@/shadcn/components/ui/button';
 import googleLogo from '../../assets/images/google-logo.png';
-import { setUser } from '@/redux/slices/authSlice';
 import {
   Dialog,
   DialogClose,
@@ -11,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shadcn/components/ui/dialog';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 import { toast, Toaster } from 'sonner';
 import { validateSignIn } from '@/utils';
 import { Alert, InputField } from '../../components/common';
@@ -23,9 +22,9 @@ import { InputGroup, InputRightElement } from '@chakra-ui/react';
 
 const emptyInput = { email: '', password: '' };
 
-export const SignIn = () => {
+export const LoginPage = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [showPass, setShowPass] = useState(false);
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
@@ -52,7 +51,6 @@ export const SignIn = () => {
       const response = await signInUser(userInput).unwrap();
       console.log(response.data);
       if (response.success) {
-        dispatch(setUser(response.data));
         toast.success('Login successful', {
           duration: 1000,
           onAutoClose: () => navigate('/'),
@@ -64,10 +62,10 @@ export const SignIn = () => {
   };
 
   return (
-    <div className='flex md:h-[calc(100vh-60px)] w-full items-center justify-center'>
+    <div className='flex md:h-[calc(100vh-60px)] w-full items-center justify-center '>
       <div className='flex flex-col space-y-10 w-full max-w-lg px-8 py-6 md:px-20 text-primary-text'>
         <h1 className='text-3xl font-semibold text-white text-center font-poppins'>
-          Sign in to Your Account
+          Login to Your Account
         </h1>
 
         <form
@@ -160,8 +158,8 @@ export const SignIn = () => {
             </InputGroup>
           </div>
 
-          <Button className='bg-accent-red hover:bg-hover-red mt-10 text-lg font-semibold uppercase'>
-            Sign in
+          <Button className='bg-accent-red hover:bg-hover-red mt-10 text-lg font-semibold uppercase font-sans'>
+            Login
           </Button>
         </form>
         {isError && (
@@ -183,14 +181,14 @@ export const SignIn = () => {
             alt='google logo'
             className='w-6 mr-2'
           />
-          Sign in with Google
+          Login with Google
         </Button>
         <p className='text-sm text-gray-400 mt-4 text-center'>
           Don&#39;t have an Account ?
           <Link
-            to={'/sign-up'}
+            to={'/register'}
             className='text-red-500 hover:underline ml-2 '>
-            Sign up
+            Register now
           </Link>
         </p>
         <Toaster position='top-right' />

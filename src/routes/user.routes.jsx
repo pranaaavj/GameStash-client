@@ -1,24 +1,24 @@
-import { ErrorPage } from '@/components/common';
 import { UserLayout } from '@/components/user';
-import { SignIn, SignUp } from '@/pages/user';
+import { NotFoundPage } from '@/pages/error';
+import { LoginPage, RegisterPage } from '@/pages/auth';
 
 const routes = [
   {
     path: '/',
     element: <UserLayout />,
-    errorElement: <ErrorPage />,
+    errorElement: <NotFoundPage />,
     children: [
       {
         path: 'login',
-        element: <SignIn />,
+        element: <LoginPage />,
       },
       {
         path: 'register',
-        element: <SignUp />,
+        element: <RegisterPage />,
       },
       {
         path: 'forgot-password',
-        element: <SignUp />,
+        element: <RegisterPage />,
       },
     ],
   },

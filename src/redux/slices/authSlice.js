@@ -3,29 +3,23 @@ import { createSlice } from '@reduxjs/toolkit';
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    userInfo: null,
+    userEmail: null,
+    otpStatus: null,
     authStatus: null,
-    role: null,
-    token: null,
   },
   reducers: {
-    setUser: (state, action) => {
-      const { user, accessToken } = action.payload;
-      state.userInfo = user;
-      state.token = accessToken;
-      state.role = user.role;
-      state.authStatus =
-        user.status === 'blocked' ? 'blocked' : 'authenticated';
+    setUserEmail: (state, action) => {
+      state.userEmail = action.email;
     },
-    logout: (state) => {
-      state.userInfo = null;
-      state.authStatus = null;
-      state.role = null;
-      state.token = null;
+    setOtpStatus: (state, action) => {
+      state.otpStatus = action.otpStatus;
+    },
+    setAuthStatus: (state, action) => {
+      state.authStatus = action.authStatus;
     },
   },
 });
 
-export const { logout, setUser } = authSlice.actions;
+export const { setAuthStatus, setOtpStatus, setUserEmail } = authSlice.actions;
 
 export default authSlice.reducer;
