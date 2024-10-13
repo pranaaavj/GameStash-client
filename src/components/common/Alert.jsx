@@ -6,9 +6,15 @@ import PropTypes from 'prop-types';
 
 export function Alert({ Icon, variant, description }) {
   return (
-    <ShadAlert variant={variant}>
-      <Icon />
-      <AlertDescription className='ml-3'>{description}</AlertDescription>
+    <ShadAlert
+      variant={variant}
+      className='flex items-center justify-start p-4 space-x-2 w-full font-sans'>
+      <div className='flex-shrink-0'>
+        <Icon className='w-6 h-6 text-red-500' />
+      </div>
+      <AlertDescription className='ml-2 text-md font-bold'>
+        {description}
+      </AlertDescription>
     </ShadAlert>
   );
 }

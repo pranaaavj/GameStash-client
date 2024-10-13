@@ -10,12 +10,12 @@ const authSlice = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
-      const { userInfo, accessToken } = action.payload;
-      state.userInfo = userInfo;
+      const { user, accessToken } = action.payload;
+      state.userInfo = user;
       state.token = accessToken;
-      state.role = userInfo.role;
+      state.role = user.role;
       state.authStatus =
-        userInfo.status === 'blocked' ? 'blocked' : 'authenticated';
+        user.status === 'blocked' ? 'blocked' : 'authenticated';
     },
     logout: (state) => {
       state.userInfo = null;

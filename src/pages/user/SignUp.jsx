@@ -26,10 +26,6 @@ export const SignUp = () => {
     setValidation(emptyInput);
   }, [userInput]);
 
-  const handleChange = ({ target: { value, name } }) => {
-    setUserInput((prevState) => ({ ...prevState, [name]: value }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validation = validateSignUp(userInput);
@@ -50,6 +46,10 @@ export const SignUp = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleChange = ({ target: { value, name } }) => {
+    setUserInput((prevState) => ({ ...prevState, [name]: value }));
   };
 
   return (
@@ -129,7 +129,7 @@ export const SignUp = () => {
             Sign in
           </Link>
         </p>
-        <Toaster />
+        <Toaster position='top-right' />
       </div>
     </div>
   );
