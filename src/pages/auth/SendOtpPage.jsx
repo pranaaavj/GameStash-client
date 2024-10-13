@@ -1,12 +1,12 @@
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { setAuthEmail } from '@/redux/slices/authSlice';
 import { toast, Toaster } from 'sonner';
-import { InputField, Alert } from '../../components/common';
 import { Link, useNavigate } from 'react-router-dom';
+import { InputField, Alert } from '../../components/common';
 import { useEffect, useState } from 'react';
 import { useSendOtpUserMutation } from '@/redux/api/authApi';
-import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
+import { useDispatch } from 'react-redux';
 
 export const SendOtpPage = () => {
   const navigate = useNavigate();
@@ -29,12 +29,11 @@ export const SendOtpPage = () => {
       setValidationEmail('Please enter a valid email');
       return;
     }
-    console.log(userEmail);
+
     try {
       const response = await sendOtpUser(userEmail).unwrap();
       if (response.success) {
-        dispatch(setAuthEmail({ email: userEmail }));
-        dispatch(setOtpStatus({ otpStatus: 'pending' }));
+        dispatch(setAuthEmail({ email: userEmail, otpStatus: 'pending' }));
         toast.success('Otp sent successfully, Please check your email', {
           duration: 1500,
           onAutoClose: () => navigate('/verify-otp'),

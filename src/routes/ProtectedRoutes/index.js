@@ -1,0 +1,1 @@
+export { ProtectedAuthRoute } from './ProtectedAuthRoute';

@@ -5,17 +5,15 @@ const authSlice = createSlice({
   initialState: {
     authEmail: null,
     otpStatus: null,
-    authStatus: null,
   },
   reducers: {
     setAuthEmail: (state, action) => {
-      state.authEmail = action.email;
+      const { email, otpStatus } = action.payload;
+      state.authEmail = email;
+      state.otpStatus = otpStatus;
     },
     setOtpStatus: (state, action) => {
-      state.otpStatus = action.otpStatus;
-    },
-    setAuthStatus: (state, action) => {
-      state.authStatus = action.authStatus;
+      state.otpStatus = action.payload.otpStatus;
     },
   },
 });

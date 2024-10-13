@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom';
-import { Alert } from '../../components/common';
 import { Button } from '@/shadcn/components/ui/button';
+import { useSelector } from 'react-redux';
 import { CircleX } from 'lucide-react';
-import { InputField } from '../../components/common';
-import { useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'sonner';
 import { validateSignUp } from '@/utils';
-import { useSignUpUserMutation } from '@/redux/api/authApi';
+import { Alert, InputField } from '../../components/common';
+import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useSignUpUserMutation } from '@/redux/api/authApi';
 
 const emptyInput = {
   name: '',
@@ -18,13 +17,18 @@ const emptyInput = {
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
+  const { authStatus } = useSelector((state) => state.auth);
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
   const [signUpUser, { isError, error }] = useSignUpUserMutation();
 
   useEffect(() => {
+    if (authStatus !== 'verified') {
+      navigate('/send-otp');
+    }
     setValidation(emptyInput);
-  }, [userInput]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInput, authStatus]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -1,5 +1,3 @@
-import { Button } from '@/shadcn/components/ui/button';
-import googleLogo from '../../assets/images/google-logo.png';
 import {
   Dialog,
   DialogClose,
@@ -10,7 +8,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shadcn/components/ui/dialog';
-// import { useDispatch } from 'react-redux';
+import { Button } from '@/shadcn/components/ui/button';
+import googleLogo from '../../assets/images/google-logo.png';
 import { toast, Toaster } from 'sonner';
 import { validateSignIn } from '@/utils';
 import { Alert, InputField } from '../../components/common';
@@ -24,7 +23,6 @@ const emptyInput = { email: '', password: '' };
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
   const [showPass, setShowPass] = useState(false);
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);

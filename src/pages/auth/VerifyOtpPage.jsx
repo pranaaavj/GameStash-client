@@ -1,36 +1,42 @@
+import { Alert } from '../../components/common';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { toast, Toaster } from 'sonner';
-import { Alert } from '../../components/common';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useSendOtpUserMutation } from '@/redux/api/authApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast, Toaster } from 'sonner';
+import { useVerifyOtpUserMutation } from '@/redux/api/authApi';
+import { setAuthStatus, setOtpStatus } from '@/redux/slices/authSlice';
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
-import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
 
 export const VerifyOtpPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userOtp, setUserOtp] = useState('');
-  const [sendOtpUser, { isError, error }] = useSendOtpUserMutation();
-  console.log(setUserOtp);
+  const { authEmail } = useSelector((state) => state.auth);
+  const [verifyOtpUser, { isError, error }] = useVerifyOtpUserMutation();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
 
-    console.log(userOtp);
+
     try {
-      const response = await sendOtpUser(userOtp).unwrap();
+      const response = await verifyOtpUser({
+        otp: userOtp,
+        email: authEmail,
+      }).unwrap();
+      console.log(response);
       if (response.success) {
-        dispatch(setAuthEmail({ email: userOtp }));
-        dispatch(setOtpStatus({ otpStatus: 'pending' }));
-        toast.success('Otp sent successfully, Please check your email', {
+        dispatch(setOtpStatus({ otpStatus: 'verified' }));
+        dispatch(setAuthStatus({ authStatus: 'authenticated' }));
+        toast.success('Email verified ! Please complete the register', {
           duration: 1500,
-          onAutoClose: () => navigate('/verify-otp'),
+          onAutoClose: () => navigate('/register'),
         });
       }
     } catch (error) {
-      console.log('Error from sentOtpUser: ', error);
+      console.log('Error from verifyOtpUser: ', error);
     }
   };
 
@@ -56,8 +62,9 @@ export const VerifyOtpPage = () => {
                 autoFocus
                 focusBorderColor='#ff5252'
                 value={userOtp}
-                onComplete={handleSubmit}
                 onChange={(value) => setUserOtp(value)}>
+                <PinInputField />
+                <PinInputField />
                 <PinInputField />
                 <PinInputField />
                 <PinInputField />
@@ -66,7 +73,9 @@ export const VerifyOtpPage = () => {
             </HStack>
           </div>
 
-          <Button className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-md sm:text-lg font-semibold uppercase font-sans'>
+          <Button
+            className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-md sm:text-lg font-semibold uppercase font-sans'
+            type='submit'>
             Verify
           </Button>
         </form>

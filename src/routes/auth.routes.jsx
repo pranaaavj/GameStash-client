@@ -1,11 +1,12 @@
-import { UserLayout } from '@/components/user';
-import { NotFoundPage } from '@/pages/error';
 import {
   LoginPage,
   RegisterPage,
   SendOtpPage,
   VerifyOtpPage,
 } from '@/pages/auth';
+import { UserLayout } from '@/components/user';
+import { NotFoundPage } from '@/pages/error';
+import { ProtectedAuthRoute } from './ProtectedRoutes';
 
 const routes = [
   {
@@ -18,16 +19,28 @@ const routes = [
         element: <LoginPage />,
       },
       {
-        path: 'register',
-        element: <RegisterPage />,
-      },
-      {
         path: 'send-otp',
         element: <SendOtpPage />,
       },
       {
         path: 'verify-otp',
-        element: <VerifyOtpPage />,
+        element: (
+          <ProtectedAuthRoute
+            requiredStatus='pending'
+            redirectPath='/login'>
+            <VerifyOtpPage />
+          </ProtectedAuthRoute>
+        ),
+      },
+      {
+        path: 'register',
+        element: (
+          <ProtectedAuthRoute
+            requiredStatus='verified'
+            redirectPath='/verify-otp'>
+            <RegisterPage />,
+          </ProtectedAuthRoute>
+        ),
       },
     ],
   },
