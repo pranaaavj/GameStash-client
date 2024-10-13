@@ -21,6 +21,7 @@ export const SendOtpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (userEmail == '') {
       setValidationEmail('Email cannot be empty');

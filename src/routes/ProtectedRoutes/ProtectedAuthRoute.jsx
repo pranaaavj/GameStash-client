@@ -1,10 +1,11 @@
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 export const ProtectedAuthRoute = ({
   requiredStatus,
   redirectPath = '/login',
+  children,
 }) => {
   const { otpStatus } = useSelector((state) => state.auth);
 
@@ -17,10 +18,11 @@ export const ProtectedAuthRoute = ({
     );
   }
 
-  return <Outlet />;
+  return children;
 };
 
 ProtectedAuthRoute.propTypes = {
   requiredStatus: PropTypes.string,
   redirectPath: PropTypes.string,
+  children: PropTypes.any,
 };

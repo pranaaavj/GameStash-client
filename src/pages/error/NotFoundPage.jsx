@@ -1,4 +1,8 @@
+import { useNavigate, Link } from 'react-router-dom';
+
 export const NotFoundPage = () => {
+  const navigate = useNavigate();
+
   return (
     <main className='grid min-h-full place-items-center bg-primary-bg px-6 py-24 sm:py-32 lg:px-8 h-screen'>
       <div className='text-center text-primary-text'>
@@ -10,16 +14,16 @@ export const NotFoundPage = () => {
           Sorry, we couldn&#39;t find the page you&#39;re looking for.
         </p>
         <div className='mt-10 flex items-center justify-center gap-x-6'>
-          <a
-            href='/'
+          <Link
+            to='/'
             className='rounded-md bg-accent-red px-3.5 py-2.5 text-sm font-semibold text-primary-text shadow-sm hover:bg-hover-red focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
-            Go back home
-          </a>
-          <a
-            href='/contact-us'
-            className='text-sm font-semibold text-primary-text hover:text-secondary-text'>
-            Contact support <span aria-hidden='true'>&rarr;</span>
-          </a>
+            Go home
+          </Link>
+          <Link
+            onClick={() => navigate(-1)}
+            className='rounded-md bg-accent-red px-3.5 py-2.5 text-sm font-semibold text-primary-text shadow-sm hover:bg-hover-red focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
+            Go Back
+          </Link>
         </div>
       </div>
     </main>

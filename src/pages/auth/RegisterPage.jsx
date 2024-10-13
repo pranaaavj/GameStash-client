@@ -1,5 +1,4 @@
 import { Button } from '@/shadcn/components/ui/button';
-import { useSelector } from 'react-redux';
 import { CircleX } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 import { validateSignUp } from '@/utils';
@@ -17,18 +16,13 @@ const emptyInput = {
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
-  const { authStatus } = useSelector((state) => state.auth);
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
   const [signUpUser, { isError, error }] = useSignUpUserMutation();
 
   useEffect(() => {
-    if (authStatus !== 'verified') {
-      navigate('/send-otp');
-    }
     setValidation(emptyInput);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInput, authStatus]);
+  }, [userInput]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,10 +36,10 @@ export const RegisterPage = () => {
       const response = await signUpUser(userInput).unwrap();
       if (response.success) {
         setUserInput(emptyInput);
-        toast.success('Registration Successful !', {
+        toast.success('Registration Successful!', {
           duration: 1500,
-          onAutoClose: () => navigate('/sign-in'),
         });
+        setTimeout(() => navigate('/sign-in'), 1500);
       }
     } catch (error) {
       console.log(error);

@@ -18,6 +18,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAuthStatus, setOtpStatus, setAuthEmail } = authSlice.actions;
+export const { setOtpStatus, setAuthEmail } = authSlice.actions;
 
 export default authSlice.reducer;

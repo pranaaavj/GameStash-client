@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'sonner';
 import { useVerifyOtpUserMutation } from '@/redux/api/authApi';
-import { setAuthStatus, setOtpStatus } from '@/redux/slices/authSlice';
+import { setOtpStatus } from '@/redux/slices/authSlice';
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
 
 export const VerifyOtpPage = () => {
@@ -18,8 +18,6 @@ export const VerifyOtpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-
 
     try {
       const response = await verifyOtpUser({
@@ -29,7 +27,6 @@ export const VerifyOtpPage = () => {
       console.log(response);
       if (response.success) {
         dispatch(setOtpStatus({ otpStatus: 'verified' }));
-        dispatch(setAuthStatus({ authStatus: 'authenticated' }));
         toast.success('Email verified ! Please complete the register', {
           duration: 1500,
           onAutoClose: () => navigate('/register'),
@@ -86,14 +83,6 @@ export const VerifyOtpPage = () => {
             description={error?.data?.message}
           />
         )}
-        <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
-          Didn&#39;t receive the OTP ?
-          <span
-            to={'/login'}
-            className='text-red-500 hover:underline ml-1 sm:ml-2 '>
-            Resend OTP
-          </span>
-        </p>
 
         <Toaster position='top-right' />
       </div>

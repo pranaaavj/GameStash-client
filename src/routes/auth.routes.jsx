@@ -38,7 +38,7 @@ const routes = [
           <ProtectedAuthRoute
             requiredStatus='verified'
             redirectPath='/verify-otp'>
-            <RegisterPage />,
+            <RegisterPage />
           </ProtectedAuthRoute>
         ),
       },
