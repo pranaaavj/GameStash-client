@@ -18,25 +18,29 @@ import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
 import { useSignInUserMutation } from '@/redux/api/authApi';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
+import { useForgetPassUserMutation } from '@/redux/api/authApi';
+import { useDispatch } from 'react-redux';
+import { setAuthEmail } from '@/redux/slices/authSlice';
 
 const emptyInput = { email: '', password: '' };
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPass, setShowPass] = useState(false);
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
   const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotEmailValid, setForgotEmailValid] = useState('');
   const [signInUser, { isError, error, reset }] = useSignInUserMutation();
+  const [forgotPassUser, { isError: isPassError, error: passError }] =
+    useForgetPassUserMutation();
+
   useEffect(() => {
     setValidation(emptyInput);
     if (isError) reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInput]);
-
-  const handleChange = ({ target: { value, name } }) => {
-    setUserInput((prevState) => ({ ...prevState, [name]: value }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,9 +54,37 @@ export const LoginPage = () => {
       console.log(response.data);
       if (response.success) {
         toast.success('Login successful', {
-          duration: 1000,
-          onAutoClose: () => navigate('/'),
+          duration: 1500,
         });
+        setTimeout(() => navigate('/'), 1500);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChange = ({ target: { value, name } }) => {
+    setUserInput((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleForgetPassword = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (forgotEmail == '') {
+      setForgotEmailValid('Email cannot be empty');
+      return;
+    } else if (!emailRegex.test(forgotEmail)) {
+      setForgotEmailValid('Please enter a valid email');
+      return;
+    }
+
+    try {
+      const response = await forgotPassUser(forgotEmail).unwrap();
+      if (response.success) {
+        dispatch(setAuthEmail(forgotEmail));
+        toast.success('Otp sent! Please check your email', {
+          duration: 1500,
+        });
+        setTimeout(() => navigate('/auth/verify-otp-password'), 1500);
       }
     } catch (error) {
       console.log(error);
@@ -86,7 +118,7 @@ export const LoginPage = () => {
 
             <Dialog>
               <DialogTrigger asChild>
-                <p className='z-10 hidden sm:block absolute right-0 text-[11px] sm:text-xs top-[85px] sm:top-[105px] font-roboto font-medium hover:text-secondary-text cursor-pointer'>
+                <p className='z-10 absolute right-0 text-[10px] sm:text-[12px] top-[105px] font-roboto font-medium hover:text-accent-red cursor-pointer'>
                   Forgot Password ?
                 </p>
               </DialogTrigger>
@@ -107,6 +139,8 @@ export const LoginPage = () => {
                       label='Email'
                       name='email'
                       placeHolder='name@work.com'
+                      isInvalid={!!forgotEmailValid}
+                      errorMessage={forgotEmailValid}
                     />
                   </div>
                 </div>
@@ -123,16 +157,12 @@ export const LoginPage = () => {
                       </Button>
                     </DialogClose>
                   </DialogFooter>
-                  <DialogClose asChild>
-                    <Button
-                      className='bg-accent-red hover:bg-hover-red text-md font-medium font-sans'
-                      onClick={() => {
-                        console.log(forgotEmail);
-                        setForgotEmail('');
-                      }}>
-                      Send OTP
-                    </Button>
-                  </DialogClose>
+                  <DialogClose asChild></DialogClose>
+                  <Button
+                    className='bg-accent-red hover:bg-hover-red text-md font-medium font-sans'
+                    onClick={handleForgetPassword}>
+                    Send OTP
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -167,6 +197,13 @@ export const LoginPage = () => {
             description={error?.data?.message}
           />
         )}
+        {isPassError && (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={passError?.data?.message}
+          />
+        )}
         <div className='flex items-center justify-between mt-5 sm:mt-6'>
           <hr className='w-full border-gray-600' />
           <span className='mx-2 sm:mx-4 text-xs sm:text-sm text-gray-400'>
@@ -181,7 +218,7 @@ export const LoginPage = () => {
             alt='google logo'
             className='w-5 sm:w-6 mr-2'
           />
-          Login with Google
+          Continue with Google
         </Button>
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Don&#39;t have an Account ?

@@ -38,8 +38,8 @@ export const SendOtpPage = () => {
         dispatch(setAuthEmail({ email: userEmail, otpStatus: 'pending' }));
         toast.success('Otp sent successfully, Please check your email', {
           duration: 1500,
-          onAutoClose: () => navigate('/auth/verify-otp'),
         });
+        setTimeout(() => navigate('/auth/verify-otp'), 1500);
       }
     } catch (error) {
       console.log('Error from sentOtpUser: ', error);

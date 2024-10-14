@@ -3,6 +3,7 @@ import {
   RegisterPage,
   SendOtpPage,
   VerifyOtpPage,
+  VerifyOtpPassPage,
 } from '@/pages/auth';
 import { UserLayout } from '@/components/user';
 import { NotFoundPage } from '@/pages/error';
@@ -33,6 +34,10 @@ export const authRoutes = [
             <RegisterPage />
           </ProtectRegisterRoute>
         ),
+      },
+      {
+        path: 'verify-otp-password',
+        element: <VerifyOtpPassPage />,
       },
     ],
   },

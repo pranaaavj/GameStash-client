@@ -4,35 +4,30 @@ import { CircleX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { setOtpStatus } from '@/redux/slices/authSlice';
 import { toast, Toaster } from 'sonner';
-import { useEffect, useState } from 'react';
-import { useVerifyOtpUserMutation } from '@/redux/api/authApi';
+import { useState } from 'react';
+import { useVerifyOtpPassUserMutation } from '@/redux/api/authApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
 
-export const VerifyOtpPage = () => {
+export const VerifyOtpPassPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userOtp, setUserOtp] = useState('');
-  const { authEmail, otpStatus } = useSelector((state) => state.auth);
-  const [verifyOtpUser, { isError, error }] = useVerifyOtpUserMutation();
-
-  useEffect(() => {
-    if (!otpStatus) {
-      navigate('/auth/login');
-    }
-  }, [otpStatus, navigate]);
+  const { authEmail } = useSelector((state) => state.auth);
+  const [verifyOtpPassUser, { isError, error }] =
+    useVerifyOtpPassUserMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await verifyOtpUser({
+      const response = await verifyOtpPassUser({
         otp: userOtp,
         email: authEmail,
       }).unwrap();
       if (response.success) {
         dispatch(setOtpStatus({ otpStatus: 'verified' }));
-
+        
         toast.success('Email verified ! Please complete the registration', {
           duration: 1500,
         });
@@ -49,7 +44,7 @@ export const VerifyOtpPage = () => {
     <div className='flex flex-col md:flex-row h-[calc(100vh-100px)] w-full items-center justify-center'>
       <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md lg:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
         <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
-          Verify Your Email with OTP
+          OTP Verification for Password Reset
         </h1>
         <p className='text-center font-sans font-light text-md sm:text-lg text-secondary-text'>
           Enter the OTP sent to your email.

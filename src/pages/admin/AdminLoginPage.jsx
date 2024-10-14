@@ -82,7 +82,7 @@ export const AdminLoginPage = () => {
 
             <Dialog>
               <DialogTrigger asChild>
-                <p className='z-10 hidden sm:block absolute right-0 text-[11px] sm:text-xs top-[85px] sm:top-[105px] font-roboto font-medium hover:text-secondary-text cursor-pointer'>
+                <p className='z-10 absolute right-0 text-[10px] sm:text-[12px] top-[78px] font-roboto font-medium hover:text-accent-red cursor-pointer'>
                   Forgot Password ?
                 </p>
               </DialogTrigger>
@@ -167,7 +167,7 @@ export const AdminLoginPage = () => {
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Not an admin ?
           <Link
-            to={'/login'}
+            to={'/auth/login'}
             className='text-red-500 hover:underline ml-1 sm:ml-2 '>
             Click here to login
           </Link>
