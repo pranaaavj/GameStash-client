@@ -2,26 +2,21 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Navigate } from 'react-router-dom';
 
-export const ProtectedAuthRoute = ({
-  requiredStatus,
-  redirectPath = '/login',
-  children,
-}) => {
+export const ProtectRegisterRoute = ({ children }) => {
   const { otpStatus } = useSelector((state) => state.auth);
 
-  if (otpStatus !== requiredStatus) {
-    return (
-      <Navigate
-        to={redirectPath}
-        replace
-      />
-    );
+  if (otpStatus === 'pending' || otpStatus === '') {
+    return <Navigate to='/auth/verify' />;
   }
 
-  return children;
+  if (otpStatus === 'verified') {
+    return children;
+  }
+
+  return <Navigate to='/auth/login' />;
 };
 
-ProtectedAuthRoute.propTypes = {
+ProtectRegisterRoute.propTypes = {
   requiredStatus: PropTypes.string,
   redirectPath: PropTypes.string,
   children: PropTypes.any,

@@ -1,9 +1,9 @@
-import authRoutes from './routes/auth.routes';
+import { authRoutes, adminRoutes } from './routes';
 import { store, Provider } from './redux/store';
 import { ChakraProvider } from '@chakra-ui/react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-const router = createBrowserRouter(authRoutes);
+const router = createBrowserRouter([...authRoutes, ...adminRoutes]);
 
 const App = () => {
   return (

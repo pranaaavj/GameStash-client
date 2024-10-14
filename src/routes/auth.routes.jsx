@@ -6,11 +6,11 @@ import {
 } from '@/pages/auth';
 import { UserLayout } from '@/components/user';
 import { NotFoundPage } from '@/pages/error';
-import { ProtectedAuthRoute } from './ProtectedRoutes';
+import { ProtectRegisterRoute } from './ProtectedRoutes';
 
-const routes = [
+export const authRoutes = [
   {
-    path: '/',
+    path: 'auth/',
     element: <UserLayout />,
     errorElement: <NotFoundPage />,
     children: [
@@ -24,26 +24,16 @@ const routes = [
       },
       {
         path: 'verify-otp',
-        element: (
-          <ProtectedAuthRoute
-            requiredStatus='pending'
-            redirectPath='/login'>
-            <VerifyOtpPage />
-          </ProtectedAuthRoute>
-        ),
+        element: <VerifyOtpPage />,
       },
       {
         path: 'register',
         element: (
-          <ProtectedAuthRoute
-            requiredStatus='verified'
-            redirectPath='/verify-otp'>
+          <ProtectRegisterRoute>
             <RegisterPage />
-          </ProtectedAuthRoute>
+          </ProtectRegisterRoute>
         ),
       },
     ],
   },
 ];
-
-export default routes;

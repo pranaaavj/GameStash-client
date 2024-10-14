@@ -1,7 +1,7 @@
 import { Alert } from '../../components/common';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'sonner';
@@ -13,8 +13,14 @@ export const VerifyOtpPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userOtp, setUserOtp] = useState('');
-  const { authEmail } = useSelector((state) => state.auth);
+  const { authEmail, otpStatus } = useSelector((state) => state.auth);
   const [verifyOtpUser, { isError, error }] = useVerifyOtpUserMutation();
+
+  useEffect(() => {
+    if (!otpStatus) {
+      navigate('/auth/login');
+    }
+  }, [otpStatus, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,13 +30,15 @@ export const VerifyOtpPage = () => {
         otp: userOtp,
         email: authEmail,
       }).unwrap();
-      console.log(response);
       if (response.success) {
         dispatch(setOtpStatus({ otpStatus: 'verified' }));
-        toast.success('Email verified ! Please complete the register', {
+
+        toast.success('Email verified ! Please complete the registration', {
           duration: 1500,
-          onAutoClose: () => navigate('/register'),
         });
+        setTimeout(() => {
+          navigate('/auth/register');
+        }, 1500);
       }
     } catch (error) {
       console.log('Error from verifyOtpUser: ', error);

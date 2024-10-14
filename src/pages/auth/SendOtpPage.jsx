@@ -6,18 +6,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { InputField, Alert } from '../../components/common';
 import { useEffect, useState } from 'react';
 import { useSendOtpUserMutation } from '@/redux/api/authApi';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export const SendOtpPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userEmail, setUserEmail] = useState('');
+  const { otpStatus } = useSelector((state) => state.auth);
   const [validationEmail, setValidationEmail] = useState('');
   const [sendOtpUser, { isError, error }] = useSendOtpUserMutation();
 
   useEffect(() => {
     setValidationEmail('');
-  }, [userEmail]);
+  }, [userEmail, otpStatus]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +38,7 @@ export const SendOtpPage = () => {
         dispatch(setAuthEmail({ email: userEmail, otpStatus: 'pending' }));
         toast.success('Otp sent successfully, Please check your email', {
           duration: 1500,
-          onAutoClose: () => navigate('/verify-otp'),
+          onAutoClose: () => navigate('/auth/verify-otp'),
         });
       }
     } catch (error) {
@@ -89,7 +90,7 @@ export const SendOtpPage = () => {
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Already have an account ?
           <Link
-            to={'/login'}
+            to={'/auth/login'}
             className='text-red-500 hover:underline ml-1 sm:ml-2 '>
             Login now
           </Link>

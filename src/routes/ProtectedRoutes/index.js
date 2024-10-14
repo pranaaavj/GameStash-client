@@ -1,1 +1,1 @@
-export { ProtectedAuthRoute } from './ProtectedAuthRoute';
+export { ProtectRegisterRoute } from './ProtectRegisterRoute';

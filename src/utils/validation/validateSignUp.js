@@ -1,8 +1,6 @@
 export const validateSignUp = (userInput) => {
   let validation = {};
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-
   if (userInput.password !== userInput.cPassword) {
     validation.cPassword = 'Password do not match';
     return validation;
@@ -10,10 +8,11 @@ export const validateSignUp = (userInput) => {
 
   if (userInput.name == '') validation.name = 'Name cannot be empty';
 
-  if (userInput.email == '') {
+  if (userInput.phoneNumber == '') {
     validation.email = 'Email cannot be empty';
-  } else if (!emailRegex.test(userInput.email)) {
-    validation.email = 'Please enter a valid email';
+  } else if (userInput.phoneNumber.length > 10) {
+    validation.phoneNumber =
+      'Invalid phone number. Please enter exactly 10 digits, and ensure it contains only numbers';
   }
 
   if (userInput.password == '') {

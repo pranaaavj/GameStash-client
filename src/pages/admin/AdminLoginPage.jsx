@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from '@/shadcn/components/ui/dialog';
 import { Button } from '@/shadcn/components/ui/button';
-import googleLogo from '../../assets/images/google-logo.png';
 import { toast, Toaster } from 'sonner';
 import { validateSignIn } from '@/utils';
 import { Alert, InputField } from '../../components/common';
@@ -21,7 +20,7 @@ import { InputGroup, InputRightElement } from '@chakra-ui/react';
 
 const emptyInput = { email: '', password: '' };
 
-export const LoginPage = () => {
+export const AdminLoginPage = () => {
   const navigate = useNavigate();
   const [showPass, setShowPass] = useState(false);
   const [userInput, setUserInput] = useState(emptyInput);
@@ -63,7 +62,7 @@ export const LoginPage = () => {
     <div className='flex flex-col md:flex-row h-[calc(100vh-60px)] w-full items-center justify-center'>
       <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md lg:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
         <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
-          Login to Your Account
+          Admin Login
         </h1>
 
         <form
@@ -79,9 +78,6 @@ export const LoginPage = () => {
               placeHolder='name@work.com'
               isInvalid={!!validation.email}
               errorMessage={validation.email}
-              helperText={
-                !validation.email ? "We'll never share your email" : null
-              }
             />
 
             <Dialog>
@@ -167,28 +163,13 @@ export const LoginPage = () => {
             description={error?.data?.message}
           />
         )}
-        <div className='flex items-center justify-between mt-5 sm:mt-6'>
-          <hr className='w-full border-gray-600' />
-          <span className='mx-2 sm:mx-4 text-xs sm:text-sm text-gray-400'>
-            OR
-          </span>
-          <hr className='w-full border-gray-600' />
-        </div>
 
-        <Button className='bg-primary-text hover:bg-secondary-text text-black rounded-full text-sm sm:text-md'>
-          <img
-            src={googleLogo}
-            alt='google logo'
-            className='w-5 sm:w-6 mr-2'
-          />
-          Login with Google
-        </Button>
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
-          Don&#39;t have an Account ?
+          Not an admin ?
           <Link
-            to={'/auth/send-otp'}
+            to={'/login'}
             className='text-red-500 hover:underline ml-1 sm:ml-2 '>
-            Create one here
+            Click here to login
           </Link>
         </p>
         <Toaster position='top-right' />
