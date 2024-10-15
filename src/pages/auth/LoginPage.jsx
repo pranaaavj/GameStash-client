@@ -106,9 +106,11 @@ export const LoginPage = () => {
         setTimeout(() => navigate('/auth/verify-otp-pass'), 1500);
       }
     } catch (error) {
-      toast.error(error?.data?.message, {
-        duration: 1500,
+      toast.error('Something went wrong, Please try again.', {
+        duration: 3500,
+        className: 'bg-accent-red text-primary-text',
       });
+      console.log(error);
     }
   };
 

@@ -12,22 +12,38 @@ import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
 export const VerifyOtpPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [userOtp, setUserOtp] = useState('');
+
   const { authEmail, otpStatus } = useSelector((state) => state.auth);
-  const [verifyOtpUser, { isError, error }] = useVerifyOtpUserMutation();
+
+  const [otpInput, setOtpInput] = useState('');
+  const [otpInputValid, setOtpInputValid] = useState('');
+
+  const [verifyOtpUser, { isError, error, reset }] = useVerifyOtpUserMutation();
 
   useEffect(() => {
     if (!otpStatus) {
       navigate('/auth/login');
     }
-  }, [otpStatus, navigate]);
+    setOtpInputValid('');
+    if (isError) reset();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otpStatus, navigate, otpInput]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!otpInput.trim()) {
+      setOtpInputValid('Please enter your OTP');
+      return;
+    } else if (otpInput.length < 6) {
+      setOtpInputValid('OTP needs to be exactly 6 digits.');
+      return;
+    }
+
     try {
       const response = await verifyOtpUser({
-        otp: userOtp,
+        otp: otpInput,
         email: authEmail,
       }).unwrap();
       if (response?.success) {
@@ -61,11 +77,12 @@ export const VerifyOtpPage = () => {
               display='flex'
               justify='center'>
               <PinInput
+                isInvalid={!!otpInputValid}
                 otp
                 autoFocus
                 focusBorderColor='#ff5252'
-                value={userOtp}
-                onChange={(value) => setUserOtp(value)}>
+                value={otpInput}
+                onChange={(value) => setOtpInput(value)}>
                 <PinInputField />
                 <PinInputField />
                 <PinInputField />
@@ -89,7 +106,13 @@ export const VerifyOtpPage = () => {
             description={error?.data?.message}
           />
         )}
-
+        {otpInputValid && (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={otpInputValid}
+          />
+        )}
         <Toaster position='top-right' />
       </div>
     </div>
