@@ -16,11 +16,11 @@ export const SendOtpEmail = () => {
 
   const [userEmail, setUserEmail] = useState('');
   const [validationEmail, setValidationEmail] = useState('');
-
-  const [sendOtpUser, { isError, error }] = useSendOtpUserMutation();
+  const [sendOtpUser, { isError, error, reset }] = useSendOtpUserMutation();
 
   useEffect(() => {
     setValidationEmail('');
+    if (isError) reset();
   }, [userEmail, otpStatus]);
 
   const handleSubmit = async (e) => {

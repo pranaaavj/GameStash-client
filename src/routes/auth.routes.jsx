@@ -17,12 +17,17 @@ import { NotFound } from '@/pages/error';
 export const authRoutes = [
   {
     path: 'auth',
+<<<<<<< HEAD
     element: (
       <UnauthorizedRoute>
         <UserLayout />
       </UnauthorizedRoute>
     ),
     errorElement: <NotFound />,
+=======
+    element: <UserLayout />,
+    errorElement: <NotFoundPage />,
+>>>>>>> c05ea32 (commit demo)
     children: [
       {
         path: 'login',
