@@ -8,55 +8,70 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shadcn/components/ui/dialog';
+import {
+  useSignInUserMutation,
+  useForgetPassUserMutation,
+} from '@/redux/api/authApi';
+import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import googleLogo from '../../assets/images/google-logo.png';
-import { toast, Toaster } from 'sonner';
+import { useDispatch } from 'react-redux';
+import { setAuthEmail } from '@/redux/slices/authSlice';
 import { validateSignIn } from '@/utils';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
-import { useSignInUserMutation } from '@/redux/api/authApi';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
-import { useForgetPassUserMutation } from '@/redux/api/authApi';
-import { useDispatch } from 'react-redux';
-import { setAuthEmail } from '@/redux/slices/authSlice';
 
-const emptyInput = { email: '', password: '' };
+const initLoginInput = { email: '', password: '' };
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showPass, setShowPass] = useState(false);
-  const [userInput, setUserInput] = useState(emptyInput);
-  const [validation, setValidation] = useState(emptyInput);
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [forgotEmailValid, setForgotEmailValid] = useState('');
+
+  const [showPass, toggleShowPass] = useState(false);
+  const [loginInput, setLoginInput] = useState(initLoginInput);
+  const [resetEmail, setResetEmail] = useState('');
+  const [loginValidation, setLoginValidation] = useState(initLoginInput);
+  const [resetEmailValid, setResetEmailValid] = useState('');
+
+  // Hooks for Api calls
   const [signInUser, { isError, error, reset }] = useSignInUserMutation();
-  const [forgotPassUser, { isError: isPassError, error: passError }] =
-    useForgetPassUserMutation();
+  const [
+    forgotPassUser,
+    { isError: isPassError, error: passError, reset: resetPassError },
+  ] = useForgetPassUserMutation();
 
   useEffect(() => {
-    setValidation(emptyInput);
+    // Clearing errors and loginValidation
+    setLoginValidation(initLoginInput);
+    setResetEmailValid('');
+
     if (isError) reset();
+    if (isPassError) resetPassError();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userInput]);
+  }, [loginInput, resetEmail]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validation = validateSignIn(userInput);
-    if (Object.keys(validation).length > 0) {
-      setValidation(validation);
+
+    const loginValidation = validateSignIn(loginInput);
+
+    if (Object.keys(loginValidation).length > 0) {
+      setLoginValidation(loginValidation);
       return;
     }
+
     try {
-      const response = await signInUser(userInput).unwrap();
-      console.log(response.data);
-      if (response.success) {
-        toast.success('Login successful', {
+      const response = await signInUser(loginInput).unwrap();
+      //Todo setup userSlice and accessToken
+      if (response?.success) {
+        toast.success(response?.message, {
           duration: 1500,
         });
-        setTimeout(() => navigate('/'), 1500);
+
+        setTimeout(() => navigate('/user'), 1500);
       }
     } catch (error) {
       console.log(error);
@@ -64,30 +79,36 @@ export const LoginPage = () => {
   };
 
   const handleChange = ({ target: { value, name } }) => {
-    setUserInput((prevState) => ({ ...prevState, [name]: value }));
+    setLoginInput((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleForgetPassword = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (forgotEmail == '') {
-      setForgotEmailValid('Email cannot be empty');
+
+    if (resetEmail == '') {
+      setResetEmailValid('Email cannot be empty');
       return;
-    } else if (!emailRegex.test(forgotEmail)) {
-      setForgotEmailValid('Please enter a valid email');
+    } else if (!emailRegex.test(resetEmail)) {
+      setResetEmailValid('Please enter a valid email');
       return;
     }
 
     try {
-      const response = await forgotPassUser(forgotEmail).unwrap();
-      if (response.success) {
-        dispatch(setAuthEmail(forgotEmail));
-        toast.success('Otp sent! Please check your email', {
+      const response = await forgotPassUser(resetEmail).unwrap();
+
+      if (response?.success) {
+        dispatch(setAuthEmail({ email: resetEmail }));
+
+        toast.success(response?.message, {
           duration: 1500,
         });
-        setTimeout(() => navigate('/auth/verify-otp-password'), 1500);
+
+        setTimeout(() => navigate('/auth/verify-otp-pass'), 1500);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error?.data?.message, {
+        duration: 1500,
+      });
     }
   };
 
@@ -104,19 +125,23 @@ export const LoginPage = () => {
           <div className='space-y-4 sm:space-y-5 font-poppins relative'>
             <InputField
               type='email'
-              value={userInput.email}
+              value={loginInput.email}
               onChange={handleChange}
               label='Email'
               name='email'
               placeHolder='name@work.com'
-              isInvalid={!!validation.email}
-              errorMessage={validation.email}
+              isInvalid={!!loginValidation.email}
+              errorMessage={loginValidation.email}
               helperText={
-                !validation.email ? "We'll never share your email" : null
+                !loginValidation.email ? "We'll never share your email" : null
               }
             />
 
-            <Dialog>
+            <Dialog
+              onOpenChange={() => {
+                setResetEmail('');
+                setResetEmailValid('');
+              }}>
               <DialogTrigger asChild>
                 <p className='z-10 absolute right-0 text-[10px] sm:text-[12px] top-[105px] font-roboto font-medium hover:text-accent-red cursor-pointer'>
                   Forgot Password ?
@@ -134,52 +159,58 @@ export const LoginPage = () => {
                   <div className='grid flex-1 gap-2'>
                     <InputField
                       type='email'
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
                       label='Email'
                       name='email'
                       placeHolder='name@work.com'
-                      isInvalid={!!forgotEmailValid}
-                      errorMessage={forgotEmailValid}
+                      isInvalid={!!resetEmailValid}
+                      errorMessage={resetEmailValid}
                     />
                   </div>
                 </div>
 
-                <div className='flex justify-start gap-5 mt-6'>
+                <div className='flex justify-start gap-5 mt-2'>
                   <DialogFooter className='p-0'>
                     <DialogClose asChild>
                       <Button
                         type='button'
                         variant='secondary'
                         className='font-sans'
-                        onClick={() => setForgotEmail('')}>
+                        onClick={() => setResetEmailValid('')}>
                         Close
                       </Button>
                     </DialogClose>
                   </DialogFooter>
-                  <DialogClose asChild></DialogClose>
                   <Button
                     className='bg-accent-red hover:bg-hover-red text-md font-medium font-sans'
                     onClick={handleForgetPassword}>
                     Send OTP
                   </Button>
                 </div>
+                {isPassError && (
+                  <Alert
+                    Icon={CircleX}
+                    variant='destructive'
+                    description={passError?.data?.message}
+                  />
+                )}
               </DialogContent>
             </Dialog>
 
             <InputGroup>
               <InputField
                 type={showPass ? 'text' : 'password'}
-                value={userInput.password}
+                value={loginInput.password}
                 onChange={handleChange}
                 label='Password'
                 name='password'
                 placeHolder='Your Password'
-                isInvalid={!!validation.password}
-                errorMessage={validation.password}
+                isInvalid={!!loginValidation.password}
+                errorMessage={loginValidation.password}
               />
               <InputRightElement marginTop={'30px'}>
-                <div onClick={() => setShowPass((prev) => !prev)}>
+                <div onClick={() => toggleShowPass((prev) => !prev)}>
                   {showPass ? <Eye size={'16px'} /> : <EyeOff size={'16px'} />}
                 </div>
               </InputRightElement>
@@ -197,13 +228,7 @@ export const LoginPage = () => {
             description={error?.data?.message}
           />
         )}
-        {isPassError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={passError?.data?.message}
-          />
-        )}
+
         <div className='flex items-center justify-between mt-5 sm:mt-6'>
           <hr className='w-full border-gray-600' />
           <span className='mx-2 sm:mx-4 text-xs sm:text-sm text-gray-400'>
@@ -228,8 +253,8 @@ export const LoginPage = () => {
             Create one here
           </Link>
         </p>
-        <Toaster position='top-right' />
       </div>
+      {/* <Toaster position='top-right' /> */}
     </div>
   );
 };

@@ -25,18 +25,18 @@ export const SendOtpPage = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (userEmail == '') {
-      setValidationEmail('Email cannot be empty');
+      setValidationEmail('Email cannot be empty.');
       return;
     } else if (!emailRegex.test(userEmail)) {
-      setValidationEmail('Please enter a valid email');
+      setValidationEmail('Please enter a valid email address.');
       return;
     }
 
     try {
       const response = await sendOtpUser(userEmail).unwrap();
-      if (response.success) {
+      if (response?.success) {
         dispatch(setAuthEmail({ email: userEmail, otpStatus: 'pending' }));
-        toast.success('Otp sent successfully, Please check your email', {
+        toast.success(response.message, {
           duration: 1500,
         });
         setTimeout(() => navigate('/auth/verify-otp'), 1500);

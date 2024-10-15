@@ -3,13 +3,13 @@ export const validateSignIn = (userInput) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (userInput.email == '') {
-    validation.email = 'Email cannot be empty';
+    validation.email = 'Email cannot be empty.';
   } else if (!emailRegex.test(userInput.email)) {
-    validation.email = 'Please enter a valid email';
+    validation.email = 'Please enter a valid email.';
   }
 
   if (userInput.password == '') {
-    validation.password = 'Password cannot be empty';
+    validation.password = 'Password cannot be empty.';
   }
 
   return validation;

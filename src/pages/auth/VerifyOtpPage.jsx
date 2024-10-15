@@ -30,15 +30,13 @@ export const VerifyOtpPage = () => {
         otp: userOtp,
         email: authEmail,
       }).unwrap();
-      if (response.success) {
+      if (response?.success) {
         dispatch(setOtpStatus({ otpStatus: 'verified' }));
 
-        toast.success('Email verified ! Please complete the registration', {
+        toast.success(response?.message, {
           duration: 1500,
         });
-        setTimeout(() => {
-          navigate('/auth/register');
-        }, 1500);
+        setTimeout(() => navigate('/auth/register'), 1500);
       }
     } catch (error) {
       console.log('Error from verifyOtpUser: ', error);
