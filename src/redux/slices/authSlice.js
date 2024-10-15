@@ -1,19 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  authEmail: null,
+  otpType: null,
+  otpStatus: null,
+  otpReset: null,
+};
+
 const authSlice = createSlice({
   name: 'auth',
-  initialState: {
-    authEmail: null,
-    otpStatus: null,
-  },
+  initialState,
   reducers: {
     setAuthEmail: (state, action) => {
-      const { email, otpStatus } = action.payload;
+      const { email, type } = action.payload;
       state.authEmail = email;
-      state.otpStatus = otpStatus;
+      state.otpType = type;
+    },
+    setOtpReset: (state, action) => {
+      state.otpReset = action.payload?.reset;
     },
     setOtpStatus: (state, action) => {
-      state.otpStatus = action.payload.otpStatus;
+      state.otpStatus = action.payload?.status;
+    },
+    resetOtpState: () => {
+      return initialState;
     },
   },
 });
