@@ -41,7 +41,7 @@ export const RegisterPage = () => {
       }).unwrap();
       if (response.success) {
         setUserInput(emptyInput);
-        toast.success('Registration Successful!', {
+        toast.success(response?.message, {
           duration: 1500,
         });
         setTimeout(() => navigate('/auth/login'), 1500);
@@ -97,7 +97,7 @@ export const RegisterPage = () => {
               errorMessage={validation.password}
               helperText={
                 !validation.password
-                  ? 'Password must be at least 6 characters long and include at least one letter and one phoneNumber'
+                  ? 'Password must be at least 6 characters long and include at least one letter and one number'
                   : null
               }
             />
@@ -121,7 +121,7 @@ export const RegisterPage = () => {
           <Alert
             Icon={CircleX}
             variant='destructive'
-            description={error.data.message}
+            description={error?.data?.message}
           />
         )}
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>

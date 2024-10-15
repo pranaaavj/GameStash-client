@@ -1,9 +1,10 @@
 import {
   LoginPage,
   RegisterPage,
+  ResetPassPage,
   SendOtpPage,
   VerifyOtpPage,
-  VerifyOtpPassPage,
+  VerifyPassOtpPage,
 } from '@/pages/auth';
 import { UserLayout } from '@/components/user';
 import { NotFoundPage } from '@/pages/error';
@@ -11,7 +12,7 @@ import { ProtectRegisterRoute } from './ProtectedRoutes';
 
 export const authRoutes = [
   {
-    path: 'auth/',
+    path: 'auth',
     element: <UserLayout />,
     errorElement: <NotFoundPage />,
     children: [
@@ -36,8 +37,12 @@ export const authRoutes = [
         ),
       },
       {
-        path: 'verify-otp-password',
-        element: <VerifyOtpPassPage />,
+        path: 'verify-otp-pass',
+        element: <VerifyPassOtpPage />,
+      },
+      {
+        path: 'reset-pass',
+        element: <ResetPassPage />,
       },
     ],
   },
