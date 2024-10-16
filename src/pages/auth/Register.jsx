@@ -15,7 +15,7 @@ const emptyInput = {
   cPassword: '',
 };
 
-export const RegisterPage = () => {
+export const Register = () => {
   const { authEmail } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();

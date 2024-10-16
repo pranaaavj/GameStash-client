@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 
 const emptyInput = { password: '', cPassword: '' };
 
-export const ResetPassPage = () => {
+export const ResetPassword = () => {
   const navigate = useNavigate();
   // const dispatch = useDispatch();
   const { authEmail } = useSelector((state) => state.auth);
@@ -55,7 +55,7 @@ export const ResetPassPage = () => {
         toast.success(response?.message, {
           duration: 1500,
         });
-        
+
         setTimeout(() => navigate('/auth/login'), 1500);
       }
     } catch (error) {

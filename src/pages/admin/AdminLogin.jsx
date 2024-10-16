@@ -20,7 +20,7 @@ import { InputGroup, InputRightElement } from '@chakra-ui/react';
 
 const emptyInput = { email: '', password: '' };
 
-export const AdminLoginPage = () => {
+export const AdminLogin = () => {
   const navigate = useNavigate();
 
   const [showPass, setShowPass] = useState(false);

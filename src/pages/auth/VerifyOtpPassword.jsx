@@ -1,59 +1,53 @@
 import {
-  useVerifyOtpUserMutation,
   useResetOtpUserMutation,
+  useVerifyOtpUserMutation,
 } from '@/redux/api/authApi';
-import { Alert } from '../../components/common';
 import { toast } from 'sonner';
+import { Alert } from '../../components/common';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
+import { useTimer } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
-import { setOtpStatus, setOtpReset } from '@/redux/slices/authSlice';
+import { setOtpReset, setOtpStatus } from '@/redux/slices/authSlice';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
-import { useTimer } from '@/hooks';
 
-export const VerifyOtpPage = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
+export const VerifyOtpPassword = () => {
+  // Redux authorization slice
   const { authEmail, otpStatus, otpType, otpReset } = useSelector(
     (state) => state.auth
   );
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [otpInput, setOtpInput] = useState('');
   const [otpInputValid, setOtpInputValid] = useState('');
 
-  const [verifyOtpUser, { isError, error, reset, isLoading }] =
+  // Rtk query hook for verifying otp for password reset
+  const [verifyOtpPassUser, { isError, error, isLoading, reset }] =
     useVerifyOtpUserMutation();
   const [
     resetOtp,
     { isError: isResetError, error: resetError, reset: resetResetOtp },
   ] = useResetOtpUserMutation();
 
-  const timer = useTimer(60, isLoading);
+  const otpTimer = useTimer(60, isLoading);
 
   useEffect(() => {
-    if (otpStatus !== 'pending' && otpType !== 'registration') {
+    // Checking for users who did not request for Otp
+    if (otpStatus !== 'pending' && otpType !== 'forgotPassword') {
       navigate('/auth/login');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [otpStatus, navigate, otpInput]);
+  }, [otpStatus, otpType, navigate]);
 
   useEffect(() => {
-    // Resetting validations and errors
+    // Resetting validation when user types
     setOtpInputValid('');
     if (isError) reset();
     if (isResetError) resetResetOtp();
   }, [otpInput]);
-
-  // useEffect(() => {
-  //   const timer =
-  //     otpTimer > 0 &&
-  //     setInterval(() => setOtpTimer((prevTime) => prevTime - 1), 1000);
-
-  //   return () => clearInterval(timer);
-  // }, [isLoading, otpTimer]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,7 +61,8 @@ export const VerifyOtpPage = () => {
     }
 
     try {
-      const response = await verifyOtpUser({
+      // Api request for verifying the otp
+      const response = await verifyOtpPassUser({
         otp: otpInput,
         email: authEmail,
         type: otpType,
@@ -80,11 +75,11 @@ export const VerifyOtpPage = () => {
           duration: 1500,
         });
 
-        setTimeout(() => navigate('/auth/register'), 1500);
+        setTimeout(() => navigate('/auth/reset-pass'), 1500);
         setOtpInput('');
       }
     } catch (error) {
-      toast.error(error?.data?.message, {
+      toast.error('Something went wrong! Please try again.', {
         duration: 1400,
       });
       console.log('Error from verifyOtpUser: ', error);
@@ -112,11 +107,11 @@ export const VerifyOtpPage = () => {
 
   return (
     <div className='flex flex-col md:flex-row h-[calc(100vh-100px)] w-full items-center justify-center'>
-      <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md lg:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
-        <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
-          Verify Your Email with OTP
+      <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md md:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
+        <h1 className='text-xl sm:text-2xl font-semibold text-white text-center font-poppins'>
+          OTP Verification for Password Reset
         </h1>
-        <p className='text-center font-sans font-light text-md sm:text-lg text-secondary-text'>
+        <p className='text-center font-sans font-light text-sm sm:text-md text-secondary-text'>
           Enter the OTP sent to your email.
         </p>
 
@@ -128,7 +123,6 @@ export const VerifyOtpPage = () => {
               display='flex'
               justify='center'>
               <PinInput
-                isInvalid={!!otpInputValid}
                 otp
                 autoFocus
                 focusBorderColor='#ff5252'
@@ -145,11 +139,12 @@ export const VerifyOtpPage = () => {
           </div>
 
           <Button
-            className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-md sm:text-lg font-semibold uppercase font-sans'
+            className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-sm sm:text-md font-semibold uppercase font-sans'
             type='submit'>
             Verify
           </Button>
         </form>
+        {/* API call errors */}
         {isError && (
           <Alert
             Icon={CircleX}
@@ -165,6 +160,7 @@ export const VerifyOtpPage = () => {
           />
         )}
 
+        {/* Otp input validation error */}
         {otpInputValid && (
           <Alert
             Icon={CircleX}
@@ -176,14 +172,14 @@ export const VerifyOtpPage = () => {
         {!otpReset && (
           <p className='font-mont text-sm text-center text-primary-text'>
             Didn&#39;t receive OTP?{' '}
-            {timer > 0 ? (
+            {otpTimer > 0 ? (
               <span className='text-gray-500'>
-                Please wait {timer} seconds.
+                Please wait {otpTimer} seconds.
               </span>
             ) : (
               <span
                 className={`${
-                  timer > 0 && 'text-muted-text'
+                  otpTimer > 0 && 'text-muted-text'
                 }hover:text-accent-red text-accent-red cursor-pointer transition-colors duration-200 ease-in-out`}
                 onClick={handleResetPass}>
                 Resend OTP

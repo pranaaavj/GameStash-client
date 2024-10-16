@@ -1,57 +1,62 @@
 import {
-  LoginPage,
-  RegisterPage,
-  ResetPassPage,
-  SendOtpPage,
-  VerifyOtpPage,
-  VerifyPassOtpPage,
+  Login,
+  Register,
+  ResetPassword,
+  SendOtpEmail,
+  VerifyOtpEmail,
+  VerifyOtpPassword,
 } from '@/pages/auth';
 import { UserLayout } from '@/components/user';
-import { NotFoundPage } from '@/pages/error';
-import { ProtectRegisterRoute, ProtectResetPassword } from './ProtectedRoutes';
-import HomePage from '@/pages/user/HomePage';
+import { NotFound } from '@/pages/error';
+import {
+  PrivateRegistration,
+  PrivateResetPassword,
+  UnauthorizedRoute,
+} from './ProtectedRoutes';
 
 export const authRoutes = [
   {
     path: 'auth',
     element: <UserLayout />,
-    errorElement: <NotFoundPage />,
+    errorElement: <NotFound />,
     children: [
       {
-        path: 'login',
-        element: <LoginPage />,
-      },
-      {
-        path: 'send-otp',
-        element: <SendOtpPage />,
-      },
-      {
-        path: 'verify-otp',
-        element: <VerifyOtpPage />,
-      },
-      {
-        path: 'register',
-        element: (
-          <ProtectRegisterRoute>
-            <RegisterPage />
-          </ProtectRegisterRoute>
-        ),
-      },
-      {
-        path: 'verify-otp-pass',
-        element: <VerifyPassOtpPage />,
-      },
-      {
-        path: 'reset-pass',
-        element: (
-          <ProtectResetPassword>
-            <ResetPassPage />
-          </ProtectResetPassword>
-        ),
-      },
-      {
-        path: 'tryout',
-        element: <HomePage />,
+        index: true,
+        element: <UnauthorizedRoute />,
+        children: [
+          {
+            path: 'login',
+            element: <Login />,
+          },
+          {
+            path: 'send-otp',
+            element: <SendOtpEmail />,
+          },
+          {
+            path: 'verify-otp',
+            element: <VerifyOtpEmail />,
+          },
+          {
+            path: 'register',
+            element: (
+              <PrivateRegistration>
+                <Register />
+              </PrivateRegistration>
+            ),
+          },
+          {
+            path: 'verify-otp-pass',
+            element: <VerifyOtpPassword />,
+          },
+          {
+            path: 'reset-pass',
+            element: (
+              <PrivateResetPassword>
+                <ResetPassword />
+              </PrivateResetPassword>
+            ),
+          },
+        ],
       },
     ],
   },

@@ -26,7 +26,7 @@ import { InputGroup, InputRightElement } from '@chakra-ui/react';
 
 const initLoginInput = { email: '', password: '' };
 
-export const LoginPage = () => {
+export const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

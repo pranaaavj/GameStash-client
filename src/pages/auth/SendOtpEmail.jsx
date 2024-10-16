@@ -8,7 +8,7 @@ import { useSendOtpUserMutation } from '@/redux/api/authApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
 
-export const SendOtpPage = () => {
+export const SendOtpEmail = () => {
   const { otpStatus } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();

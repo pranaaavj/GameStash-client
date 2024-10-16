@@ -5,14 +5,12 @@ const userSlice = createSlice({
   initialState: {
     userInfo: null,
     authStatus: null,
-    role: null,
     token: null,
   },
   reducers: {
     setUser: (state, action) => {
       const { user } = action.payload;
       state.userInfo = user;
-      state.role = user.role;
       state.authStatus =
         user.status === 'blocked' ? 'blocked' : 'authenticated';
     },

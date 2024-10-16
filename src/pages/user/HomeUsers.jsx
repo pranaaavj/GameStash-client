@@ -3,7 +3,6 @@ import { Card, CardContent, CardFooter } from '@/shadcn/components/ui/card';
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
 import { Checkbox } from '@/shadcn/components/ui/checkbox';
-import { Search, ShoppingCart, User } from 'lucide-react';
 const featuredGames = [
   {
     id: 1,
@@ -67,47 +66,9 @@ const genres = [
   'Sports',
 ];
 
-export default function HomePage() {
+export const HomeUsers = () => {
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
-      <header className='bg-secondary-bg py-4 px-6 flex justify-between items-center'>
-        <div className='flex items-center space-x-6'>
-          <h1 className='text-2xl font-poppins font-bold text-accent-red'>
-            GameStash
-          </h1>
-          <nav>
-            <ul className='flex space-x-4'>
-              <li>
-                <a
-                  href='#'
-                  className='hover:text-accent-blue transition-colors'>
-                  Store
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='hover:text-accent-blue transition-colors'>
-                  Support
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='hover:text-accent-blue transition-colors'>
-                  About
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div className='flex items-center space-x-4'>
-          <Search className='w-5 h-5 text-secondary-text hover:text-primary-text cursor-pointer' />
-          <ShoppingCart className='w-5 h-5 text-secondary-text hover:text-primary-text cursor-pointer' />
-          <User className='w-5 h-5 text-secondary-text hover:text-primary-text cursor-pointer' />
-        </div>
-      </header>
-
       <main className='container mx-auto px-4 py-8'>
         <Carousel className='mb-12'>
           {featuredGames.map((game) => (
@@ -199,4 +160,4 @@ export default function HomePage() {
       </footer>
     </div>
   );
-}
+};

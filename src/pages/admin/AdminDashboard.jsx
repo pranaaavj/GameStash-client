@@ -25,7 +25,7 @@ import {
 } from '@/shadcn/components/ui/card';
 import { Input } from '@/shadcn/components/ui/input';
 
-export const AdminDashboardPage = () => {
+export const AdminDashboard = () => {
   return (
     <div className='min-h-screen bg-gray-900 text-gray-100'>
       {/* Sidebar */}
