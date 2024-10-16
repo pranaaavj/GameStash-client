@@ -1,12 +1,13 @@
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import { validateSignUp } from '@/utils';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useSignUpUserMutation } from '@/redux/api/authApi';
+import { useRegisterUserMutation } from '@/redux/api/authApi';
+import { resetAuthState } from '@/redux/slices/authSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 const emptyInput = {
   name: '',
@@ -15,12 +16,16 @@ const emptyInput = {
   cPassword: '',
 };
 
-export const RegisterPage = () => {
+export const Register = () => {
+  const { authEmail } = useSelector((state) => state.auth);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
-  const { authEmail } = useSelector((state) => state.auth);
-  const [signUpUser, { isError, error }] = useSignUpUserMutation();
+
+  const [registerUser, { isError, error }] = useRegisterUserMutation();
 
   useEffect(() => {
     setValidation(emptyInput);
@@ -28,22 +33,29 @@ export const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validation = validateSignUp(userInput);
     if (Object.keys(validation).length > 0) {
       setValidation(validation);
       return;
     }
+
     delete userInput.cPassword;
+
     try {
-      const response = await signUpUser({
+      const response = await registerUser({
         ...userInput,
         email: authEmail,
       }).unwrap();
+
       if (response.success) {
         setUserInput(emptyInput);
+        dispatch(resetAuthState());
+
         toast.success(response?.message, {
           duration: 1500,
         });
+
         setTimeout(() => navigate('/auth/login'), 1500);
       }
     } catch (error) {
@@ -132,7 +144,6 @@ export const RegisterPage = () => {
             Login now
           </Link>
         </p>
-        <Toaster position='top-right' />
       </div>
     </div>
   );

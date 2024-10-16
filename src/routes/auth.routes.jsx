@@ -1,48 +1,60 @@
 import {
-  LoginPage,
-  RegisterPage,
-  ResetPassPage,
-  SendOtpPage,
-  VerifyOtpPage,
-  VerifyPassOtpPage,
+  Login,
+  Register,
+  ResetPassword,
+  SendOtpEmail,
+  VerifyOtpEmail,
+  VerifyOtpPassword,
 } from '@/pages/auth';
+import {
+  PrivateRegistration,
+  PrivateResetPassword,
+  UnauthorizedRoute,
+} from './ProtectedRoutes';
 import { UserLayout } from '@/components/user';
-import { NotFoundPage } from '@/pages/error';
-import { ProtectRegisterRoute } from './ProtectedRoutes';
+import { NotFound } from '@/pages/error';
 
 export const authRoutes = [
   {
     path: 'auth',
-    element: <UserLayout />,
-    errorElement: <NotFoundPage />,
+    element: (
+      <UnauthorizedRoute>
+        <UserLayout />
+      </UnauthorizedRoute>
+    ),
+    errorElement: <NotFound />,
     children: [
       {
         path: 'login',
-        element: <LoginPage />,
+        element: <Login />,
       },
       {
         path: 'send-otp',
-        element: <SendOtpPage />,
+        element: <SendOtpEmail />,
       },
       {
         path: 'verify-otp',
-        element: <VerifyOtpPage />,
+        element: <VerifyOtpEmail />,
+      },
+      {
+        path: 'verify-otp-pass',
+        element: <VerifyOtpPassword />,
       },
       {
         path: 'register',
         element: (
-          <ProtectRegisterRoute>
-            <RegisterPage />
-          </ProtectRegisterRoute>
+          <PrivateRegistration>
+            <Register />
+          </PrivateRegistration>
         ),
       },
       {
-        path: 'verify-otp-pass',
-        element: <VerifyPassOtpPage />,
-      },
-      {
         path: 'reset-pass',
-        element: <ResetPassPage />,
+        element: (
+          <PrivateResetPassword>
+            <ResetPassword />
+          </PrivateResetPassword>
+        ),
       },
     ],
   },

@@ -1,5 +1,5 @@
 import { AdminLayout } from '@/components/admin';
-import { AdminLoginPage } from '@/pages/admin';
+import { AdminDashboard, AdminLogin } from '@/pages/admin';
 
 export const adminRoutes = [
   {
@@ -8,7 +8,11 @@ export const adminRoutes = [
     children: [
       {
         path: 'login',
-        element: <AdminLoginPage />,
+        element: <AdminLogin />,
+      },
+      {
+        path: 'dashboard',
+        element: <AdminDashboard />,
       },
     ],
   },

@@ -4,44 +4,44 @@ export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_SERVER_URL }),
   endpoints: (builder) => ({
-    signInUser: builder.mutation({
+    loginUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/login',
         method: 'POST',
         body: userInfo,
       }),
     }),
-    signUpUser: builder.mutation({
+    registerUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/register',
         method: 'POST',
         body: userInfo,
       }),
     }),
+    logoutUser: builder.mutation({
+      query: (userInfo) => ({
+        url: '/auth/logout',
+        method: 'POST',
+        body: userInfo,
+      }),
+    }),
     sendOtpUser: builder.mutation({
-      query: (userEmail) => ({
+      query: (userInfo) => ({
         url: '/auth/send-otp',
         method: 'POST',
-        body: { email: userEmail },
+        body: userInfo,
+      }),
+    }),
+    resetOtpUser: builder.mutation({
+      query: (userInfo) => ({
+        url: '/auth/reset-otp',
+        method: 'POST',
+        body: userInfo,
       }),
     }),
     verifyOtpUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/verify-otp',
-        method: 'POST',
-        body: userInfo,
-      }),
-    }),
-    forgetPassUser: builder.mutation({
-      query: (userEmail) => ({
-        url: '/auth/forget-pass',
-        method: 'POST',
-        body: { email: userEmail },
-      }),
-    }),
-    verifyOtpPassUser: builder.mutation({
-      query: (userInfo) => ({
-        url: '/auth/verify-otp-pass',
         method: 'POST',
         body: userInfo,
       }),
@@ -57,11 +57,10 @@ export const authApi = createApi({
 });
 
 export const {
-  useSignInUserMutation,
-  useSignUpUserMutation,
+  useLoginUserMutation,
+  useRegisterUserMutation,
   useSendOtpUserMutation,
   useVerifyOtpUserMutation,
   useResetPassUserMutation,
-  useForgetPassUserMutation,
-  useVerifyOtpPassUserMutation,
+  useResetOtpUserMutation,
 } = authApi;

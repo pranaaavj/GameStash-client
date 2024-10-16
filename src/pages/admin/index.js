@@ -1,1 +1,2 @@
-export { AdminLoginPage } from './AdminLoginPage';
+export { AdminLogin } from './AdminLogin';
+export { AdminDashboard } from './AdminDashboard';
