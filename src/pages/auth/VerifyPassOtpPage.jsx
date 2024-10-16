@@ -1,46 +1,112 @@
+import {
+  useResetOtpUserMutation,
+  useVerifyOtpUserMutation,
+} from '@/redux/api/authApi';
+import { toast } from 'sonner';
 import { Alert } from '../../components/common';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setOtpStatus } from '@/redux/slices/authSlice';
-import { toast, Toaster } from 'sonner';
+import { setOtpReset, setOtpStatus } from '@/redux/slices/authSlice';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useVerifyOtpPassUserMutation } from '@/redux/api/authApi';
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
 
 export const VerifyPassOtpPage = () => {
-  const { authEmail } = useSelector((state) => state.auth);
+  // Redux authorization slice
+  const { authEmail, otpStatus, otpType, otpReset } = useSelector(
+    (state) => state.auth
+  );
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [userOtp, setUserOtp] = useState('');
+
+  const [otpInput, setOtpInput] = useState('');
+  const [otpTimer, setOtpTimer] = useState(60);
+  const [otpInputValid, setOtpInputValid] = useState('');
 
   // Rtk query hook for verifying otp for password reset
-  const [verifyOtpPassUser, { isError, error }] =
-    useVerifyOtpPassUserMutation();
+  const [verifyOtpPassUser, { isError, error, isLoading, reset }] =
+    useVerifyOtpUserMutation();
+  const [
+    resetOtp,
+    { isError: isResetError, error: resetError, reset: resetResetOtp },
+  ] = useResetOtpUserMutation();
+
+  useEffect(() => {
+    // Checking for users who did not request for Otp
+    if (otpStatus !== 'pending' && otpType !== 'forgotPassword') {
+      navigate('/auth/login');
+    }
+  }, [otpStatus, otpType, navigate]);
+
+  useEffect(() => {
+    setOtpInputValid('');
+    if (isError) reset();
+    if (isResetError) resetResetOtp();
+  }, [otpInput]);
+
+  useEffect(() => {
+    const timer =
+      otpTimer > 0 &&
+      setInterval(() => setOtpTimer((prevTime) => prevTime - 1), 1000);
+
+    return () => clearInterval(timer);
+  }, [isLoading, otpTimer]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!otpInput.trim()) {
+      setOtpInputValid('Please enter your OTP');
+      return;
+    } else if (otpInput.length < 6) {
+      setOtpInputValid('OTP needs to be exactly 6 digits.');
+      return;
+    }
+
     try {
+      // Api request for verifying the otp
       const response = await verifyOtpPassUser({
-        otp: userOtp,
+        otp: otpInput,
         email: authEmail,
+        type: otpType,
       }).unwrap();
 
       if (response?.success) {
-        dispatch(setOtpStatus({ otpStatus: 'verified' }));
+        dispatch(setOtpStatus({ status: 'verified' }));
 
         toast.success(response?.message, {
           duration: 1500,
         });
-        
+
         setTimeout(() => navigate('/auth/reset-pass'), 1500);
+        setOtpInput('');
       }
-      3;
     } catch (error) {
+      toast.error('Something went wrong! Please try again.', {
+        duration: 1400,
+      });
       console.log('Error from verifyOtpUser: ', error);
+    }
+  };
+
+  const handleResetPass = async () => {
+    try {
+      const response = await resetOtp({
+        email: authEmail,
+        type: otpType,
+      }).unwrap();
+
+      if (response?.success) {
+        dispatch(setOtpReset({ reset: true }));
+
+        toast.success(response?.message, {
+          duration: 1500,
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -65,8 +131,8 @@ export const VerifyPassOtpPage = () => {
                 otp
                 autoFocus
                 focusBorderColor='#ff5252'
-                value={userOtp}
-                onChange={(value) => setUserOtp(value)}>
+                value={otpInput}
+                onChange={(value) => setOtpInput(value)}>
                 <PinInputField />
                 <PinInputField />
                 <PinInputField />
@@ -83,6 +149,7 @@ export const VerifyPassOtpPage = () => {
             Verify
           </Button>
         </form>
+        {/* API call errors */}
         {isError && (
           <Alert
             Icon={CircleX}
@@ -90,8 +157,41 @@ export const VerifyPassOtpPage = () => {
             description={error?.data?.message}
           />
         )}
+        {isResetError && (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={resetError?.data?.message}
+          />
+        )}
 
-        <Toaster position='top-right' />
+        {/* Otp input validation error */}
+        {otpInputValid && (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={otpInputValid}
+          />
+        )}
+        {/* Run the timer when the OTP is sent */}
+        {!otpReset && (
+          <p className='font-mont text-sm text-center text-primary-text'>
+            Didn&#39;t receive OTP?{' '}
+            {otpTimer > 0 ? (
+              <span className='text-gray-500'>
+                Please wait {otpTimer} seconds.
+              </span>
+            ) : (
+              <span
+                className={`${
+                  otpTimer > 0 && 'text-muted-text'
+                }hover:text-accent-red text-accent-red cursor-pointer transition-colors duration-200 ease-in-out`}
+                onClick={handleResetPass}>
+                Resend OTP
+              </span>
+            )}
+          </p>
+        )}
       </div>
     </div>
   );

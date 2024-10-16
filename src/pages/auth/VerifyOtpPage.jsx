@@ -1,34 +1,59 @@
+import {
+  useVerifyOtpUserMutation,
+  useResetOtpUserMutation,
+} from '@/redux/api/authApi';
 import { Alert } from '../../components/common';
+import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { setOtpStatus } from '@/redux/slices/authSlice';
-import { toast, Toaster } from 'sonner';
+import { setOtpStatus, setOtpReset } from '@/redux/slices/authSlice';
 import { useEffect, useState } from 'react';
-import { useVerifyOtpUserMutation } from '@/redux/api/authApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
+import { useTimer } from '@/hooks';
 
 export const VerifyOtpPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { authEmail, otpStatus } = useSelector((state) => state.auth);
+  const { authEmail, otpStatus, otpType, otpReset } = useSelector(
+    (state) => state.auth
+  );
 
   const [otpInput, setOtpInput] = useState('');
   const [otpInputValid, setOtpInputValid] = useState('');
 
-  const [verifyOtpUser, { isError, error, reset }] = useVerifyOtpUserMutation();
+  const [verifyOtpUser, { isError, error, reset, isLoading }] =
+    useVerifyOtpUserMutation();
+  const [
+    resetOtp,
+    { isError: isResetError, error: resetError, reset: resetResetOtp },
+  ] = useResetOtpUserMutation();
+
+  const timer = useTimer(60, isLoading);
 
   useEffect(() => {
-    if (!otpStatus) {
+    if (otpStatus !== 'pending' && otpType !== 'registration') {
       navigate('/auth/login');
     }
-    setOtpInputValid('');
-    if (isError) reset();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otpStatus, navigate, otpInput]);
+
+  useEffect(() => {
+    // Resetting validations and errors
+    setOtpInputValid('');
+    if (isError) reset();
+    if (isResetError) resetResetOtp();
+  }, [otpInput]);
+
+  // useEffect(() => {
+  //   const timer =
+  //     otpTimer > 0 &&
+  //     setInterval(() => setOtpTimer((prevTime) => prevTime - 1), 1000);
+
+  //   return () => clearInterval(timer);
+  // }, [isLoading, otpTimer]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,17 +70,43 @@ export const VerifyOtpPage = () => {
       const response = await verifyOtpUser({
         otp: otpInput,
         email: authEmail,
+        type: otpType,
       }).unwrap();
+
       if (response?.success) {
-        dispatch(setOtpStatus({ otpStatus: 'verified' }));
+        dispatch(setOtpStatus({ status: 'verified' }));
 
         toast.success(response?.message, {
           duration: 1500,
         });
+
         setTimeout(() => navigate('/auth/register'), 1500);
+        setOtpInput('');
       }
     } catch (error) {
+      toast.error(error?.data?.message, {
+        duration: 1400,
+      });
       console.log('Error from verifyOtpUser: ', error);
+    }
+  };
+
+  const handleResetPass = async () => {
+    try {
+      const response = await resetOtp({
+        email: authEmail,
+        type: otpType,
+      }).unwrap();
+
+      if (response?.success) {
+        dispatch(setOtpReset({ reset: true }));
+
+        toast.success(response?.message, {
+          duration: 1500,
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -106,6 +157,14 @@ export const VerifyOtpPage = () => {
             description={error?.data?.message}
           />
         )}
+        {isResetError && (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={resetError?.data?.message}
+          />
+        )}
+
         {otpInputValid && (
           <Alert
             Icon={CircleX}
@@ -113,7 +172,25 @@ export const VerifyOtpPage = () => {
             description={otpInputValid}
           />
         )}
-        <Toaster position='top-right' />
+        {/* Run the timer when the OTP is sent */}
+        {!otpReset && (
+          <p className='font-mont text-sm text-center text-primary-text'>
+            Didn&#39;t receive OTP?{' '}
+            {timer > 0 ? (
+              <span className='text-gray-500'>
+                Please wait {timer} seconds.
+              </span>
+            ) : (
+              <span
+                className={`${
+                  timer > 0 && 'text-muted-text'
+                }hover:text-accent-red text-accent-red cursor-pointer transition-colors duration-200 ease-in-out`}
+                onClick={handleResetPass}>
+                Resend OTP
+              </span>
+            )}
+          </p>
+        )}
       </div>
     </div>
   );

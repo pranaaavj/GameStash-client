@@ -4,7 +4,7 @@ const initialState = {
   authEmail: null,
   otpType: null,
   otpStatus: null,
-  otpReset: null,
+  otpReset: false,
 };
 
 const authSlice = createSlice({
@@ -28,6 +28,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setOtpStatus, setAuthEmail } = authSlice.actions;
+export const { resetOtpState, setAuthEmail, setOtpReset, setOtpStatus } =
+  authSlice.actions;
 
 export default authSlice.reducer;

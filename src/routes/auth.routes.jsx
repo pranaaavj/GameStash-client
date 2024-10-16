@@ -8,7 +8,8 @@ import {
 } from '@/pages/auth';
 import { UserLayout } from '@/components/user';
 import { NotFoundPage } from '@/pages/error';
-import { ProtectRegisterRoute } from './ProtectedRoutes';
+import { ProtectRegisterRoute, ProtectResetPassword } from './ProtectedRoutes';
+import HomePage from '@/pages/user/HomePage';
 
 export const authRoutes = [
   {
@@ -42,7 +43,15 @@ export const authRoutes = [
       },
       {
         path: 'reset-pass',
-        element: <ResetPassPage />,
+        element: (
+          <ProtectResetPassword>
+            <ResetPassPage />
+          </ProtectResetPassword>
+        ),
+      },
+      {
+        path: 'tryout',
+        element: <HomePage />,
       },
     ],
   },

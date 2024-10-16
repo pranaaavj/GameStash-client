@@ -13,7 +13,7 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className='bg-secondary-bg shadow-sm font-poppins'>
+    <nav className='bg-secondary-bg z-10 shadow-sm font-poppins fixed left-0 right-0'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center justify-between h-14'>
           <div className='flex-shrink-0 flex items-center'>

@@ -9,19 +9,19 @@ import {
   DialogTrigger,
 } from '@/shadcn/components/ui/dialog';
 import {
-  useSignInUserMutation,
-  useForgetPassUserMutation,
+  useLoginUserMutation,
+  useSendOtpUserMutation,
 } from '@/redux/api/authApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import googleLogo from '../../assets/images/google-logo.png';
 import { useDispatch } from 'react-redux';
-import { setAuthEmail } from '@/redux/slices/authSlice';
 import { validateSignIn } from '@/utils';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
+import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
 
 const initLoginInput = { email: '', password: '' };
@@ -37,11 +37,11 @@ export const LoginPage = () => {
   const [resetEmailValid, setResetEmailValid] = useState('');
 
   // Hooks for Api calls
-  const [signInUser, { isError, error, reset }] = useSignInUserMutation();
+  const [loginUser, { isError, error, reset }] = useLoginUserMutation();
   const [
-    forgotPassUser,
+    sendOtpUser,
     { isError: isPassError, error: passError, reset: resetPassError },
-  ] = useForgetPassUserMutation();
+  ] = useSendOtpUserMutation();
 
   useEffect(() => {
     // Clearing errors and loginValidation
@@ -57,14 +57,15 @@ export const LoginPage = () => {
     e.preventDefault();
 
     const loginValidation = validateSignIn(loginInput);
-
+    // Setting validation errors
     if (Object.keys(loginValidation).length > 0) {
       setLoginValidation(loginValidation);
       return;
     }
 
     try {
-      const response = await signInUser(loginInput).unwrap();
+      // Sending Api request for login
+      const response = await loginUser(loginInput).unwrap();
       //Todo setup userSlice and accessToken
       if (response?.success) {
         toast.success(response?.message, {
@@ -78,13 +79,10 @@ export const LoginPage = () => {
     }
   };
 
-  const handleChange = ({ target: { value, name } }) => {
-    setLoginInput((prevState) => ({ ...prevState, [name]: value }));
-  };
-
-  const handleForgetPassword = async () => {
+  const handleForgotPassword = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    // Setting validation for email
     if (resetEmail == '') {
       setResetEmailValid('Email cannot be empty');
       return;
@@ -94,10 +92,15 @@ export const LoginPage = () => {
     }
 
     try {
-      const response = await forgotPassUser(resetEmail).unwrap();
+      // Sending Api request for OTP validation
+      const response = await sendOtpUser({
+        email: resetEmail,
+        type: 'forgotPassword',
+      }).unwrap();
 
       if (response?.success) {
-        dispatch(setAuthEmail({ email: resetEmail }));
+        dispatch(setAuthEmail({ email: resetEmail, type: 'forgotPassword' }));
+        dispatch(setOtpStatus({ status: 'pending' }));
 
         toast.success(response?.message, {
           duration: 1500,
@@ -106,12 +109,17 @@ export const LoginPage = () => {
         setTimeout(() => navigate('/auth/verify-otp-pass'), 1500);
       }
     } catch (error) {
+      // Custom error toast
       toast.error('Something went wrong, Please try again.', {
         duration: 3500,
         className: 'bg-accent-red text-primary-text',
       });
       console.log(error);
     }
+  };
+
+  const handleChange = ({ target: { value, name } }) => {
+    setLoginInput((prevState) => ({ ...prevState, [name]: value }));
   };
 
   return (
@@ -179,14 +187,17 @@ export const LoginPage = () => {
                         type='button'
                         variant='secondary'
                         className='font-sans'
-                        onClick={() => setResetEmailValid('')}>
+                        onClick={() => {
+                          setResetEmail('');
+                          setResetEmailValid('');
+                        }}>
                         Close
                       </Button>
                     </DialogClose>
                   </DialogFooter>
                   <Button
                     className='bg-accent-red hover:bg-hover-red text-md font-medium font-sans'
-                    onClick={handleForgetPassword}>
+                    onClick={handleForgotPassword}>
                     Send OTP
                   </Button>
                 </div>
@@ -194,7 +205,10 @@ export const LoginPage = () => {
                   <Alert
                     Icon={CircleX}
                     variant='destructive'
-                    description={passError?.data?.message}
+                    description={
+                      passError?.data?.message ||
+                      'Something went wrong! Please try again.'
+                    }
                   />
                 )}
               </DialogContent>
@@ -227,7 +241,9 @@ export const LoginPage = () => {
           <Alert
             Icon={CircleX}
             variant='destructive'
-            description={error?.data?.message}
+            description={
+              error?.data?.message || 'Something went wrong! Please try again.'
+            }
           />
         )}
 
@@ -256,7 +272,6 @@ export const LoginPage = () => {
           </Link>
         </p>
       </div>
-      {/* <Toaster position='top-right' /> */}
     </div>
   );
 };

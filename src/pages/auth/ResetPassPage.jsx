@@ -1,5 +1,5 @@
 import { Button } from '@/shadcn/components/ui/button';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import { InputField, Alert } from '../../components/common';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -27,6 +27,7 @@ export const ResetPassPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
     if (userInput.password !== userInput.cPassword) {
       setValidation((prevState) => ({
@@ -44,15 +45,24 @@ export const ResetPassPage = () => {
       return;
     }
 
-    const response = await resetPass({
-      password: userInput.password,
-      email: authEmail,
-    }).unwrap();
-    if (response?.success) {
-      toast.success(response?.message, {
+    try {
+      const response = await resetPass({
+        password: userInput.password,
+        email: authEmail,
+      }).unwrap();
+
+      if (response?.success) {
+        toast.success(response?.message, {
+          duration: 1500,
+        });
+        
+        setTimeout(() => navigate('/auth/login'), 1500);
+      }
+    } catch (error) {
+      toast.error('Something went wrong! Please try again.', {
         duration: 1500,
       });
-      setTimeout(() => navigate('/auth/login'), 1500);
+      console.log(error);
     }
   };
 
@@ -109,7 +119,6 @@ export const ResetPassPage = () => {
             description={error?.data?.message}
           />
         )}
-        <Toaster position='top-right' />
       </div>
     </div>
   );

@@ -10,12 +10,14 @@ const userSlice = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
-      const { user, accessToken } = action.payload;
+      const { user } = action.payload;
       state.userInfo = user;
-      state.token = accessToken;
       state.role = user.role;
       state.authStatus =
         user.status === 'blocked' ? 'blocked' : 'authenticated';
+    },
+    setToken: (state, action) => {
+      state.token = action.payload.token;
     },
     logout: (state) => {
       state.userInfo = null;
@@ -26,6 +28,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout, setUser } = userSlice.actions;
+export const { logout, setUser, setToken } = userSlice.actions;
 
 export default userSlice.reducer;

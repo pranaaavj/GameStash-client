@@ -1,5 +1,5 @@
 import { AdminLayout } from '@/components/admin';
-import { AdminLoginPage } from '@/pages/admin';
+import { AdminDashboardPage, AdminLoginPage } from '@/pages/admin';
 
 export const adminRoutes = [
   {
@@ -9,6 +9,10 @@ export const adminRoutes = [
       {
         path: 'login',
         element: <AdminLoginPage />,
+      },
+      {
+        path: 'dashboard',
+        element: <AdminDashboardPage />,
       },
     ],
   },
