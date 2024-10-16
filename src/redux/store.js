@@ -1,4 +1,5 @@
 import authReducer from './slices/authSlice';
+import userReducer from './slices/userSlice';
 import { configureStore } from '@reduxjs/toolkit';
 import { authApi } from './api/authApi';
 import { userApi } from './api/userApi';
@@ -10,6 +11,7 @@ const persistedState = loadState();
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    user: userReducer,
     [authApi.reducerPath]: authApi.reducer,
     [userApi.reducerPath]: authApi.reducer,
   },

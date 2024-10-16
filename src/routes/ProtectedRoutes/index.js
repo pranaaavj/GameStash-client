@@ -1,5 +1,5 @@
 export { PrivateResetPassword } from './PrivateResetPassword';
 export { PrivateRegistration } from './PrivateRegistration';
 
-export { ProtectedUserRoute } from './AuthorizedRoute';
+export { AuthorizedRoute } from './AuthorizedRoute';
 export { UnauthorizedRoute } from './UnauthorizedRoute';

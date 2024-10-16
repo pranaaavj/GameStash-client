@@ -11,8 +11,7 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       const { user } = action.payload;
       state.userInfo = user;
-      state.authStatus =
-        user.status === 'blocked' ? 'blocked' : 'authenticated';
+      state.authStatus = user.status === 'blocked' ? 'blocked' : 'loggedIn';
     },
     setToken: (state, action) => {
       state.token = action.payload.token;

@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/shadcn/components/ui/dialog';
 import { Button } from '@/shadcn/components/ui/button';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import { validateSignIn } from '@/utils';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
@@ -174,7 +174,6 @@ export const AdminLogin = () => {
             Click here to login
           </Link>
         </p>
-        <Toaster position='top-right' />
       </div>
     </div>
   );

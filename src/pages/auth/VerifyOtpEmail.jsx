@@ -47,14 +47,6 @@ export const VerifyOtpEmail = () => {
     if (isResetError) resetResetOtp();
   }, [otpInput]);
 
-  // useEffect(() => {
-  //   const timer =
-  //     otpTimer > 0 &&
-  //     setInterval(() => setOtpTimer((prevTime) => prevTime - 1), 1000);
-
-  //   return () => clearInterval(timer);
-  // }, [isLoading, otpTimer]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -79,7 +71,7 @@ export const VerifyOtpEmail = () => {
         toast.success(response?.message, {
           duration: 1500,
         });
-
+        
         setTimeout(() => navigate('/auth/register'), 1500);
         setOtpInput('');
       }

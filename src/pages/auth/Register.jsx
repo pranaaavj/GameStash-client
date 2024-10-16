@@ -1,12 +1,13 @@
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
-import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { validateSignUp } from '@/utils';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useRegisterUserMutation } from '@/redux/api/authApi';
+import { resetAuthState } from '@/redux/slices/authSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 const emptyInput = {
   name: '',
@@ -19,6 +20,7 @@ export const Register = () => {
   const { authEmail } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
@@ -48,6 +50,7 @@ export const Register = () => {
 
       if (response.success) {
         setUserInput(emptyInput);
+        dispatch(resetAuthState());
 
         toast.success(response?.message, {
           duration: 1500,

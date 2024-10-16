@@ -1,6 +1,6 @@
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import { InputField, Alert } from '../../components/common';
 import { useEffect, useState } from 'react';
@@ -109,7 +109,6 @@ export const SendOtpEmail = () => {
             Login now
           </Link>
         </p>
-        <Toaster position='top-right' />
       </div>
     </div>
   );

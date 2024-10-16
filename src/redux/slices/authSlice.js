@@ -22,13 +22,13 @@ const authSlice = createSlice({
     setOtpStatus: (state, action) => {
       state.otpStatus = action.payload?.status;
     },
-    resetOtpState: () => {
+    resetAuthState: () => {
       return initialState;
     },
   },
 });
 
-export const { resetOtpState, setAuthEmail, setOtpReset, setOtpStatus } =
+export const { resetAuthState, setAuthEmail, setOtpReset, setOtpStatus } =
   authSlice.actions;
 
 export default authSlice.reducer;

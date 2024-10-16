@@ -15,6 +15,8 @@ import {
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import googleLogo from '../../assets/images/google-logo.png';
+import { setUser } from '@/redux/slices/userSlice';
+import { setToken } from '@/redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
 import { validateSignIn } from '@/utils';
 import { Alert, InputField } from '../../components/common';
@@ -66,11 +68,15 @@ export const Login = () => {
     try {
       // Sending Api request for login
       const response = await loginUser(loginInput).unwrap();
-      //Todo setup userSlice and accessToken
+
       if (response?.success) {
         toast.success(response?.message, {
           duration: 1500,
         });
+
+        // Setting the user in redux store
+        dispatch(setUser({ user: response?.data?.user }));
+        dispatch(setToken({ token: response?.data?.accessToken }));
 
         setTimeout(() => navigate('/user'), 1500);
       }

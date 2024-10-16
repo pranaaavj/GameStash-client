@@ -1,7 +1,7 @@
 import { UserLayout } from '@/components/user';
 import { NotFound } from '@/pages/error';
 import { HomeUsers } from '@/pages/user';
-import { ProtectedUserRoute } from './ProtectedRoutes';
+import { AuthorizedRoute } from './ProtectedRoutes';
 
 export const userRoutes = [
   {
@@ -15,7 +15,7 @@ export const userRoutes = [
       },
       {
         path: 'profile',
-        element: <ProtectedUserRoute />,
+        element: <AuthorizedRoute />,
         children: [
           {
             path: 'details',
