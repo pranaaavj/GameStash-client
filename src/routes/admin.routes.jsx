@@ -1,18 +1,41 @@
 import { AdminLayout } from '@/components/admin';
-import { AdminDashboard, AdminLogin } from '@/pages/admin';
+import {
+  Dashboard,
+  AdminLogin,
+  AddProduct,
+  EditProduct,
+  ProductList,
+} from '@/pages/admin';
 
 export const adminRoutes = [
   {
-    path: '/admin',
+    path: 'admin/login',
+    element: <AdminLogin />,
+  },
+  {
+    path: 'admin',
     element: <AdminLayout />,
     children: [
       {
-        path: 'login',
-        element: <AdminLogin />,
+        path: 'dashboard',
+        element: <Dashboard />,
       },
       {
-        path: 'dashboard',
-        element: <AdminDashboard />,
+        path: 'products',
+        children: [
+          {
+            index: true,
+            element: <ProductList />,
+          },
+          {
+            path: 'add',
+            element: <AddProduct />,
+          },
+          {
+            path: 'edit/:productId',
+            element: <EditProduct />,
+          },
+        ],
       },
     ],
   },

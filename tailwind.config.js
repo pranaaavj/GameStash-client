@@ -72,5 +72,13 @@ export default {
       },
     },
   },
+  options: {
+    safelist: [
+      'bg-accent-red',
+      'hover:bg-hover-red',
+      'text-accent-blue',
+      'hover:text-hover-blue',
+    ],
+  },
   plugins: [import('tailwindcss-animate')],
 };

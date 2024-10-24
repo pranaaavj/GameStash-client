@@ -6,12 +6,12 @@ import { Alert } from '../../components/common';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
+import { useTimer } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
-import { setOtpStatus, setOtpReset } from '@/redux/slices/authSlice';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { setOtpStatus, setOtpReset } from '@/redux/slices/authSlice';
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
-import { useTimer } from '@/hooks';
 
 export const VerifyOtpEmail = () => {
   const navigate = useNavigate();
@@ -71,7 +71,7 @@ export const VerifyOtpEmail = () => {
         toast.success(response?.message, {
           duration: 1500,
         });
-        
+
         setTimeout(() => navigate('/auth/register'), 1500);
         setOtpInput('');
       }

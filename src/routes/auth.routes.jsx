@@ -7,9 +7,10 @@ import {
   VerifyOtpPassword,
 } from '@/pages/auth';
 import {
-  PrivateRegistration,
-  PrivateResetPassword,
+  // PrivateRegistration,
+  // PrivateResetPassword,
   UnauthorizedRoute,
+  OtpProtectedRoute,
 } from './ProtectedRoutes';
 import { UserLayout } from '@/components/user';
 import { NotFound } from '@/pages/error';
@@ -17,44 +18,51 @@ import { NotFound } from '@/pages/error';
 export const authRoutes = [
   {
     path: 'auth',
-    element: (
-      <UnauthorizedRoute>
-        <UserLayout />
-      </UnauthorizedRoute>
-    ),
+    element: <UserLayout />,
     errorElement: <NotFound />,
     children: [
       {
-        path: 'login',
-        element: <Login />,
-      },
-      {
-        path: 'send-otp',
-        element: <SendOtpEmail />,
-      },
-      {
-        path: 'verify-otp',
-        element: <VerifyOtpEmail />,
-      },
-      {
-        path: 'verify-otp-pass',
-        element: <VerifyOtpPassword />,
-      },
-      {
-        path: 'register',
-        element: (
-          <PrivateRegistration>
-            <Register />
-          </PrivateRegistration>
-        ),
-      },
-      {
-        path: 'reset-pass',
-        element: (
-          <PrivateResetPassword>
-            <ResetPassword />
-          </PrivateResetPassword>
-        ),
+        path: '',
+        element: <UnauthorizedRoute />,
+        children: [
+          {
+            path: 'login',
+            element: <Login />,
+          },
+          {
+            path: 'register',
+            element: (
+              <OtpProtectedRoute requiredOtpType='registration'>
+                <Register />
+              </OtpProtectedRoute>
+            ),
+          },
+          {
+            path: 'reset-pass',
+            element: (
+              <OtpProtectedRoute requiredOtpType='forgotPassword'>
+                <ResetPassword />
+              </OtpProtectedRoute>
+            ),
+          },
+          {
+            path: 'otp',
+            children: [
+              {
+                path: 'send',
+                element: <SendOtpEmail />,
+              },
+              {
+                path: 'verify-email',
+                element: <VerifyOtpEmail />,
+              },
+              {
+                path: 'verify-pass',
+                element: <VerifyOtpPassword />,
+              },
+            ],
+          },
+        ],
       },
     ],
   },

@@ -112,7 +112,7 @@ export const Login = () => {
           duration: 1500,
         });
 
-        setTimeout(() => navigate('/auth/verify-otp-pass'), 1500);
+        setTimeout(() => navigate('/auth/otp/verify-pass'), 1500);
       }
     } catch (error) {
       // Custom error toast
@@ -272,7 +272,7 @@ export const Login = () => {
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Don&#39;t have an Account ?
           <Link
-            to={'/auth/send-otp'}
+            to={'/auth/otp/send'}
             className='text-red-500 hover:underline ml-1 sm:ml-2 '>
             Create one here
           </Link>

@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   authEmail: null,
-  otpType: null,
-  otpStatus: null,
+  otpType: 'none',
+  otpStatus: 'not verified',
   otpReset: false,
 };
 

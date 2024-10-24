@@ -46,14 +46,11 @@ export const SendOtpEmail = () => {
         dispatch(setAuthEmail({ email: userEmail, type: 'registration' }));
         dispatch(setOtpStatus({ status: 'pending' }));
 
-        toast.success(
-          'OTP verified successfully! Please enter your new password.',
-          {
-            duration: 1500,
-          }
-        );
+        toast.success(response?.message, {
+          duration: 1500,
+        });
 
-        setTimeout(() => navigate('/auth/verify-otp'), 1500);
+        setTimeout(() => navigate('/auth/otp/verify-email'), 1500);
       }
     } catch (error) {
       console.log('Error from sentOtpUser: ', error);

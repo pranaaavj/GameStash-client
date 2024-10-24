@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import { useUsers } from '@/hooks/users/useUsers';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
-export const UnauthorizedRoute = ({ children }) => {
+export const UnauthorizedRoute = () => {
   const user = useUsers();
-  console.log(user);
+
   if (user && user?.token) {
     return <Navigate to='/user/home' />;
   }
 
-  return children;
+  return <Outlet />;
 };
 
 UnauthorizedRoute.propTypes = {
