@@ -3,6 +3,7 @@ import userReducer from './slices/userSlice';
 import { configureStore } from '@reduxjs/toolkit';
 import { authApi } from './api/authApi';
 import { userApi } from './api/userApi';
+import { adminApi } from './api/adminApi';
 import { loadState, saveState } from '@/utils';
 
 // Persisted state in local storage
@@ -14,6 +15,7 @@ export const store = configureStore({
     user: userReducer,
     [authApi.reducerPath]: authApi.reducer,
     [userApi.reducerPath]: authApi.reducer,
+    [adminApi.reducerPath]: adminApi.reducer,
   },
   preloadedState: persistedState,
   middleware: (getDefaultMiddleware) =>
@@ -21,7 +23,8 @@ export const store = configureStore({
       serializableCheck: false,
     })
       .concat(authApi.middleware)
-      .concat(userApi.middleware),
+      .concat(userApi.middleware)
+      .concat(adminApi.middleware),
 });
 
 // Any changes to the store would be persisted

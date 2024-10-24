@@ -11,7 +11,7 @@ export const AdminLayout = () => {
       <div className='flex flex-col flex-grow'>
         <main className='flex items-center justify-center p-6 bg-primary-bg text-primary-text overflow-y-auto h-full'>
           {/* Centered Outlet */}
-          <div className='w-full max-w-4xl p-6 bg-secondary-bg rounded-lg shadow-lg'>
+          <div className='w-full max-w-6xl p-6 bg-secondary-bg rounded-lg shadow-lg'>
             <Outlet />
           </div>
         </main>
