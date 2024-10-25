@@ -21,7 +21,10 @@ export const baseQueryWithReAuth = async (args, api, extraOptions) => {
   console.log('response: ' + response);
 
   // Checking for unauthorized error
-  if (response?.error && response?.error?.status === 401) {
+  if (
+    (response?.error && response?.error?.status === 403) ||
+    response?.error?.status === 401
+  ) {
     const refreshResponse = await baseQuery(
       '/auth/refresh-token',
       api,

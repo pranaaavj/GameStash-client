@@ -2,12 +2,12 @@ export const loadState = () => {
   try {
     const serializedData = localStorage.getItem('redux');
     if (!serializedData) {
-      return;
+      return undefined;
     }
     return JSON.parse(serializedData);
   } catch (error) {
     console.log('Error while loading state', error);
-    return;
+    return undefined;
   }
 };
 

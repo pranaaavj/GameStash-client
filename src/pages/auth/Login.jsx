@@ -78,7 +78,7 @@ export const Login = () => {
         dispatch(setUser({ user: response?.data?.user }));
         dispatch(setToken({ token: response?.data?.accessToken }));
 
-        setTimeout(() => navigate('/user'), 1500);
+        setTimeout(() => navigate('/user/home'), 1500);
       }
     } catch (error) {
       console.log(error);

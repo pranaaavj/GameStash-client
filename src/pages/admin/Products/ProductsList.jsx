@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import {
   EditButton,
   DeleteButton,
@@ -7,31 +6,46 @@ import {
 import { Link } from 'react-router-dom';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
-import { useEffect, useState } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Pagination } from '@/components/common';
 import { mapTableData } from '@/utils';
+import { Plus, Search } from 'lucide-react';
+import { useState } from 'react';
 import { useGetAllProductsQuery } from '@/redux/api/adminApi';
 
 export const ProductList = () => {
-  const [products, setProducts] = useState([]);
-  const { data: response, isSuccess, refetch } = useGetAllProductsQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const {
+    data: response,
+    isSuccess,
+    isError,
+    error,
+  } = useGetAllProductsQuery(
+    {
+      page: currentPage,
+      limit: 5,
+    },
+    { refetchOnMountOrArgChange: true, keepUnusedDataFor: 0 }
+  );
 
-  useEffect(() => {
-    if (isSuccess) {
-      setProducts(response?.data);
-    }
-    refetch();
-  }, [isSuccess, response]);
-
-  const headers = ['name', 'price', 'platform', 'genre', 'stock'];
+  const tableHeaders = ['name', 'price', 'platform', 'genre', 'stock'];
 
   const actions = [() => <EditButton />, () => <DeleteButton />];
 
-  const tableData = mapTableData(products, headers);
+  const tableData = isSuccess
+    ? mapTableData(response?.data?.products, tableHeaders)
+    : [];
+
+  if (isError) {
+    console.log(error);
+  }
 
   return (
     <div className='w-full h-full overflow-auto bg-secondary-bg rounded-lg p-4'>
-      {/* Search and Add Product Button */}
+      <div className='mb-6 text-center'>
+        <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
+          Products
+        </h1>
+      </div>
       <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
         {/* Search Input */}
         <div className='relative w-full sm:w-64'>
@@ -50,17 +64,22 @@ export const ProductList = () => {
           </Button>
         </Link>
       </div>
-
-      {/* Responsive Table with Scrolling */}
+      {/* Table */}
       <div className='w-full overflow-x-auto'>
-        {products && (
+        {
           <ReuseableTable
-            headers={headers}
+            headers={tableHeaders}
             data={tableData}
             actions={actions}
           />
-        )}
+        }
       </div>
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={response?.data?.totalPages || 0}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </div>
   );
 };

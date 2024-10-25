@@ -4,7 +4,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 export const AuthorizedRoute = () => {
   const user = useUsers();
-  console.log(user);
+  console.log(user.token);
   if (!user) {
     return <h1>Loading...</h1>;
   }
@@ -27,7 +27,7 @@ export const AuthorizedRoute = () => {
     );
   }
 
-  if (user?.userInfo?.role === 'user') {
+  if (user?.userInfo?.role === 'user' || user?.userInfo?.role === 'admin') {
     return <Outlet />;
   }
 

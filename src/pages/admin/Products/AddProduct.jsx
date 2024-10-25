@@ -1,52 +1,53 @@
-import { useState } from 'react';
 import {
   Card,
-  CardContent,
-  CardHeader,
   CardTitle,
+  CardHeader,
+  CardContent,
 } from '@/shadcn/components/ui/card';
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectTrigger,
+  SelectContent,
 } from '@/shadcn/components/ui/select';
-import { Textarea } from '@/shadcn/components/ui/textarea';
-
-// Assuming InputField is in the same directory
-import { InputField } from '@/components/common';
 import { Button } from '@/shadcn/components/ui/button';
+import { Textarea } from '@/shadcn/components/ui/textarea';
+import { useState } from 'react';
+import { InputField } from '@/components/common';
+import { validateProduct } from '@/utils';
 
+const initialProductState = {
+  name: '',
+  price: '',
+  genre: '',
+  platform: '',
+  images: [],
+  description: '',
+  brand: '',
+  stock: '',
+};
 export function AddProduct() {
-  const [productInput, setProductInput] = useState({
-    name: '',
-    price: '',
-    category: '',
-    description: '',
-    brand: '',
-    stock: '',
-  });
-
-  const [productValidation, setProductValidation] = useState({
-    name: '',
-    price: '',
-    category: '',
-    description: '',
-    brand: '',
-    stock: '',
-  });
+  const [productInput, setProductInput] = useState(initialProductState);
+  const [productValidation, setProductValidation] =
+    useState(initialProductState);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProductInput((prev) => ({ ...prev, [name]: value }));
-    // Clear validation message when user starts typing
     setProductValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Implement form validation and submission logic here
+
+    const productValidation = validateProduct(productInput);
+    // Setting validation errors
+    if (Object.keys(productValidation).length > 0) {
+      setProductValidation(productValidation);
+      return;
+    }
+
     console.log('Product submitted:', productInput);
   };
 
@@ -90,10 +91,10 @@ export function AddProduct() {
             </label>
             <Select
               onValueChange={(value) =>
-                handleChange({ target: { name: 'category', value } })
+                handleChange({ target: { name: 'Genre', value } })
               }>
-              <SelectTrigger className='w-full bg-primary-bg text-secondary-text'>
-                <SelectValue placeholder='Select a category' />
+              <SelectTrigger className='w-full bg-primary-bg text-secondary-text border border-accent-blue rounded-md focus:ring-accent-blue'>
+                <SelectValue placeholder='Select a Genre' />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='games'>Games</SelectItem>
@@ -135,13 +136,13 @@ export function AddProduct() {
               value={productInput.description}
               onChange={handleChange}
               placeholder='Enter product description'
-              className='w-full bg-primary-bg text-secondary-text'
+              className='w-full bg-primary-bg text-secondary-text border border-accent-blue rounded-md focus:ring-accent-blue'
               rows={4}
             />
           </div>
           <Button
             type='submit'
-            className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200'>
+            className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
             Add Product
           </Button>
         </form>

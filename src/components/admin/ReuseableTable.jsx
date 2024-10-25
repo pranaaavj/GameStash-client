@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 
 export const ReuseableTable = ({ headers, data, actions }) => {
   return (
-    <Table className='w-full table-fixed min-w-full border-collapse'>
+    <Table className='w-full table-fixed border-collapse'>
       <TableHeader>
         <TableRow className='bg-primary-bg/10 border-b-2 border-accent-blue'>
           {headers.map((header, index) => (
@@ -22,13 +22,13 @@ export const ReuseableTable = ({ headers, data, actions }) => {
                 header === 'Platform' ||
                 header === 'Stock'
                   ? 'hidden md:table-cell'
-                  : '' // Example: Hide 'Genre' on small screens
+                  : ''
               }`}>
               {header}
             </TableHead>
           ))}
           {actions && (
-            <TableHead className='px-2 md:px-6 py-2 text-center text-xs md:text-sm font-semibold text-primary-text uppercase tracking-wider'>
+            <TableHead className='px-2 md:px-6 py-3 text-center text-xs md:text-sm font-semibold text-primary-text uppercase tracking-wider'>
               Actions
             </TableHead>
           )}
@@ -51,7 +51,7 @@ export const ReuseableTable = ({ headers, data, actions }) => {
               </TableCell>
             ))}
             {actions && (
-              <TableCell className='px-2 md:px-6 py-2 whitespace-nowrap text-center text-xs md:text-sm font-medium border-b border-accent-blue/20'>
+              <TableCell className='px-2 md:px-6 py-3 whitespace-nowrap text-center text-xs md:text-sm font-medium border-b border-accent-blue/20'>
                 <div className='flex justify-center space-x-2'>
                   {actions.map((ActionButton, actionIndex) => (
                     <div

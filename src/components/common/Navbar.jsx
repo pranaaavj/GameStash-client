@@ -13,12 +13,12 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className='bg-secondary-bg z-10 font-poppins fixed left-0 right-0'>
+    <nav className='bg-secondary-bg z-10 font-poppins fixed left-0 right-0 w-full'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center justify-between h-14'>
           <div className='flex-shrink-0 flex items-center'>
             <Link
-              href='/'
+              to='/'
               className='text-xl font-bold'>
               <div className='flex space-x-3 text-primary-text'>
                 <img
@@ -34,17 +34,17 @@ export const Navbar = () => {
           <div className='hidden md:block'>
             <div className='flex items-baseline space-x-4'>
               <Link
-                href='/store'
+                to='/store'
                 className='text-primary-text hover:text-hover-red px-3 py-2 rounded-md text-sm font-medium'>
                 Store
               </Link>
               <Link
-                href='/support'
+                to='/user/support'
                 className='text-primary-text hover:text-hover-red text-sm font-medium'>
                 Support
               </Link>
               <Link
-                href='/about'
+                to='/about'
                 className='text-primary-text hover:text-hover-red px-3 py-2 rounded-md text-sm font-medium'>
                 About
               </Link>
@@ -58,13 +58,13 @@ export const Navbar = () => {
               <Search className='h-6 w-6' />
             </button>
             <Link
-              href='/cart'
+              to='/cart'
               aria-label='Shopping Cart'
               className='text-primary-text hover:text-hover-red'>
               <ShoppingCart className='h-6 w-6' />
             </Link>
             <Link
-              href='/account'
+              to='/user/profile'
               aria-label='User Account'
               className='text-primary-text hover:text-hover-red'>
               <Avatar>
@@ -101,17 +101,17 @@ export const Navbar = () => {
       <div className={`${isOpen ? 'block' : 'hidden'} md:hidden`}>
         <div className='px-2 pt-2 pb-3 space-y-1 sm:px-3'>
           <Link
-            href='/store'
+            to='store'
             className='text-gray-600 hover:text-gray-800 block px-3 py-2 rounded-md text-base font-medium'>
             Store
           </Link>
           <Link
-            href='/support'
+            to='/user/support'
             className='text-gray-600 hover:text-gray-800 block px-3 py-2 rounded-md text-base font-medium'>
             Support
           </Link>
           <Link
-            href='/about'
+            to='about'
             className='text-gray-600 hover:text-gray-800 block px-3 py-2 rounded-md text-base font-medium'>
             About
           </Link>
@@ -119,7 +119,7 @@ export const Navbar = () => {
         <div className='pt-4 pb-3 border-t border-gray-200'>
           <div className='flex items-center px-5'>
             <Link
-              href='/account'
+              to='/account'
               aria-label='User Account'
               className='text-primary-text hover:text-hover-red'>
               <Avatar>
@@ -130,7 +130,7 @@ export const Navbar = () => {
               </Avatar>
             </Link>
             <Link
-              href='/cart'
+              to='/cart'
               aria-label='Shopping Cart'
               className='ml-auto text-primary-text hover:text-hover-red'>
               <ShoppingCart className='h-6 w-6' />

@@ -3,7 +3,6 @@ import { Card, CardContent, CardFooter } from '@/shadcn/components/ui/card';
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
 import { Checkbox } from '@/shadcn/components/ui/checkbox';
-import { Link } from 'react-router-dom';
 const featuredGames = [
   {
     id: 1,
@@ -67,7 +66,7 @@ const genres = [
   'Sports',
 ];
 
-export const HomeUsers = () => {
+export const Support = () => {
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
       <main className='container mx-auto px-4 py-8'>
@@ -93,7 +92,6 @@ export const HomeUsers = () => {
             </div>
           ))}
         </Carousel>
-        <Link to='/admin/products'>Admin/Products</Link>
 
         <div className='flex flex-col md:flex-row gap-8'>
           <aside className='w-full md:w-1/4'>

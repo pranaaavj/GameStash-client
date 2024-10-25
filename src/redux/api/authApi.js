@@ -4,6 +4,7 @@ export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_SERVER_URL }),
   endpoints: (builder) => ({
+    // User login
     loginUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/login',
@@ -11,6 +12,7 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
+    // User registration after opt verification
     registerUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/register',
@@ -18,6 +20,7 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
+    // User logout
     logoutUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/logout',
@@ -25,6 +28,7 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
+    // Sending otp for reset password / registration
     sendOtpUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/send-otp',
@@ -32,6 +36,7 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
+    // Resending the otp
     resetOtpUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/reset-otp',
@@ -39,6 +44,7 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
+    // Verifying the otp
     verifyOtpUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/verify-otp',
@@ -46,6 +52,7 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
+    // User password resetting 
     resetPassUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/reset-pass',

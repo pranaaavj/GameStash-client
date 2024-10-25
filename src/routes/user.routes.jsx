@@ -1,6 +1,7 @@
 import { UserLayout } from '@/components/user';
 import { NotFound } from '@/pages/error';
 import { HomeUsers } from '@/pages/user';
+import { Support } from '@/pages/user/Support';
 import { AuthorizedRoute } from './ProtectedRoutes';
 
 export const userRoutes = [
@@ -22,6 +23,10 @@ export const userRoutes = [
             element: <h1>Hello</h1>,
           },
         ],
+      },
+      {
+        path: 'support',
+        element: <Support />,
       },
     ],
   },

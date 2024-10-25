@@ -5,8 +5,11 @@ export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: baseQueryWithReAuth,
   endpoints: (builder) => ({
+    // All products listing
     getAllProducts: builder.query({
-      query: () => ({ url: '/admin/products', credentials: 'include' }),
+      query: ({ page = 1, limit = 10 }) => ({
+        url: `/admin/products?page=${page}&limit=${limit}`,
+      }),
     }),
   }),
 });
