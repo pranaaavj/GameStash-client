@@ -25,19 +25,19 @@ export const validateProduct = (productInput) => {
     validation.platform = 'Platform cannot be empty.';
   }
 
-  // Validation for images
-  if (!Array.isArray(productInput.images) || productInput.images.length === 0) {
-    validation.images = 'At least one image is required.';
-  } else if (!productInput.images.every((image) => typeof image === 'string')) {
-    validation.images = 'Each image must be a valid URL or string.';
-  }
+  // // Validation for images
+  // if (!Array.isArray(productInput.images) || productInput.images.length === 0) {
+  //   validation.images = 'At least one image is required.';
+  // } else if (!productInput.images.every((image) => typeof image === 'string')) {
+  //   validation.images = 'Each image must be a valid URL or string.';
+  // }
 
-  // Validation for description
-  if (productInput.description === '') {
-    validation.description = 'Description cannot be empty.';
-  } else if (productInput.description.length < 10) {
-    validation.description = 'Description must be at least 10 characters long.';
-  }
+  // // Validation for description
+  // if (productInput.description === '') {
+  //   validation.description = 'Description cannot be empty.';
+  // } else if (productInput.description.length < 10) {
+  //   validation.description = 'Description must be at least 10 characters long.';
+  // }
 
   // Validation for brand
   if (productInput.brand === '') {

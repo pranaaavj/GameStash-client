@@ -5,40 +5,59 @@ import {
   CardContent,
 } from '@/shadcn/components/ui/card';
 import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-} from '@/shadcn/components/ui/select';
+  useGetAllBrandsQuery,
+  useGetAllGenresQuery,
+  useAddProductMutation,
+} from '@/redux/api/adminApi';
+import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
+import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useState } from 'react';
-import { InputField } from '@/components/common';
-import { validateProduct } from '@/utils';
+import { useNavigate } from 'react-router-dom';
+import { Alert, InputField, SelectField } from '@/components/common';
+import { validateProduct, mapOptionsData } from '@/utils';
 
 const initialProductState = {
   name: '',
   price: '',
   genre: '',
   platform: '',
-  images: [],
-  description: '',
+  // images: [],
   brand: '',
   stock: '',
+  description: '',
 };
 export function AddProduct() {
+  const navigate = useNavigate();
+
+  // Fetching brands and genres
+  const { data: responseBrands, isSuccess: brandQuerySuccess } =
+    useGetAllBrandsQuery({});
+  const { data: responseGenres, isSuccess: genreQuerySuccess } =
+    useGetAllGenresQuery({});
+  const [addProduct, { isError, error }] = useAddProductMutation();
+
+  // Product state
   const [productInput, setProductInput] = useState(initialProductState);
   const [productValidation, setProductValidation] =
     useState(initialProductState);
-
+  console.log(productValidation);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProductInput((prev) => ({ ...prev, [name]: value }));
     setProductValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const handleSubmit = (e) => {
+  // Mapping options from brands and genres
+  const brandOptions = brandQuerySuccess
+    ? mapOptionsData(responseBrands?.data?.brands)
+    : [];
+  const genreOptions = genreQuerySuccess
+    ? mapOptionsData(responseGenres?.data?.genres)
+    : [];
+  console.log(brandOptions)
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const productValidation = validateProduct(productInput);
@@ -48,13 +67,24 @@ export function AddProduct() {
       return;
     }
 
-    console.log('Product submitted:', productInput);
+    try {
+      const response = await addProduct(productInput).unwrap();
+
+      if (response.success) {
+        toast.success('Product added successfully', {
+          duration: 1500,
+        });
+        setTimeout(() => navigate('/admin/products'), 1500);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-lg'>
-      <CardHeader className='bg-primary-bg/10 border-b border-accent-blue'>
-        <CardTitle className='text-2xl font-bold text-primary-text'>
+    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-lg text-primary-text'>
+      <CardHeader className='bg-primary-bg/10'>
+        <CardTitle className='text-2xl font-bold text-center text-primary-text'>
           Add New Product
         </CardTitle>
       </CardHeader>
@@ -81,39 +111,42 @@ export function AddProduct() {
             placeHolder='0.00'
             isInvalid={!!productValidation.price}
             errorMessage={productValidation.price}
-            helperText='Enter price in USD'
+            helperText={!productValidation.price && 'Enter price in rupees'}
           />
-          <div className='space-y-2'>
-            <label
-              htmlFor='category'
-              className='block text-sm font-medium text-primary-text'>
-              Category
-            </label>
-            <Select
-              onValueChange={(value) =>
-                handleChange({ target: { name: 'Genre', value } })
-              }>
-              <SelectTrigger className='w-full bg-primary-bg text-secondary-text border border-accent-blue rounded-md focus:ring-accent-blue'>
-                <SelectValue placeholder='Select a Genre' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='games'>Games</SelectItem>
-                <SelectItem value='consoles'>Consoles</SelectItem>
-                <SelectItem value='accessories'>Accessories</SelectItem>
-                <SelectItem value='merchandise'>Merchandise</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <SelectField
+            type='text'
+            value={productInput.genre}
+            onChange={handleChange}
+            label='Genre'
+            name='genre'
+            options={genreOptions}
+            placeholder='Select a Genre'
+            isInvalid={!!productValidation.genre}
+            errorMessage={productValidation.genre}
+          />
+
           <InputField
+            type='text'
+            value={productInput.platform}
+            onChange={handleChange}
+            label='Platform'
+            name='platform'
+            placeHolder='Enter platform'
+            isInvalid={!!productValidation.platform}
+            errorMessage={productValidation.platform}
+          />
+          <SelectField
             type='text'
             value={productInput.brand}
             onChange={handleChange}
             label='Brand'
             name='brand'
-            placeHolder='Enter brand name'
+            options={brandOptions}
+            placeholder='Select a brand'
             isInvalid={!!productValidation.brand}
             errorMessage={productValidation.brand}
           />
+
           <InputField
             type='number'
             value={productInput.stock}
@@ -136,7 +169,7 @@ export function AddProduct() {
               value={productInput.description}
               onChange={handleChange}
               placeholder='Enter product description'
-              className='w-full bg-primary-bg text-secondary-text border border-accent-blue rounded-md focus:ring-accent-blue'
+              className='w-full bg-[#262626] ring-0 focus:ring-2 text-primary-text rounded-md'
               rows={4}
             />
           </div>
@@ -146,6 +179,15 @@ export function AddProduct() {
             Add Product
           </Button>
         </form>
+        {isError && (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={
+              error?.data?.message || 'Something went wrong! Please try again.'
+            }
+          />
+        )}
       </CardContent>
     </Card>
   );

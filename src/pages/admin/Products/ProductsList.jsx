@@ -6,14 +6,19 @@ import {
 import { Link } from 'react-router-dom';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
-import { Pagination } from '@/components/common';
-import { mapTableData } from '@/utils';
-import { Plus, Search } from 'lucide-react';
 import { useState } from 'react';
+import { Pagination } from '@/components/common';
+import { Plus, Search } from 'lucide-react';
+import { mapTableData } from '@/utils';
+import { ConfirmationModal } from '@/components/common';
 import { useGetAllProductsQuery } from '@/redux/api/adminApi';
 
 export const ProductList = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  // const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  console.log(isModalOpen);
   const {
     data: response,
     isSuccess,
@@ -29,7 +34,12 @@ export const ProductList = () => {
 
   const tableHeaders = ['name', 'price', 'platform', 'genre', 'stock'];
 
-  const actions = [() => <EditButton />, () => <DeleteButton />];
+  const actions = [
+    () => <EditButton />,
+    () => <DeleteButton onClick={() => setIsModalOpen(true)} />,
+  ];
+
+  const handleDeleteProduct = () => {};
 
   const tableData = isSuccess
     ? mapTableData(response?.data?.products, tableHeaders)
@@ -66,19 +76,28 @@ export const ProductList = () => {
       </div>
       {/* Table */}
       <div className='w-full overflow-x-auto'>
-        {
+        {tableData.length ? (
           <ReuseableTable
             headers={tableHeaders}
             data={tableData}
             actions={actions}
           />
-        }
+        ) : (
+          'No Data to show'
+        )}
       </div>
       {/* Pagination */}
       <Pagination
         currentPage={currentPage}
         totalPages={response?.data?.totalPages || 0}
         onPageChange={(page) => setCurrentPage(page)}
+      />
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleDeleteProduct}
+        title='Confirm Deletion'
+        description='Are you sure you want to delete this product? This action cannot be undone.'
       />
     </div>
   );

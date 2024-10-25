@@ -45,6 +45,7 @@ export const VerifyOtpEmail = () => {
     setOtpInputValid('');
     if (isError) reset();
     if (isResetError) resetResetOtp();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otpInput]);
 
   const handleSubmit = async (e) => {

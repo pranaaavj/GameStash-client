@@ -52,7 +52,8 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
-    // User password resetting 
+
+    // User password resetting
     resetPassUser: builder.mutation({
       query: (userInfo) => ({
         url: '/auth/reset-pass',
