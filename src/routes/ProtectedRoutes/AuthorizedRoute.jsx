@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { useUsers } from '@/hooks/users/useUsers';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-export const AuthorizedRoute = () => {
+export const AuthorizedRoute = ({ children }) => {
   const user = useUsers();
 
   if (!user) {
@@ -28,7 +28,7 @@ export const AuthorizedRoute = () => {
   }
 
   if (user?.userInfo?.role === 'user' || user?.userInfo?.role === 'admin') {
-    return <Outlet />;
+    return children;
   }
 
   return <Navigate to='/auth/unauthorized' />;

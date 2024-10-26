@@ -18,7 +18,7 @@ const baseQuery = fetchBaseQuery({
 // Automatic refetching of accessToken
 export const baseQueryWithReAuth = async (args, api, extraOptions) => {
   let response = await baseQuery(args, api, extraOptions);
-  console.log('response: ' + response);
+  console.log('response: ', response);
 
   // Checking for unauthorized error
   if (
@@ -30,10 +30,13 @@ export const baseQueryWithReAuth = async (args, api, extraOptions) => {
       api,
       extraOptions
     );
-    console.log('refresh response' + refreshResponse);
+
+    console.log('refresh response', refreshResponse);
     // Setting token in redux store
-    if (refreshResponse.success) {
-      api.dispatch(setToken({ token: refreshResponse?.accessToken }));
+    if (refreshResponse?.data?.success) {
+      api.dispatch(
+        setToken({ token: refreshResponse?.data?.data?.accessToken })
+      );
 
       // Retrying the initial query
       response = await baseQuery(args, api, extraOptions);

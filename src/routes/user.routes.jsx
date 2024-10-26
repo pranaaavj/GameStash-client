@@ -12,7 +12,11 @@ export const userRoutes = [
     children: [
       {
         path: 'home',
-        element: <HomeUsers />,
+        element: (
+          <AuthorizedRoute>
+            <HomeUsers />
+          </AuthorizedRoute>
+        ),
       },
       {
         path: 'profile',

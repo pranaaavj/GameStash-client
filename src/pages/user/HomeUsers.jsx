@@ -4,6 +4,8 @@ import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
 import { Checkbox } from '@/shadcn/components/ui/checkbox';
 import { Link } from 'react-router-dom';
+import { useTestQuery } from '@/redux/api/authApi';
+import { useEffect, useState } from 'react';
 const featuredGames = [
   {
     id: 1,
@@ -68,6 +70,13 @@ const genres = [
 ];
 
 export const HomeUsers = () => {
+  const { data, refetch } = useTestQuery();
+  const [state, setState] = useState(1);
+  console.log(data);
+  useEffect(() => {
+    refetch();
+  }, [state]);
+
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
       <main className='container mx-auto px-4 py-8'>
@@ -93,8 +102,13 @@ export const HomeUsers = () => {
             </div>
           ))}
         </Carousel>
-        <Link to='/admin/products'>Admin/Products</Link>
-
+        <div
+          className='h-10 w-10 mt-30 z-30 text-white'
+          onClick={() => setState(state + 1)}>
+          {state}
+        </div>
+        <Link to='/admin/products'>Admin/Products</Link>{' '}
+        <Link to='/user/profile/details'>Details</Link>
         <div className='flex flex-col md:flex-row gap-8'>
           <aside className='w-full md:w-1/4'>
             <h2 className='text-2xl font-poppins font-bold mb-4'>Filters</h2>
