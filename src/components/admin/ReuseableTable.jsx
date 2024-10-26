@@ -35,11 +35,11 @@ export const ReuseableTable = ({ headers, data, actions }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((rowData, rowIndex) => (
+        {data.map((row) => (
           <TableRow
-            key={rowIndex}
+            key={row?.id}
             className='transition-colors duration-200 even:bg-primary-bg/5 hover:bg-primary-bg/20'>
-            {rowData.map((cellData, cellIndex) => (
+            {row?.data?.map((cellData, cellIndex) => (
               <TableCell
                 key={cellIndex}
                 className={`px-2 md:px-6 py-3 whitespace-nowrap text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 ${
@@ -57,7 +57,10 @@ export const ReuseableTable = ({ headers, data, actions }) => {
                     <div
                       key={actionIndex}
                       className='transition-transform duration-200 hover:scale-105 active:scale-95'>
-                      <ActionButton id={rowIndex} />
+                      <ActionButton
+                        id={row?.id}
+                        title={row?.isActive ? 'UnList' : 'List'}
+                      />
                     </div>
                   ))}
                 </div>

@@ -1,4 +1,3 @@
-import { AdminLayout } from '@/components/admin';
 import {
   Dashboard,
   AdminLogin,
@@ -6,15 +5,19 @@ import {
   EditProduct,
   ProductList,
 } from '@/pages/admin';
+import { AdminError } from '@/pages/error';
+import { AdminLayout } from '@/components/admin';
 
 export const adminRoutes = [
   {
     path: 'admin/login',
     element: <AdminLogin />,
+    errorElement: <AdminError />,
   },
   {
     path: 'admin',
     element: <AdminLayout />,
+    errorElement: <AdminError />,
     children: [
       {
         path: 'dashboard',

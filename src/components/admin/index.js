@@ -1,4 +1,4 @@
 export { EditButton } from './EditButton';
 export { AdminLayout } from './AdminLayout';
-export { DeleteButton } from './DeleteButton';
+export { ToggleList } from './ToggleList';
 export { ReuseableTable } from './ReuseableTable';

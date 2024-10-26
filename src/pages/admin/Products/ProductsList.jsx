@@ -1,6 +1,6 @@
 import {
   EditButton,
-  DeleteButton,
+  ToggleList,
   ReuseableTable,
 } from '../../../components/admin';
 import { Link } from 'react-router-dom';
@@ -15,10 +15,9 @@ import { useGetAllProductsQuery } from '@/redux/api/adminApi';
 
 export const ProductList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  // const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log(isModalOpen);
   const {
     data: response,
     isSuccess,
@@ -31,15 +30,35 @@ export const ProductList = () => {
     },
     { refetchOnMountOrArgChange: true, keepUnusedDataFor: 0 }
   );
-
+  console.log(response);
   const tableHeaders = ['name', 'price', 'platform', 'genre', 'stock'];
 
   const actions = [
     () => <EditButton />,
-    () => <DeleteButton onClick={() => setIsModalOpen(true)} />,
+    ({ id, title }) => {
+      console.log(id);
+      return (
+        <ToggleList
+          onClick={() => handleDeleteModal(id)}
+          title={title}
+        />
+      );
+    },
   ];
 
-  const handleDeleteProduct = () => {};
+  const handleDeleteModal = (id) => {
+    setSelectedProduct(id);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    console.log(selectedProduct);
+  };
+
+  const handleCancelDelete = () => {
+    setSelectedProduct(null);
+    setIsModalOpen(false);
+  };
 
   const tableData = isSuccess
     ? mapTableData(response?.data?.products, tableHeaders)
@@ -50,7 +69,7 @@ export const ProductList = () => {
   }
 
   return (
-    <div className='w-full h-full overflow-auto bg-secondary-bg rounded-lg p-4'>
+    <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-4'>
       <div className='mb-6 text-center'>
         <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
           Products
@@ -74,8 +93,9 @@ export const ProductList = () => {
           </Button>
         </Link>
       </div>
+
       {/* Table */}
-      <div className='w-full overflow-x-auto'>
+      <div className='w-full overflow-x-auto flex-grow no-scrollbar'>
         {tableData.length ? (
           <ReuseableTable
             headers={tableHeaders}
@@ -86,18 +106,23 @@ export const ProductList = () => {
           'No Data to show'
         )}
       </div>
+
       {/* Pagination */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={response?.data?.totalPages || 0}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
+      <div className='sticky bottom-0 mt-4'>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={response?.data?.totalPages || 0}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      </div>
+
+      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleDeleteProduct}
-        title='Confirm Deletion'
-        description='Are you sure you want to delete this product? This action cannot be undone.'
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title='Unlist Product'
+        description='Are you sure you want to unlist this product? It will no longer be visible to customers but can be re-listed later if needed.'
       />
     </div>
   );

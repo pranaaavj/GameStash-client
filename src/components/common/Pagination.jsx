@@ -27,13 +27,14 @@ export const Pagination = ({
     <ShadPagination className='mt-10'>
       <PaginationContent className='flex justify-center space-x-2'>
         <PaginationItem>
-          {currentPage > 1 && (
+          {
             <PaginationPrevious
               onClick={() => onPageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className='cursor-pointer'
+              className={`cursor-pointer ${
+                currentPage === 1 ? 'invisible' : 'visible'
+              }`}
             />
-          )}
+          }
         </PaginationItem>
         {/* Page Numbers */}
         {startPage > 1 && <PaginationEllipsis />}
@@ -49,13 +50,14 @@ export const Pagination = ({
         ))}
         {endPage < totalPages && <PaginationEllipsis />}
         <PaginationItem>
-          {currentPage < totalPages && (
+          {
             <PaginationNext
               onClick={() => onPageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className='cursor-pointer'
+              className={`cursor-pointer ${
+                currentPage === totalPages ? 'invisible' : 'visible'
+              }`}
             />
-          )}
+          }
         </PaginationItem>
       </PaginationContent>
     </ShadPagination>

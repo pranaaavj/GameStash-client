@@ -8,13 +8,18 @@ import {
   Users,
   PanelLeftOpen,
   PanelRightOpen,
+  Tag,
+  Gift,
 } from 'lucide-react';
 import Logo from '../../assets/images/logo.svg';
 
-const navItems = [
+const menuItems = [
   { name: 'Dashboard', icon: Home, to: '/admin/dashboard' },
-  { name: 'Users', icon: Users, to: '/admin/page' },
+  { name: 'Users', icon: Users, to: '/admin/users' },
   { name: 'Products', icon: PackagePlus, to: '/admin/products' },
+  { name: 'Genres', icon: Tag, to: '/admin/genres' }, // Tag icon for genres
+  { name: 'Brands', icon: PackagePlus, to: '/admin/brands' },
+  { name: 'Coupons', icon: Gift, to: '/admin/coupons' }, // Gift icon for coupons
   { name: 'Settings', icon: Settings, to: '/admin/settings' },
 ];
 
@@ -65,7 +70,7 @@ export const Sidebar = () => {
 
       <nav className='flex-grow mt-6'>
         <ul className='space-y-2 px-2'>
-          {navItems.map((item) => (
+          {menuItems.map((item) => (
             <li key={item.name}>
               <NavLink
                 to={item.to}
