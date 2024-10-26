@@ -28,7 +28,7 @@ const initialProductState = {
   stock: '',
   description: '',
 };
-export function AddProduct() {
+export const AddProduct = () => {
   const navigate = useNavigate();
 
   // Fetching brands and genres
@@ -42,7 +42,7 @@ export function AddProduct() {
   const [productInput, setProductInput] = useState(initialProductState);
   const [productValidation, setProductValidation] =
     useState(initialProductState);
-  console.log(productValidation);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProductInput((prev) => ({ ...prev, [name]: value }));
@@ -56,7 +56,7 @@ export function AddProduct() {
   const genreOptions = genreQuerySuccess
     ? mapOptionsData(responseGenres?.data?.genres)
     : [];
-  console.log(brandOptions)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -71,7 +71,7 @@ export function AddProduct() {
       const response = await addProduct(productInput).unwrap();
 
       if (response.success) {
-        toast.success('Product added successfully', {
+        toast.success(response.message, {
           duration: 1500,
         });
         setTimeout(() => navigate('/admin/products'), 1500);
@@ -191,4 +191,4 @@ export function AddProduct() {
       </CardContent>
     </Card>
   );
-}
+};

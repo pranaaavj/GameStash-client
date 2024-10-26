@@ -48,7 +48,7 @@ export const AdminLogin = () => {
     }
     try {
       const response = await signInUser(userInput).unwrap();
-      console.log(response.data);
+
       if (response.success) {
         toast.success('Login successful', {
           duration: 1000,
@@ -125,7 +125,6 @@ export const AdminLogin = () => {
                     <Button
                       className='bg-accent-red hover:bg-hover-red text-md sm:text-lg md:text-xl lg:text-2xl font-medium font-sans'
                       onClick={() => {
-                        console.log(forgotEmail);
                         setForgotEmail('');
                       }}>
                       Send OTP

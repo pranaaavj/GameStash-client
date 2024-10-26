@@ -14,6 +14,7 @@ export const ReuseableTable = ({ headers, data, actions }) => {
     <Table className='w-full table-fixed border-collapse'>
       <TableHeader>
         <TableRow className='bg-primary-bg/10 border-b-2 border-accent-blue'>
+          {/* Mapping Table Headers */}
           {headers.map((header, index) => (
             <TableHead
               key={index}
@@ -35,6 +36,7 @@ export const ReuseableTable = ({ headers, data, actions }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
+        {/* Mapping table data */}
         {data.map((row) => (
           <TableRow
             key={row?.id}
@@ -58,7 +60,7 @@ export const ReuseableTable = ({ headers, data, actions }) => {
                       key={actionIndex}
                       className='transition-transform duration-200 hover:scale-105 active:scale-95'>
                       <ActionButton
-                        id={row?.id}
+                        productId={row?.id}
                         title={row?.isActive ? 'UnList' : 'List'}
                       />
                     </div>

@@ -3,23 +3,30 @@ import {
   ToggleList,
   ReuseableTable,
 } from '../../../components/admin';
-import { Link } from 'react-router-dom';
+import {
+  useGetAllProductsQuery,
+  useToggleProductListMutation,
+} from '@/redux/api/adminApi';
+import { toast } from 'sonner';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
-import { Pagination } from '@/components/common';
-import { Plus, Search } from 'lucide-react';
 import { mapTableData } from '@/utils';
+import { Link, useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '@/components/common';
-import { useGetAllProductsQuery } from '@/redux/api/adminApi';
+import { Alert, Pagination } from '@/components/common';
+import { CircleX, Plus, Search } from 'lucide-react';
 
 export const ProductList = () => {
+  const navigate = useNavigate();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Fetching data through RTK
   const {
-    data: response,
+    data: responseGetProducts,
     isSuccess,
     isError,
     error,
@@ -30,38 +37,54 @@ export const ProductList = () => {
     },
     { refetchOnMountOrArgChange: true, keepUnusedDataFor: 0 }
   );
-  console.log(response);
+  const [
+    toggleProductList,
+    { isError: isProductListError, error: productListError },
+  ] = useToggleProductListMutation();
+
   const tableHeaders = ['name', 'price', 'platform', 'genre', 'stock'];
 
   const actions = [
-    () => <EditButton />,
-    ({ id, title }) => {
-      console.log(id);
-      return (
-        <ToggleList
-          onClick={() => handleDeleteModal(id)}
-          title={title}
-        />
-      );
-    },
+    ({ productId }) => (
+      <EditButton
+        onClick={() => navigate(`/admin/products/edit/${productId}`)}
+      />
+    ),
+    ({ productId, title }) => (
+      <ToggleList
+        onClick={() => handleListingModal(productId)}
+        title={title}
+      />
+    ),
   ];
 
-  const handleDeleteModal = (id) => {
-    setSelectedProduct(id);
+  const handleListingModal = (productId) => {
+    setSelectedProduct(productId);
     setIsModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    console.log(selectedProduct);
+  const handleConfirmListing = async () => {
+    try {
+      const responseProductList = await toggleProductList(selectedProduct);
+
+      if (responseProductList.success) {
+        toast.success(responseProductList.message, {
+          duration: 1500,
+        });
+        setTimeout(() => navigate('/admin/products'), 1500);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const handleCancelDelete = () => {
+  const handleCancelListing = () => {
     setSelectedProduct(null);
     setIsModalOpen(false);
   };
 
   const tableData = isSuccess
-    ? mapTableData(response?.data?.products, tableHeaders)
+    ? mapTableData(responseGetProducts?.data?.products, tableHeaders)
     : [];
 
   if (isError) {
@@ -111,7 +134,7 @@ export const ProductList = () => {
       <div className='sticky bottom-0 mt-4'>
         <Pagination
           currentPage={currentPage}
-          totalPages={response?.data?.totalPages || 0}
+          totalPages={responseGetProducts?.data?.totalPages || 0}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
@@ -119,11 +142,21 @@ export const ProductList = () => {
       {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={isModalOpen}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        title='Unlist Product'
-        description='Are you sure you want to unlist this product? It will no longer be visible to customers but can be re-listed later if needed.'
+        onClose={handleCancelListing}
+        onConfirm={handleConfirmListing}
+        title='Confirm Action'
+        description='Are you sure you want to proceed with this action?'
       />
+      {isProductListError && (
+        <Alert
+          Icon={CircleX}
+          variant='destructive'
+          description={
+            productListError?.data?.message ||
+            'Something went wrong! Please try again.'
+          }
+        />
+      )}
     </div>
   );
 };

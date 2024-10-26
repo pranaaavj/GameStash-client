@@ -17,7 +17,7 @@ export const adminRoutes = [
   {
     path: 'admin',
     element: <AdminLayout />,
-    errorElement: <AdminError />,
+    // errorElement: <AdminError />,
     children: [
       {
         path: 'dashboard',

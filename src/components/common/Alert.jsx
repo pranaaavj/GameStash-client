@@ -8,7 +8,7 @@ export function Alert({ Icon, variant, description }) {
   return (
     <ShadAlert
       variant={variant}
-      className='flex items-center justify-start p-4 space-x-2 w-full font-sans'>
+      className='flex items-center justify-start p-4 space-x-2 w-full font-sans my-5'>
       <div className='flex-shrink-0'>
         <Icon className='w-6 h-6 text-red-500' />
       </div>

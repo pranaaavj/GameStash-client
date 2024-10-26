@@ -21,6 +21,7 @@ export const SendOtpEmail = () => {
   useEffect(() => {
     setValidationEmail('');
     if (isError) reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userEmail, otpStatus]);
 
   const handleSubmit = async (e) => {
