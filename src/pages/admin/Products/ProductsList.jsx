@@ -2,19 +2,20 @@ import {
   EditButton,
   ToggleList,
   ReuseableTable,
+  AdminPagination,
 } from '../../../components/admin';
 import {
   useGetAllProductsQuery,
   useToggleProductListMutation,
 } from '@/redux/api/adminApi';
 import { toast } from 'sonner';
+import { Alert } from '@/components/common';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
-import { Link, useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '@/components/common';
-import { Alert, Pagination } from '@/components/common';
+import { Link, useNavigate } from 'react-router-dom';
 import { CircleX, Plus, Search } from 'lucide-react';
 
 export const ProductList = () => {
@@ -34,8 +35,8 @@ export const ProductList = () => {
     {
       page: currentPage,
       limit: 5,
-    },
-    { refetchOnMountOrArgChange: true, keepUnusedDataFor: 0 }
+    }
+    // { refetchOnMountOrArgChange: true, keepUnusedDataFor: 0 }
   );
   const [
     toggleProductList,
@@ -132,7 +133,7 @@ export const ProductList = () => {
 
       {/* Pagination */}
       <div className='sticky bottom-0 mt-4'>
-        <Pagination
+        <AdminPagination
           currentPage={currentPage}
           totalPages={responseGetProducts?.data?.totalPages || 0}
           onPageChange={(page) => setCurrentPage(page)}

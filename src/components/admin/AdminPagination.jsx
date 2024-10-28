@@ -8,7 +8,7 @@ import {
 } from '@/shadcn/components/ui/pagination';
 import PropTypes from 'prop-types';
 
-export const Pagination = ({
+export const AdminPagination = ({
   currentPage = 1,
   totalPages = 1,
   onPageChange,
@@ -64,7 +64,7 @@ export const Pagination = ({
   );
 };
 
-Pagination.propTypes = {
+AdminPagination.propTypes = {
   currentPage: PropTypes.number,
   totalPages: PropTypes.number,
   onPageChange: PropTypes.func,

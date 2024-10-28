@@ -8,19 +8,22 @@ const items = [
   {
     id: 1,
     image:
-      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?fit=crop&w=1200&q=80',
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg', // A sci-fi theme
+    name: 'Galaxy Raiders',
     price: '$29.99',
   },
   {
     id: 2,
     image:
-      'https://images.unsplash.com/photo-1506354666786-959d6d497f1a?fit=crop&w=1200&q=80',
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg', // Fantasy adventure
+    name: 'Kingdom Quest',
     price: '$59.99',
   },
   {
     id: 3,
     image:
-      'https://images.unsplash.com/photo-1506354666786-959d6d497f1a?fit=crop&w=1200&q=80',
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg', // Post-apocalyptic setting
+    name: 'Wasteland Survival',
     price: '$39.99',
   },
 ];
@@ -40,7 +43,7 @@ export const GameCarousal = () => {
     <div className='max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12'>
       <Card className='border-none shadow-none'>
         <CardContent className='p-0'>
-          <AnimatePresence mode='wait'>
+          <AnimatePresence mode='popLayout'>
             <motion.div
               key={currentIndex}
               initial={{ opacity: 0 }}

@@ -5,10 +5,13 @@ export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: baseQueryWithReAuth,
   endpoints: (builder) => ({
-    getUserInfo: builder.query({
-      query: () => ({ url: '/user/profile', credentials: 'include' }),
+    getProducts: builder.query({
+      query: ({ page = 1, limit = 5, queryOptions = {} }) => ({
+        url: '/user/products',
+        params: { page, limit, ...queryOptions },
+      }),
     }),
   }),
 });
 
-export const { useGetUserInfoQuery } = userApi;
+export const { useGetProductsQuery } = userApi;

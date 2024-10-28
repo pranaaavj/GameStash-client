@@ -1,4 +1,4 @@
-import { Navbar } from '../common';
+import { Footer, Navbar } from '../common';
 import { Outlet } from 'react-router-dom';
 
 export const UserLayout = () => {
@@ -8,6 +8,7 @@ export const UserLayout = () => {
       <main className='flex-grow'>
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 };
