@@ -17,6 +17,7 @@ import { mapTableData } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
 import { CircleX, Plus, Search } from 'lucide-react';
+import Component from '@/components/admin/ImageUploadComponent';
 
 export const ProductList = () => {
   const navigate = useNavigate();
@@ -129,6 +130,10 @@ export const ProductList = () => {
         ) : (
           'No Data to show'
         )}
+      </div>
+
+      <div>
+        <Component />
       </div>
 
       {/* Pagination */}
