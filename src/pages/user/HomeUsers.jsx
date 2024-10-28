@@ -73,6 +73,7 @@ export const HomeUsers = () => {
   const { data, refetch } = useTestQuery();
   const [state, setState] = useState(1);
   console.log(data);
+
   useEffect(() => {
     refetch();
   }, [state]);

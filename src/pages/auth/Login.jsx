@@ -25,6 +25,8 @@ import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
 import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
+//... other imports
 
 const initLoginInput = { email: '', password: '' };
 
@@ -78,7 +80,7 @@ export const Login = () => {
         dispatch(setUser({ user: response?.data?.user }));
         dispatch(setToken({ token: response?.data?.accessToken }));
 
-        setTimeout(() => navigate('/user/home'), 1500);
+        navigate('/user/home');
       }
     } catch (error) {
       console.log(error);
@@ -129,7 +131,18 @@ export const Login = () => {
   };
 
   return (
-    <div className='flex flex-col md:flex-row h-[calc(100vh-60px)] w-full items-center justify-center'>
+    <motion.div
+      className='flex items-center justify-center min-h-screen w-full overflow-hidden'
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.3, ease: 'easeInOut' },
+        },
+      }}
+      initial='hidden'
+      animate='visible'>
       <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md lg:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
         <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
           Login to Your Account
@@ -152,23 +165,21 @@ export const Login = () => {
                 !loginValidation.email ? "We'll never share your email" : null
               }
             />
-
             <Dialog
               onOpenChange={() => {
                 setResetEmail('');
                 setResetEmailValid('');
               }}>
               <DialogTrigger asChild>
-                <p className='z-10 absolute right-0 text-[10px] sm:text-[12px] top-[105px] font-roboto font-medium hover:text-accent-red cursor-pointer'>
-                  Forgot Password ?
+                <p className='z-10 absolute right-0 top-[105px] text-[10px] sm:text-[12px] font-roboto font-medium hover:text-accent-red cursor-pointer'>
+                  Forgot Password?
                 </p>
               </DialogTrigger>
               <DialogContent className='sm:max-w-md bg-primary-bg text-primary-text border-none font-poppins'>
                 <DialogHeader>
                   <DialogTitle>Forgot Password</DialogTitle>
                   <DialogDescription className='font-sans text-secondary-text'>
-                    Enter the email address that was associated with your
-                    account
+                    Enter the email associated with your account
                   </DialogDescription>
                 </DialogHeader>
                 <div className='flex items-center space-x-2'>
@@ -185,7 +196,6 @@ export const Login = () => {
                     />
                   </div>
                 </div>
-
                 <div className='flex justify-start gap-5 mt-2'>
                   <DialogFooter className='p-0'>
                     <DialogClose asChild>
@@ -270,14 +280,14 @@ export const Login = () => {
           Continue with Google
         </Button>
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
-          Don&#39;t have an Account ?
+          Don&#39;t have an Account?
           <Link
             to={'/auth/otp/send'}
-            className='text-red-500 hover:underline ml-1 sm:ml-2 '>
+            className='text-red-500 hover:underline ml-1 sm:ml-2'>
             Create one here
           </Link>
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 };
