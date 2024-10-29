@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
+/* eslint-disable react/prop-types */
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 import { Button } from '@/shadcn/components/ui/button';
 import {
@@ -23,9 +24,7 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
 
-  if (!ctx) {
-    return null;
-  }
+  if (!ctx) return null;
 
   canvas.width = pixelCrop.width;
   canvas.height = pixelCrop.height;
@@ -43,13 +42,11 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
   );
 
   return new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      resolve(URL.createObjectURL(blob));
-    }, 'image/jpeg');
+    canvas.toBlob((blob) => resolve(blob), 'image/jpeg');
   });
 };
 
-export default function Component() {
+export const ImageCropper = ({ onCropComplete, initialImages = [] }) => {
   const [images, setImages] = useState([]);
   const [currentImage, setCurrentImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -58,6 +55,17 @@ export default function Component() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Load initial images
+  useEffect(() => {
+    if (initialImages.length > 0) {
+      const loadedImages = initialImages.map((url) => ({
+        original: url,
+        cropped: url,
+      }));
+      setImages(loadedImages);
+    }
+  }, [initialImages]);
 
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
@@ -68,28 +76,35 @@ export default function Component() {
     setImages((prevImages) => [...prevImages, ...newImages]);
   };
 
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
+  const onCropCompleteInternal = useCallback(
+    (croppedArea, croppedAreaPixels) => {
+      setCroppedAreaPixels(croppedAreaPixels);
+    },
+    []
+  );
 
   const saveCroppedImage = useCallback(async () => {
     try {
-      const croppedImage = await getCroppedImg(
+      const blob = await getCroppedImg(
         currentImage.original,
         croppedAreaPixels
       );
+
+      // Generate a URL for the cropped blob and update images array
+      const croppedUrl = URL.createObjectURL(blob);
       setImages((prevImages) =>
         prevImages.map((img) =>
           img.original === currentImage.original
-            ? { ...img, cropped: croppedImage }
+            ? { ...img, cropped: croppedUrl }
             : img
         )
       );
       setIsCropperOpen(false);
+      onCropComplete(croppedUrl); // Pass URL to parent
     } catch (e) {
       console.error(e);
     }
-  }, [croppedAreaPixels, currentImage]);
+  }, [croppedAreaPixels, currentImage, onCropComplete]);
 
   const openCropper = (image) => {
     setCurrentImage(image);
@@ -99,7 +114,9 @@ export default function Component() {
   return (
     <div className='p-4'>
       <div className='mb-4'>
-        <Button onClick={() => fileInputRef.current.click()}>
+        <Button
+          type='button'
+          onClick={() => fileInputRef.current.click()}>
           <Upload className='w-4 h-4 mr-2' />
           Upload Images
         </Button>
@@ -114,24 +131,26 @@ export default function Component() {
       </div>
 
       <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className='relative'>
-            <img
-              src={image.cropped || image.original}
-              alt={`Uploaded ${index + 1}`}
-              className='w-full h-40 object-cover rounded-lg'
-            />
-            <Button
-              variant='outline'
-              size='icon'
-              className='absolute top-2 right-2'
-              onClick={() => openCropper(image)}>
-              <Edit className='h-4 w-4' />
-            </Button>
-          </div>
-        ))}
+        {images.length > 0 &&
+          images.map((image, index) => (
+            <div
+              key={index}
+              className='relative'>
+              <img
+                src={image.cropped || image.original}
+                alt={`Uploaded ${index + 1}`}
+                className='w-full h-40 object-cover rounded-lg'
+              />
+              <Button
+                variant='outline'
+                size='icon'
+                type='button'
+                className='absolute top-2 right-2'
+                onClick={() => openCropper(image)}>
+                <Edit className='h-4 w-4 text-primary-b' />
+              </Button>
+            </div>
+          ))}
       </div>
 
       <Dialog
@@ -149,34 +168,35 @@ export default function Component() {
                 zoom={zoom}
                 aspect={aspect}
                 onCropChange={setCrop}
-                onCropComplete={onCropComplete}
+                onCropComplete={onCropCompleteInternal}
                 onZoomChange={setZoom}
               />
             )}
           </div>
           <div className='flex justify-between mt-4'>
             <Button
+              type='button'
               onClick={() => setIsCropperOpen(false)}
               variant='outline'>
-              <X className='w-4 h-4 mr-2' />
-              Close
+              <X className='w-4 h-4 mr-2' /> Close
             </Button>
             <select
               value={aspect}
               onChange={(e) => setAspect(parseFloat(e.target.value))}
-              className='p-2 mx-1 rounded bg-gray-800 text-sm text-white'>
+              className='mx-1 rounded bg-gray-800 text-sm text-center text-white'>
               <option value={1}>1:1 (Square)</option>
               <option value={4 / 3}>4:3 (Standard)</option>
               <option value={16 / 9}>16:9 (Widescreen)</option>
               <option value={3 / 2}>3:2</option>
             </select>
-            <Button onClick={saveCroppedImage}>
-              <Save className='w-4 h-4 mr-2' />
-              Save Crop
+            <Button
+              type='button'
+              onClick={saveCroppedImage}>
+              <Save className='w-4 h-4 mr-2' /> Save Crop
             </Button>
           </div>
         </DialogContent>
       </Dialog>
     </div>
   );
-}
+};

@@ -8,8 +8,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shadcn/components/ui/dialog';
-import { Button } from '@/shadcn/components/ui/button';
 import { toast } from 'sonner';
+import { Button } from '@/shadcn/components/ui/button';
+import { setUser } from '@/redux/slices/userSlice';
+import { setToken } from '@/redux/slices/userSlice';
+import { useDispatch } from 'react-redux';
 import { validateSignIn } from '@/utils';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
@@ -17,12 +20,15 @@ import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
 import { useLoginUserMutation } from '@/redux/api/authApi';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
+import { useUsers } from '@/hooks/users/useUsers';
 
 const emptyInput = { email: '', password: '' };
 
 export const AdminLogin = () => {
+  const user = useUsers();
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  console.log(user);
   const [showPass, setShowPass] = useState(false);
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
@@ -30,10 +36,13 @@ export const AdminLogin = () => {
 
   const [signInUser, { isError, error, reset }] = useLoginUserMutation();
   useEffect(() => {
+    if (user.authStatus === 'loggedIn') {
+      navigate('/admin/dashboard');
+    }
     setValidation(emptyInput);
     if (isError) reset();
     // eslint-disable-next-line
-  }, [userInput]);
+  }, [userInput, user]);
 
   const handleChange = ({ target: { value, name } }) => {
     setUserInput((prevState) => ({ ...prevState, [name]: value }));
@@ -50,10 +59,13 @@ export const AdminLogin = () => {
       const response = await signInUser(userInput).unwrap();
 
       if (response.success) {
+        dispatch(setUser({ user: response?.data?.user }));
+        dispatch(setToken({ token: response?.data?.accessToken }));
+
         toast.success('Login successful', {
           duration: 1000,
-          onAutoClose: () => navigate('/'),
         });
+        navigate('/admin/dashboard');
       }
     } catch (error) {
       console.log(error);

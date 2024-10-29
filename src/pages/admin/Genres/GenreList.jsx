@@ -5,8 +5,8 @@ import {
   AdminPagination,
 } from '../../../components/admin';
 import {
-  useGetAllProductsQuery,
-  useToggleProductListMutation,
+  useGetAllGenresQuery,
+  useToggleGenreListMutation,
 } from '@/redux/api/adminApi';
 import { toast } from 'sonner';
 import { Alert } from '@/components/common';
@@ -18,68 +18,57 @@ import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
 import { CircleX, Plus, Search } from 'lucide-react';
 
-export const ProductList = () => {
+export const GenreList = () => {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetching data through RTK
   const {
-    data: responseGetProducts,
+    data: responseGetGenres,
     isSuccess,
     isError,
     error,
-  } = useGetAllProductsQuery(
-    {
-      page: currentPage,
-      limit: 6,
-    }
-    // { refetchOnMountOrArgChange: true, keepUnusedDataFor: 0 }
-  );
-  const [
-    toggleProductList,
-    { isError: isProductListError, error: productListError },
-  ] = useToggleProductListMutation();
+  } = useGetAllGenresQuery({
+    page: currentPage,
+    limit: 6,
+  });
 
-  const tableHeaders = [
-    'name',
-    'price',
-    'platform',
-    'genre',
-    'isActive',
-    'stock',
-  ];
+  const [
+    toggleGenreList,
+    { isError: isGenreListError, error: genreListError },
+  ] = useToggleGenreListMutation();
+
+  const tableHeaders = ['name', 'description', 'isActive'];
 
   const actions = [
-    ({ id: productId }) => (
-      <EditButton
-        onClick={() => navigate(`/admin/products/edit/${productId}`)}
-      />
+    ({ id: genreId }) => (
+      <EditButton onClick={() => navigate(`/admin/genres/edit/${genreId}`)} />
     ),
-    ({ id: productId, title }) => (
+    ({ id: genreId, title }) => (
       <ToggleList
-        onClick={() => handleListingModal(productId)}
+        onClick={() => handleListingModal(genreId)}
         title={title}
       />
     ),
   ];
 
-  const handleListingModal = (productId) => {
-    setSelectedProduct(productId);
+  const handleListingModal = (genreId) => {
+    setSelectedGenre(genreId);
     setIsModalOpen(true);
   };
 
   const handleConfirmListing = async () => {
     try {
-      const responseProductList = await toggleProductList(selectedProduct);
+      const responseGenreList = await toggleGenreList(selectedGenre);
 
-      if (responseProductList.success) {
-        toast.success(responseProductList.message, {
+      if (responseGenreList.success) {
+        toast.success(responseGenreList.message, {
           duration: 1500,
         });
-        setTimeout(() => navigate('/admin/products'), 1500);
+        setTimeout(() => navigate('/admin/genres'), 1500);
       }
     } catch (error) {
       console.log(error);
@@ -87,14 +76,14 @@ export const ProductList = () => {
   };
 
   const handleCancelListing = () => {
-    setSelectedProduct(null);
+    setSelectedGenre(null);
     setIsModalOpen(false);
   };
 
   const tableData = isSuccess
-    ? mapTableData(responseGetProducts?.data?.products, tableHeaders)
+    ? mapTableData(responseGetGenres?.data?.genres, tableHeaders)
     : [];
-
+  console.log(tableData);
   if (isError) {
     console.log(error);
   }
@@ -103,7 +92,7 @@ export const ProductList = () => {
     <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-4'>
       <div className='mb-6 text-center'>
         <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
-          Products
+          Genres
         </h1>
       </div>
       <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
@@ -117,10 +106,10 @@ export const ProductList = () => {
           />
         </div>
 
-        {/* Add Product Button */}
-        <Link to='/admin/products/add'>
+        {/* Add Genre Button */}
+        <Link to='/admin/genres/add'>
           <Button className='w-full sm:w-auto bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>
-            <Plus className='mr-2 h-4 w-4' /> Add Product
+            <Plus className='mr-2 h-4 w-4' /> Add Genre
           </Button>
         </Link>
       </div>
@@ -139,10 +128,10 @@ export const ProductList = () => {
       </div>
 
       {/* Pagination */}
-      <div className='sticky bottom-0 mt-4'>
+      <div className='sticky bottom-0'>
         <AdminPagination
           currentPage={currentPage}
-          totalPages={responseGetProducts?.data?.totalPages || 0}
+          totalPages={responseGetGenres?.data?.totalPages || 0}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
@@ -155,12 +144,12 @@ export const ProductList = () => {
         title='Confirm Action'
         description='Are you sure you want to proceed with this action?'
       />
-      {isProductListError && (
+      {isGenreListError && (
         <Alert
           Icon={CircleX}
           variant='destructive'
           description={
-            productListError?.data?.message ||
+            genreListError?.data?.message ||
             'Something went wrong! Please try again.'
           }
         />

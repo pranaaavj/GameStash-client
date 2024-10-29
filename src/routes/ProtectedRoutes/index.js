@@ -4,3 +4,4 @@ export { PrivateResetPassword } from './PrivateResetPassword';
 
 export { AuthorizedRoute } from './AuthorizedRoute';
 export { UnauthorizedRoute } from './UnauthorizedRoute';
+export { AuthorizeAdminRoute } from './AuthorizeAdminRoute';

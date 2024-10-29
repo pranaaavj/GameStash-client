@@ -2,14 +2,15 @@ import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 export const GameCard = ({ game }) => {
+  console.log(game);
   return (
     <motion.div
       className='bg-transparent rounded-lg overflow-hidden h-[23rem] max-w-[14rem] transition-transform duration-300 flex flex-col justify-between'
       whileHover={{ scale: 1.03 }}>
       <div className='relative'>
         <img
-          src={game.image}
-          alt={game.title}
+          src={game.images[0]}
+          alt={game.name}
           className='w-full h-[16rem] object-cover rounded-lg'
         />
         {/* For discount section  */}
@@ -20,16 +21,14 @@ export const GameCard = ({ game }) => {
         )} */}
       </div>
       <div className='p-4 text-left'>
-        {game.baseGame && (
-          <p className='text-secondary-text text-xs mb-1'>Base Game</p>
-        )}
+        {<p className='text-secondary-text text-xs mb-1'>Base Game</p>}
         <h3 className='text-primary-text font-bold text-base mb-1 font-poppins truncate'>
-          {game.title}
+          {game.name}
         </h3>
 
         {/* Display Genre and Platform */}
         <div className='text-secondary-text text-xs mb-2 flex justify-between items-center'>
-          <span>{game.genre}</span>
+          <span>{game.genre?.name}</span>
           <span className='text-secondary-text'>{game.platform}</span>
         </div>
 

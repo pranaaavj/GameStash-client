@@ -4,9 +4,16 @@ import {
   AddProduct,
   EditProduct,
   ProductList,
+  BrandList,
+  AddBrand,
+  EditBrand,
+  GenreList,
+  AddGenre,
+  EditGenre,
 } from '@/pages/admin';
 import { AdminError } from '@/pages/error';
 import { AdminLayout } from '@/components/admin';
+import { AuthorizeAdminRoute } from './ProtectedRoutes';
 
 export const adminRoutes = [
   {
@@ -17,26 +24,66 @@ export const adminRoutes = [
   {
     path: 'admin',
     element: <AdminLayout />,
-    // errorElement: <AdminError />,
+    errorElement: <AdminError />,
     children: [
       {
-        path: 'dashboard',
-        element: <Dashboard />,
-      },
-      {
-        path: 'products',
+        path: '',
+        element: <AuthorizeAdminRoute />,
         children: [
           {
-            index: true,
-            element: <ProductList />,
+            path: 'dashboard',
+            element: <Dashboard />,
           },
           {
-            path: 'add',
-            element: <AddProduct />,
+            path: 'products',
+            children: [
+              {
+                index: true,
+                element: <ProductList />,
+              },
+              {
+                path: 'add',
+                element: <AddProduct />,
+              },
+              {
+                path: 'edit/:productId',
+                element: <EditProduct />,
+              },
+            ],
           },
           {
-            path: 'edit/:productId',
-            element: <EditProduct />,
+            path: 'brands',
+            children: [
+              {
+                index: true,
+                element: <BrandList />,
+              },
+              {
+                path: 'add',
+                element: <AddBrand />,
+              },
+              {
+                path: 'edit/:brandId',
+                element: <EditBrand />,
+              },
+            ],
+          },
+          {
+            path: 'genres',
+            children: [
+              {
+                index: true,
+                element: <GenreList />,
+              },
+              {
+                path: 'add',
+                element: <AddGenre />,
+              },
+              {
+                path: 'edit/:genreId',
+                element: <EditGenre />,
+              },
+            ],
           },
         ],
       },

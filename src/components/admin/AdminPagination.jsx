@@ -24,7 +24,7 @@ export const AdminPagination = ({
   }
 
   return (
-    <ShadPagination className='mt-10'>
+    <ShadPagination className='mt-5'>
       <PaginationContent className='flex justify-center space-x-2'>
         <PaginationItem>
           {

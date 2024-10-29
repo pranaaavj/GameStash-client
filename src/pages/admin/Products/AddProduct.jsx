@@ -15,6 +15,7 @@ import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ImageUploader } from '@/components/admin/ImageUpload';
 import { Alert, InputField, SelectField } from '@/components/common';
 import { validateProduct, mapOptionsData } from '@/utils';
 
@@ -23,7 +24,7 @@ const initialProductState = {
   price: '',
   genre: '',
   platform: '',
-  // images: [],
+  images: [],
   brand: '',
   stock: '',
   description: '',
@@ -39,6 +40,7 @@ export const AddProduct = () => {
   const [addProduct, { isError, error }] = useAddProductMutation();
 
   // Product state
+  const [images, setImages] = useState([]);
   const [productInput, setProductInput] = useState(initialProductState);
   const [productValidation, setProductValidation] =
     useState(initialProductState);
@@ -68,13 +70,13 @@ export const AddProduct = () => {
     }
 
     try {
-      const response = await addProduct(productInput).unwrap();
+      const response = await addProduct({ ...productInput, images }).unwrap();
 
       if (response.success) {
         toast.success(response.message, {
           duration: 1500,
         });
-        setTimeout(() => navigate('/admin/products'), 1500);
+        navigate('/admin/products');
       }
     } catch (error) {
       console.log(error);
@@ -173,12 +175,20 @@ export const AddProduct = () => {
               rows={4}
             />
           </div>
+          {/* <ImageCropper onCropComplete={handleCroppedImage} /> */}
+
+          <ImageUploader
+            images={images}
+            setImages={setImages}
+          />
+
           <Button
             type='submit'
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
             Add Product
           </Button>
         </form>
+
         {isError && (
           <Alert
             Icon={CircleX}

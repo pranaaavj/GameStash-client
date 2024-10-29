@@ -2,6 +2,7 @@ import { UserLayout } from '@/components/user';
 import { NotFound } from '@/pages/error';
 import { Home } from '@/pages/user';
 import { AuthorizedRoute } from './ProtectedRoutes';
+import { ProductDetailsPage } from '@/pages/user/Game/GameDetails';
 
 export const userRoutes = [
   {
@@ -16,6 +17,10 @@ export const userRoutes = [
       {
         path: 'profile',
         element: <AuthorizedRoute />,
+      },
+      {
+        path: 'product',
+        element: <ProductDetailsPage />,
       },
     ],
   },

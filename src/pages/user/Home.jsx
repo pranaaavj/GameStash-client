@@ -3,86 +3,102 @@ import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { GameCarousal } from './Game/GameCarousal';
 import { GameListing } from './Game/GameListing';
+import { useGetProductsQuery } from '@/redux/api/userApi';
+import { Alert } from '@/components/common';
+import { CircleX } from 'lucide-react';
+import { useState } from 'react';
 
 // Mock data for games
-const games = [
-  {
-    id: 1,
-    title: 'Cyberpunk 2077',
-    genre: 'RPG',
-    platform: 'PC',
-    price: 59.99,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg',
-  },
-  {
-    id: 2,
-    title: 'Red Dead Redemption 2',
-    genre: 'Action',
-    platform: 'Xbox',
-    price: 39.99,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg',
-  },
-  {
-    id: 3,
-    title: 'The Witcher 3: Wild Hunt',
-    genre: 'RPG',
-    platform: 'PlayStation',
-    price: 29.99,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg',
-  },
-  {
-    id: 4,
-    title: 'Grand Theft Auto V',
-    genre: 'Action',
-    platform: 'PC',
-    price: 29.99,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/271590/header.jpg',
-  },
-  {
-    id: 5,
-    title: 'Elden Ring',
-    genre: 'Adventure',
-    platform: 'PC',
-    price: 59.99,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg',
-  },
-  {
-    id: 6,
-    title: 'God of War',
-    genre: 'Adventure',
-    platform: 'PlayStation',
-    price: 49.99,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/header.jpg',
-  },
-  {
-    id: 7,
-    title: 'Horizon Zero Dawn',
-    genre: 'Action',
-    platform: 'PC',
-    price: 49.99,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg',
-  },
-  {
-    id: 8,
-    title: 'Death Stranding',
-    genre: 'Adventure',
-    platform: 'PC',
-    price: 39.99,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1190460/header.jpg',
-  },
-];
+// const games = [
+//   {
+//     id: 1,
+//     title: 'Cyberpunk 2077',
+//     genre: 'RPG',
+//     platform: 'PC',
+//     price: 59.99,
+//     image:
+//       'https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg',
+//   },
+//   {
+//     id: 2,
+//     title: 'Red Dead Redemption 2',
+//     genre: 'Action',
+//     platform: 'Xbox',
+//     price: 39.99,
+//     image:
+//       'https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg',
+//   },
+//   {
+//     id: 3,
+//     title: 'The Witcher 3: Wild Hunt',
+//     genre: 'RPG',
+//     platform: 'PlayStation',
+//     price: 29.99,
+//     image:
+//       'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg',
+//   },
+//   {
+//     id: 4,
+//     title: 'Grand Theft Auto V',
+//     genre: 'Action',
+//     platform: 'PC',
+//     price: 29.99,
+//     image:
+//       'https://cdn.cloudflare.steamstatic.com/steam/apps/271590/header.jpg',
+//   },
+//   {
+//     id: 5,
+//     title: 'Elden Ring',
+//     genre: 'Adventure',
+//     platform: 'PC',
+//     price: 59.99,
+//     image:
+//       'https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg',
+//   },
+//   {
+//     id: 6,
+//     title: 'God of War',
+//     genre: 'Adventure',
+//     platform: 'PlayStation',
+//     price: 49.99,
+//     image:
+//       'https://cdn.cloudflare.steamstatic.com/steam/apps/1593500/header.jpg',
+//   },
+//   {
+//     id: 7,
+//     title: 'Horizon Zero Dawn',
+//     genre: 'Action',
+//     platform: 'PC',
+//     price: 49.99,
+//     image:
+//       'https://cdn.cloudflare.steamstatic.com/steam/apps/1151640/header.jpg',
+//   },
+//   {
+//     id: 8,
+//     title: 'Death Stranding',
+//     genre: 'Adventure',
+//     platform: 'PC',
+//     price: 39.99,
+//     image:
+//       'https://cdn.cloudflare.steamstatic.com/steam/apps/1190460/header.jpg',
+//   },
+// ];
 
 export const Home = () => {
-  
+  const [pageState, setPageState] = useState({
+    latestGames: 1,
+  });
 
+  const {
+    data: responseLatest,
+    error,
+    isError,
+    isSuccess,
+  } = useGetProductsQuery({ page: pageState.latestGames, limit: 5 });
+
+  if (isError) {
+    console.log(error);
+  }
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
       <main className='container mx-auto px-4 pt-24'>
@@ -90,10 +106,27 @@ export const Home = () => {
         <GameCarousal />
 
         {/* Listing games */}
-        <GameListing
-          title='Discover Something New'
-          games={games}
-        />
+        {isError && (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={
+              error?.data?.message || 'Something went wrong! Please try again.'
+            }
+          />
+        )}
+
+        {isSuccess && responseLatest?.data?.products && (
+          <GameListing
+            title='Discover Something New'
+            games={responseLatest.data.products}
+            currentPage={responseLatest.data.currentPage}
+            totalPage={responseLatest.data.totalPages}
+            onPageChange={(page) =>
+              setPageState((prev) => ({ ...prev, latestGames: page }))
+            }
+          />
+        )}
 
         <motion.section
           initial={{ opacity: 0, y: 50 }}

@@ -1,14 +1,17 @@
-import { useState } from 'react';
+/* eslint-disable react/prop-types */
+
 import { ChevronRight } from 'lucide-react';
 import { GameCard } from './GameCard';
 import { UserPagination } from '@/components/user';
 import PropTypes from 'prop-types';
 
-export const GameListing = ({ title, games }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const gamesPerPage = 5;
-  const totalPages = Math.ceil(games.length / gamesPerPage);
-
+export const GameListing = ({
+  title,
+  games,
+  currentPage,
+  totalPage,
+  onPageChange,
+}) => {
   return (
     <div className='bg-[#121212] py-10 sm:py-20'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -18,17 +21,17 @@ export const GameListing = ({ title, games }) => {
             <ChevronRight className='ml-2 h-6 w-6' />
           </h2>
           <UserPagination
-            totalPages={totalPages}
+            totalPages={totalPage}
             currentPage={currentPage}
-            onPageChange={(page) => setCurrentPage(page)}
+            onPageChange={onPageChange}
           />
         </div>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5'>
           {games
-            .slice(currentPage * gamesPerPage, (currentPage + 1) * gamesPerPage)
+            // .slice(currentPage * gamesPerPage, (currentPage + 1) * gamesPerPage)
             .map((game) => (
               <GameCard
-                key={game.id}
+                key={game._id}
                 game={game}
               />
             ))}

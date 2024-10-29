@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
+import { ImageUploader } from '@/components/admin/ImageUpload';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, InputField, SelectField } from '@/components/common';
@@ -24,7 +25,7 @@ const initialProductState = {
   price: '',
   genre: '',
   platform: '',
-  // images: [],
+  images: [],
   brand: '',
   stock: '',
   description: '',
@@ -50,23 +51,23 @@ export const EditProduct = () => {
   ] = useEditProductMutation();
 
   // Product state
+  const [images, setImages] = useState([]);
   const [productInput, setProductInput] = useState(initialProductState);
   const [productValidation, setProductValidation] =
     useState(initialProductState);
 
   useEffect(() => {
     if (responseProduct) {
-      console.log(responseProduct.data);
       setProductInput({
         name: responseProduct.data.name,
         price: responseProduct.data.price,
         genre: responseProduct.data.genre.name,
         platform: responseProduct.data.platform,
-        // images: [],
         brand: responseProduct.data.brand.name,
         stock: responseProduct.data.stock,
         description: responseProduct.data.description,
       });
+      setImages(responseProduct.data.images);
     }
   }, [responseProduct]);
 
@@ -95,10 +96,10 @@ export const EditProduct = () => {
     }
 
     try {
-      console.log({ productId, ...productInput });
       const response = await editProduct({
         productId,
         ...productInput,
+        images,
       }).unwrap();
 
       if (response.success) {
@@ -203,6 +204,15 @@ export const EditProduct = () => {
               rows={4}
             />
           </div>
+          {/* <ImageCropper
+            onCropComplete={handleCroppedImage}
+            initialImages={productInput.images}
+          /> */}
+          <ImageUploader
+            images={images}
+            setImages={setImages}
+          />
+
           <Button
             type='submit'
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>

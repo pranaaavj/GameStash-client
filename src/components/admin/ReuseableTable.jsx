@@ -25,7 +25,7 @@ export const ReuseableTable = ({ headers, data, actions }) => {
                   ? 'hidden md:table-cell'
                   : ''
               }`}>
-              {header}
+              {header === 'isActive' ? 'status' : header}
             </TableHead>
           ))}
           {actions && (
@@ -44,23 +44,28 @@ export const ReuseableTable = ({ headers, data, actions }) => {
             {row?.data?.map((cellData, cellIndex) => (
               <TableCell
                 key={cellIndex}
-                className={`px-2 md:px-6 py-3 whitespace-nowrap text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 ${
+                className={`px-2 md:px-6 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 overflow-hidden truncate ${
                   cellIndex === 2 || cellIndex === 3 || cellIndex === 4
                     ? 'hidden md:table-cell'
-                    : '' // Hide 4th column (Genre) on small screens
+                    : ''
                 }`}>
-                {cellData}
+                {/* Check if cellData is boolean for isActive status */}
+                {typeof cellData === 'boolean'
+                  ? cellData
+                    ? 'Active'
+                    : 'Inactive'
+                  : cellData}
               </TableCell>
             ))}
             {actions && (
-              <TableCell className='px-2 md:px-6 py-3 whitespace-nowrap text-center text-xs md:text-sm font-medium border-b border-accent-blue/20'>
+              <TableCell className='px-2 md:px-6 py-3 text-center text-xs md:text-sm font-medium border-b border-accent-blue/20'>
                 <div className='flex justify-center space-x-2'>
                   {actions.map((ActionButton, actionIndex) => (
                     <div
                       key={actionIndex}
                       className='transition-transform duration-200 hover:scale-105 active:scale-95'>
                       <ActionButton
-                        productId={row?.id}
+                        id={row?.id}
                         title={row?.isActive ? 'UnList' : 'List'}
                       />
                     </div>
