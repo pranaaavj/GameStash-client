@@ -80,7 +80,7 @@ export const Login = () => {
         dispatch(setUser({ user: response?.data?.user }));
         dispatch(setToken({ token: response?.data?.accessToken }));
 
-        navigate('/user/home');
+        navigate('/');
       }
     } catch (error) {
       console.log(error);

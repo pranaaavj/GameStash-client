@@ -1,43 +1,37 @@
-import { Card, CardContent } from '@/shadcn/components/ui/card';
+import { CircleX, Heart } from 'lucide-react';
 import { Button } from '@/shadcn/components/ui/button';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Heart } from 'lucide-react';
+import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { useState, useEffect } from 'react';
-
-const items = [
-  {
-    id: 1,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/header.jpg', // A sci-fi theme
-    name: 'Galaxy Raiders',
-    price: '$29.99',
-  },
-  {
-    id: 2,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg', // Fantasy adventure
-    name: 'Kingdom Quest',
-    price: '$59.99',
-  },
-  {
-    id: 3,
-    image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg', // Post-apocalyptic setting
-    name: 'Wasteland Survival',
-    price: '$39.99',
-  },
-];
+import { useGetProductsQuery } from '@/redux/api/userApi';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Alert } from '@/components/common';
 
 export const GameCarousal = () => {
+  const {
+    data: carousalProducts,
+    isError,
+    error,
+    isLoading,
+  } = useGetProductsQuery({ limit: 5 });
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % items.length);
-    }, 5000); // Auto-change slide every 5 seconds
+    if (carousalProducts?.data?.products?.length) {
+      const interval = setInterval(() => {
+        setCurrentIndex(
+          (prevIndex) => (prevIndex + 1) % carousalProducts.data.products.length
+        );
+      }, 5000); // Auto-change slide every 5 seconds
 
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }
+  }, [carousalProducts?.data?.products]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  console.log(carousalProducts);
 
   return (
     <div className='max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12'>
@@ -52,13 +46,16 @@ export const GameCarousal = () => {
               transition={{ duration: 0.8 }}
               className='relative'>
               <img
-                src={items[currentIndex].image}
-                alt={`Product ${items[currentIndex].id}`}
+                src={
+                  carousalProducts?.data?.products[currentIndex]?.images[0] ||
+                  ''
+                }
+                alt={`Product ${carousalProducts?.data?.products[currentIndex]?._id}`}
                 className='w-full h-[30vh] sm:h-[50vh] lg:h-[70vh] object-cover rounded-t-lg'
               />
               <div className='absolute bottom-0 left-0 right-0 p-4 lg:p-8'>
                 <p className='text-primary-bg text-xl sm:text-2xl lg:text-3xl font-bold mb-2'>
-                  {items[currentIndex].price}
+                  {carousalProducts?.data?.products?.[currentIndex]?.price}
                 </p>
                 <div className='flex space-x-2'>
                   <Button
@@ -77,6 +74,15 @@ export const GameCarousal = () => {
           </AnimatePresence>
         </CardContent>
       </Card>
+      {isError && (
+        <Alert
+          Icon={CircleX}
+          variant='destructive'
+          description={
+            error?.data?.message || 'Something went wrong! Please try again.'
+          }
+        />
+      )}
     </div>
   );
 };

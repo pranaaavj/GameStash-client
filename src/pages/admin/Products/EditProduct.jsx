@@ -204,10 +204,7 @@ export const EditProduct = () => {
               rows={4}
             />
           </div>
-          {/* <ImageCropper
-            onCropComplete={handleCroppedImage}
-            initialImages={productInput.images}
-          /> */}
+
           <ImageUploader
             images={images}
             setImages={setImages}

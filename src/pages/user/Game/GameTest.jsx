@@ -1,161 +1,176 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
-import { UserPagination } from '@/components/user';
+import {
+  ShoppingCart,
+  Heart,
+  ChevronRight,
+  ChevronLeft,
+  Minus,
+  Plus,
+} from 'lucide-react';
+import { useRef, useState } from 'react';
 
-// Mock data for games (unchanged)
-const games = [
-  {
-    id: 1,
-    title: 'Cyberpunk 2077',
-    baseGame: true,
-    price: 59.99,
-    discountedPrice: 39.99,
-    discount: 33,
-    image: '/placeholder.svg?height=225&width=400',
-  },
-  {
-    id: 2,
-    title: 'Red Dead Redemption 2',
-    baseGame: true,
-    price: 59.99,
-    image: '/placeholder.svg?height=225&width=400',
-  },
-  {
-    id: 3,
-    title: 'The Witcher 3: Wild Hunt',
-    baseGame: true,
-    price: 39.99,
-    discountedPrice: 19.99,
-    discount: 50,
-    image: '/placeholder.svg?height=225&width=400',
-  },
-  {
-    id: 4,
-    title: 'Grand Theft Auto V',
-    baseGame: true,
-    price: 29.99,
-    image: '/placeholder.svg?height=225&width=400',
-  },
-  {
-    id: 5,
-    title: 'Elden Ring',
-    baseGame: true,
-    price: 59.99,
-    image: '/placeholder.svg?height=225&width=400',
-  },
-  {
-    id: 6,
-    title: 'God of War',
-    baseGame: true,
-    price: 49.99,
-    discountedPrice: 39.99,
-    discount: 20,
-    image: '/placeholder.svg?height=225&width=400',
-  },
-  {
-    id: 7,
-    title: 'Horizon Zero Dawn',
-    baseGame: true,
-    price: 49.99,
-    image: '/placeholder.svg?height=225&width=400',
-  },
-  {
-    id: 8,
-    title: 'Death Stranding',
-    baseGame: true,
-    price: 59.99,
-    discountedPrice: 29.99,
-    discount: 50,
-    image: '/placeholder.svg?height=225&width=400',
-  },
-];
+import { Button } from '@/shadcn/components/ui/button';
+import { cn } from '@/shadcn/lib/utils';
 
-// GameCard component (unchanged)
-const GameCard = ({ game }) => (
-  <motion.div
-    className='bg-[#1c1c1c] rounded-lg shadow-md overflow-hidden'
-    whileHover={{ scale: 1.03 }}
-    transition={{ type: 'spring', stiffness: 300, damping: 10 }}>
-    <div className='relative'>
-      <motion.img
-        src={game.image}
-        alt={game.title}
-        className='w-full h-auto rounded-t-lg'
-        whileHover={{ scale: 1.05 }}
-        transition={{ duration: 0.3 }}
-      />
-      {game.discount && (
-        <span className='absolute top-2 left-2 bg-[#5a9bf5] text-white text-xs font-bold px-2 py-1 rounded-full'>
-          -{game.discount}%
-        </span>
-      )}
-    </div>
-    <div className='p-4 text-center'>
-      {game.baseGame && (
-        <p className='text-[#b3b3b3] text-sm mb-1'>Base Game</p>
-      )}
-      <h3 className='text-white font-bold text-lg mb-2 font-poppins'>
-        {game.title}
-      </h3>
-      <div className='flex justify-center items-center'>
-        {game.discountedPrice ? (
-          <>
-            <span className='text-[#e5e5e5] font-bold mr-2 line-through'>
-              ${game.price.toFixed(2)}
-            </span>
-            <span className='text-[#5a9bf5] font-bold'>
-              ${game.discountedPrice.toFixed(2)}
-            </span>
-          </>
-        ) : (
-          <span className='text-[#e5e5e5] font-bold'>
-            ${game.price.toFixed(2)}
-          </span>
-        )}
-      </div>
-    </div>
-  </motion.div>
-);
+export function GameTest() {
+  const [quantity, setQuantity] = useState(1);
 
-export default function GameViewerSection() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 5;
-  // Fetch games data for the current page
+  const [activeIndex, setActiveIndex] = useState(0);
+  const thumbnailsRef = useRef(null);
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
+  const scrollThumbnails = (direction) => {
+    if (thumbnailsRef.current) {
+      const scrollAmount = 200;
+      thumbnailsRef.current.scrollLeft +=
+        direction === 'left' ? -scrollAmount : scrollAmount;
     }
   };
 
+  // Mock game data (replace with actual data fetching logic)
+  // Mock game data
+  const gameData = {
+    title: 'My Time at Sandrock',
+    price: '₹1,899',
+    discountedPrice: '₹1,329.30',
+    discount: '-30%',
+    saleEnds: 'Sale ends 11/1/2024 at 8:30 PM',
+    developer: 'Pathea Games',
+    images: [
+      '/placeholder.svg?height=600&width=1000',
+      '/placeholder.svg?height=600&width=1000',
+      '/placeholder.svg?height=600&width=1000',
+      '/placeholder.svg?height=600&width=1000',
+      '/placeholder.svg?height=600&width=1000',
+      '/placeholder.svg?height=600&width=1000',
+    ],
+    description:
+      "As a fledgling Builder in a wild and rugged townscape, it's up to you and your trusty toolset to gather resources, build machines, and fix up your workshop to save the town from the jaws of economic ruin, despite some unexpected complications.",
+  };
   return (
-    <div className='bg-primary-bg py-10 sm:py-20'>
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        {/* Header with title and pagination at the top-right */}
-        <div className='flex items-center justify-between mb-8'>
-          <h2 className='text-primary-text text-2xl sm:text-3xl font-bold font-poppins flex items-center'>
-            Discover Something New
-            <ChevronRight className='ml-2 h-6 w-6' />
-          </h2>
-          <UserPagination
-            currentPage={currentPage}
-            totalPages={games?.totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
+    <div className='min-h-screen bg-[#121212] text-white'>
+      <div className='max-w-[1400px] mx-auto p-6'>
+        <div className='grid grid-cols-1 lg:grid-cols-[1fr,400px] gap-8'>
+          {/* Left Column - Carousel */}
+          <div className='space-y-4'>
+            {/* Main Image */}
+            <div className='relative aspect-[16/9] overflow-hidden rounded-lg'>
+              <div className='absolute inset-0 transition-opacity duration-300'>
+                <img
+                  src={gameData.images[activeIndex]}
+                  alt={`Screenshot ${activeIndex + 1}`}
+                  className='w-full h-full object-cover'
+                />
+              </div>
+            </div>
 
-        {
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'>
-            {games?.map((game) => (
-              <GameCard
-                key={game.id}
-                game={game}
-              />
-            ))}
+            {/* Thumbnails */}
+            <div className='relative'>
+              <button
+                onClick={() => scrollThumbnails('left')}
+                className='absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors'>
+                <ChevronLeft className='w-5 h-5' />
+              </button>
+
+              <div
+                ref={thumbnailsRef}
+                className='flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth px-8'>
+                {gameData.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveIndex(index)}
+                    className={cn(
+                      'flex-shrink-0 w-[180px] aspect-video rounded-lg overflow-hidden transition-all',
+                      activeIndex === index
+                        ? 'ring-2 ring-blue-500'
+                        : 'opacity-70 hover:opacity-100'
+                    )}>
+                    <img
+                      src={image}
+                      alt={`Thumbnail ${index + 1}`}
+                      className='w-full h-full object-cover'
+                    />
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => scrollThumbnails('right')}
+                className='absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors'>
+                <ChevronRight className='w-5 h-5' />
+              </button>
+            </div>
+
+            {/* Description */}
+            <p className='text-gray-300 mt-6 leading-relaxed'>
+              {gameData.description}
+            </p>
           </div>
-        }
+
+          {/* Right Column - Game Info */}
+          <div className='space-y-6'>
+            <div>
+              <h1 className='text-3xl font-bold mb-4'>{gameData.title}</h1>
+              <div className='flex items-baseline gap-2 mb-1'>
+                <span className='bg-blue-500 text-white px-2 py-0.5 text-sm rounded'>
+                  {gameData.discount}
+                </span>
+                <span className='text-gray-400 line-through text-sm'>
+                  {gameData.price}
+                </span>
+                <span className='text-2xl font-bold'>
+                  {gameData.discountedPrice}
+                </span>
+              </div>
+              <p className='text-sm text-gray-400'>{gameData.saleEnds}</p>
+            </div>
+
+            <div className='flex items-center space-x-4'>
+              <span className='text-lg font-semibold'>Quantity:</span>
+              <div className='flex items-center'>
+                <Button
+                  variant='outline'
+                  size='icon'
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                  <Minus className='h-4 w-4' />
+                </Button>
+                <span className='mx-4 text-lg'>{quantity}</span>
+                <Button
+                  variant='outline'
+                  size='icon'
+                  onClick={() => setQuantity(quantity + 1)}>
+                  <Plus className='h-4 w-4' />
+                </Button>
+              </div>
+            </div>
+
+            <div className='space-y-3'>
+              <Button className='w-full bg-[#0074E4] hover:bg-[#0063C1] text-white font-semibold py-3'>
+                Buy Now
+              </Button>
+
+              <Button
+                variant='secondary'
+                className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white'>
+                <ShoppingCart className='w-4 h-4 mr-2' />
+                Add To Cart
+              </Button>
+
+              <Button
+                variant='secondary'
+                className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white'>
+                <Heart className='w-4 h-4 mr-2' />
+                Add to Wishlist
+              </Button>
+            </div>
+
+            <div className='space-y-4 pt-4 border-t border-gray-800'>
+              <div className='flex justify-between'>
+                <span className='text-gray-400'>Developer</span>
+                <span>{gameData.developer}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

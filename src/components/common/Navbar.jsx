@@ -18,7 +18,7 @@ export const Navbar = () => {
         <div className='flex items-center justify-between h-14'>
           <div className='flex-shrink-0 flex items-center'>
             <Link
-              to='/user/home'
+              to='/'
               className='text-xl font-bold'>
               <div className='flex space-x-3 text-primary-text'>
                 <img

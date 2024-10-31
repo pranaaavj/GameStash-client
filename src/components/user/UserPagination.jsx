@@ -9,14 +9,14 @@ export const UserPagination = ({ currentPage, totalPages, onPageChange }) => {
         variant='outline'
         className='rounded-full text-primary-text bg-secondary-bg w-5 h-auto border-none'
         onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 0}>
+        disabled={currentPage === 1}>
         <ChevronLeft className='h-4 w-4' />
       </Button>
       <Button
         variant='outline'
         className='rounded-full text-primary-text bg-secondary-bg w-5 h-auto border-none'
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages - 1}>
+        disabled={currentPage === totalPages}>
         <ChevronRight className='h-4 w-4' />
       </Button>
     </div>

@@ -1,8 +1,5 @@
 /* eslint-disable react/prop-types */
-
-import { useState } from 'react';
 import { Button } from '@/shadcn/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
 import {
   Carousel,
   CarouselContent,
@@ -10,7 +7,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/shadcn/components/ui/carousel';
-import { Star, ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart, Heart, Minus, Plus } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { Reviews } from '../Reviews';
+import { StarRating } from '..';
+import { useState } from 'react';
 
 const gameData = {
   title: 'Rogue Waters',
@@ -63,37 +64,6 @@ const gameData = {
   ],
 };
 
-const StarRating = ({ rating }) => (
-  <div className='flex'>
-    {[1, 2, 3, 4, 5].map((star) => (
-      <Star
-        key={star}
-        className={`h-4 w-4 ${
-          star <= rating
-            ? 'fill-yellow-500 text-yellow-500'
-            : 'fill-muted-text text-muted-text'
-        }`}
-      />
-    ))}
-  </div>
-);
-
-const ReviewsSection = ({ reviews }) => (
-  <div className='space-y-4'>
-    {reviews.map((review, index) => (
-      <div
-        key={index}
-        className='bg-secondary-bg p-4 rounded-lg'>
-        <div className='flex justify-between items-center mb-2'>
-          <span className='font-bold text-primary-text'>{review.name}</span>
-          <StarRating rating={review.rating} />
-        </div>
-        <p className='text-secondary-text'>{review.comment}</p>
-      </div>
-    ))}
-  </div>
-);
-
 const SystemRequirements = ({ requirements }) => (
   <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
     {Object.entries(requirements).map(([type, specs]) => (
@@ -120,16 +90,23 @@ const SystemRequirements = ({ requirements }) => (
   </div>
 );
 
-export function ProductDetailsPage() {
-  const [activeTab, setActiveTab] = useState('overview');
+export function GameDetails() {
+  const { productId } = useParams();
+  const [quantity, setQuantity] = useState(1);
+
+  console.log(productId);
 
   return (
-    <div className='min-h-screen bg-primary-bg mx-24 text-primary-text font-sans px-4 sm:px-8 lg:px-16'>
+    <div className='mt-20 min-h-screen bg-primary-bg mx-24 text-primary-text font-sans px-4 sm:px-8 lg:px-16'>
       <div className='container mx-auto py-8'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
           {/* Left Column - Carousel */}
-          <div>
-            <Carousel className='w-full'>
+          <div className='space-y-6'>
+            <div>
+              <h1 className='text-6xl font-bold mb-2'>{gameData.title}</h1>
+              <StarRating rating={gameData.rating} />
+            </div>
+            <Carousel className='w-full mx-10 '>
               <CarouselContent>
                 {gameData.screenshots.map((screenshot, index) => (
                   <CarouselItem
@@ -149,35 +126,71 @@ export function ProductDetailsPage() {
           </div>
 
           {/* Right Column - Game Info and Action Buttons */}
-          <div>
-            <h1 className='text-4xl font-bold mb-4'>{gameData.title}</h1>
-            <span className='text-3xl font-bold'>{gameData.price}</span>
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className='mt-6'>
-              <TabsList className='bg-secondary-bg p-2 rounded-lg mb-6'>
-                <TabsTrigger value='overview'>Overview</TabsTrigger>
-                <TabsTrigger value='addons'>Add-Ons</TabsTrigger>
-                <TabsTrigger value='achievements'>Achievements</TabsTrigger>
-              </TabsList>
-            </Tabs>
+          <div className=' ml-20 mt-20 space-y-6'>
+            <div>
+              <div className='flex items-baseline gap-2 mb-1'>
+                <span className='text-primary-text text-2xl'>
+                  {gameData.price}
+                </span>
+                {/* <span className='text-2xl font-bold'>
+                  {gameData.discountedPrice}
+                </span> */}
+              </div>
+            </div>
 
-            <div className='space-y-2'>
-              <Button className='w-full bg-accent-blue hover:bg-hover-blue text-white'>
+            <div className='flex items-center space-x-4'>
+              <span className='text-lg font-semibold'>Quantity:</span>
+              <div className='flex items-center'>
+                <Button
+                  variant='outline'
+                  size='icon'
+                  className='bg-[#2A2A2A] hover:bg-[#353535] text-white border-none'
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                  <Minus className='h-4 w-4' />
+                </Button>
+                <span className='mx-4 text-lg'>{quantity}</span>
+                <Button
+                  variant='outline'
+                  className='bg-[#2A2A2A] hover:bg-[#353535] text-white border-none'
+                  size='icon'
+                  onClick={() => setQuantity(quantity + 1)}>
+                  <Plus className='h-4 w-4 ' />
+                </Button>
+              </div>
+            </div>
+
+            <div className='space-y-3'>
+              <Button className='w-full bg-[#0074E4] hover:bg-[#0063C1] text-white font-semibold py-3'>
                 Buy Now
               </Button>
-              <div className='flex space-x-2'>
-                <Button
-                  variant='outline'
-                  className='flex-1'>
-                  <ShoppingCart className='mr-2 h-4 w-4' /> Add to Cart
-                </Button>
-                <Button
-                  variant='outline'
-                  className='flex-1'>
-                  <Heart className='mr-2 h-4 w-4' /> Wishlist
-                </Button>
+
+              <Button
+                variant='secondary'
+                className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white'>
+                <ShoppingCart className='w-4 h-4 mr-2' />
+                Add To Cart
+              </Button>
+
+              <Button
+                variant='secondary'
+                className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white'>
+                <Heart className='w-4 h-4 mr-2' />
+                Add to Wishlist
+              </Button>
+            </div>
+
+            <div className='space-y-4 pt-4 border-t border-gray-800'>
+              <div className='text-secondary-text space-y-2'>
+                <p>
+                  <span className='font-semibold'>Brand:</span> {gameData.brand}
+                </p>
+                <p>
+                  <span className='font-semibold'>Platform:</span>{' '}
+                  {gameData.platform}
+                </p>
+                <p>
+                  <span className='font-semibold'>Genre:</span> {gameData.genre}
+                </p>
               </div>
             </div>
           </div>
@@ -197,7 +210,7 @@ export function ProductDetailsPage() {
 
           <div>
             <h2 className='text-2xl font-bold mb-2'>Reviews</h2>
-            <ReviewsSection reviews={gameData.reviews} />
+            <Reviews reviews={gameData.reviews} />
           </div>
         </div>
       </div>

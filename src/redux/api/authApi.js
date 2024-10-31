@@ -62,11 +62,6 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
-    test: builder.query({
-      query: () => ({
-        url: '/user/home-page',
-      }),
-    }),
   }),
 });
 

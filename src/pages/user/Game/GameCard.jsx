@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 
-export const GameCard = ({ game }) => {
-  console.log(game);
+export const GameCard = ({ game, onClick }) => {
   return (
     <motion.div
+      onClick={onClick}
       className='bg-transparent rounded-lg overflow-hidden h-[23rem] max-w-[14rem] transition-transform duration-300 flex flex-col justify-between'
       whileHover={{ scale: 1.03 }}>
       <div className='relative'>
@@ -60,4 +60,5 @@ export const GameCard = ({ game }) => {
 
 GameCard.propTypes = {
   game: PropTypes.object,
+  onClick: PropTypes.func,
 };

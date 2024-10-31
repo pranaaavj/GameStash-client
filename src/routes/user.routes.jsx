@@ -2,16 +2,17 @@ import { UserLayout } from '@/components/user';
 import { NotFound } from '@/pages/error';
 import { Home } from '@/pages/user';
 import { AuthorizedRoute } from './ProtectedRoutes';
-import { ProductDetailsPage } from '@/pages/user/Game/GameDetails';
+import { GameDetails } from '@/pages/user';
+import { GameTest } from '@/pages/user/Game/GameTest';
 
 export const userRoutes = [
   {
-    path: 'user',
+    path: '/',
     element: <UserLayout />,
     errorElement: <NotFound />,
     children: [
       {
-        path: 'home',
+        index: true,
         element: <Home />,
       },
       {
@@ -20,7 +21,16 @@ export const userRoutes = [
       },
       {
         path: 'product',
-        element: <ProductDetailsPage />,
+        children: [
+          {
+            path: ':productId',
+            element: <GameDetails />,
+          },
+        ],
+      },
+      {
+        path: 'test',
+        element: <GameTest />,
       },
     ],
   },

@@ -6,7 +6,7 @@ export const UnauthorizedRoute = () => {
   const user = useUsers();
 
   if (user && user?.token) {
-    return <Navigate to='/user/home' />;
+    return <Navigate to='/' />;
   }
 
   return <Outlet />;

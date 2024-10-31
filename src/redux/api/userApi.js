@@ -11,7 +11,13 @@ export const userApi = createApi({
         params: { page, limit, ...queryOptions },
       }),
     }),
+    getOneProduct: builder.query({
+      query: (productId) => ({
+        url: '/user/product',
+        params: { productId },
+      }),
+    }),
   }),
 });
 
-export const { useGetProductsQuery } = userApi;
+export const { useGetProductsQuery, useGetOneProductQuery } = userApi;
