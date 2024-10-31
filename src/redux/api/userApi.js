@@ -11,13 +11,21 @@ export const userApi = createApi({
         params: { page, limit, ...queryOptions },
       }),
     }),
-    getOneProduct: builder.query({
+    getProduct: builder.query({
       query: (productId) => ({
-        url: '/user/product',
-        params: { productId },
+        url: `/user/product/${productId}`,
+      }),
+    }),
+    getReviewByProduct: builder.query({
+      query: (productId) => ({
+        url: `/user/review/${productId}`,
       }),
     }),
   }),
 });
 
-export const { useGetProductsQuery, useGetOneProductQuery } = userApi;
+export const {
+  useGetProductsQuery,
+  useGetProductQuery,
+  useGetReviewByProductQuery,
+} = userApi;

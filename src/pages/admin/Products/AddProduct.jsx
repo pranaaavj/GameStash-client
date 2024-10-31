@@ -28,7 +28,15 @@ const initialProductState = {
   brand: '',
   stock: '',
   description: '',
+  // System requirements fields added here
+  systemRequirements: {
+    cpu: '',
+    gpu: '',
+    ram: '',
+    storage: '',
+  },
 };
+
 export const AddProduct = () => {
   const navigate = useNavigate();
 
@@ -47,7 +55,18 @@ export const AddProduct = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProductInput((prev) => ({ ...prev, [name]: value }));
+    // Handling system requirements separately
+    if (name in productInput.systemRequirements) {
+      setProductInput((prev) => ({
+        ...prev,
+        systemRequirements: {
+          ...prev.systemRequirements,
+          [name]: value,
+        },
+      }));
+    } else {
+      setProductInput((prev) => ({ ...prev, [name]: value }));
+    }
     setProductValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -59,11 +78,18 @@ export const AddProduct = () => {
     ? mapOptionsData(responseGenres?.data?.genres)
     : [];
 
+  const platformOptions = mapOptionsData([
+    { name: 'PC' },
+    { name: 'PlayStation' },
+    { name: 'Xbox' },
+    { name: 'Nintendo' },
+    { name: 'Other' },
+  ]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const productValidation = validateProduct(productInput);
-    // Setting validation errors
     if (Object.keys(productValidation).length > 0) {
       setProductValidation(productValidation);
       return;
@@ -73,9 +99,7 @@ export const AddProduct = () => {
       const response = await addProduct({ ...productInput, images }).unwrap();
 
       if (response.success) {
-        toast.success(response.message, {
-          duration: 1500,
-        });
+        toast.success(response.message, { duration: 1500 });
         navigate('/admin/products');
       }
     } catch (error) {
@@ -126,14 +150,24 @@ export const AddProduct = () => {
             isInvalid={!!productValidation.genre}
             errorMessage={productValidation.genre}
           />
-
-          <InputField
+          {/* <InputField
             type='text'
             value={productInput.platform}
             onChange={handleChange}
             label='Platform'
             name='platform'
             placeHolder='Enter platform'
+            isInvalid={!!productValidation.platform}
+            errorMessage={productValidation.platform}
+          /> */}
+          <SelectField
+            type='text'
+            value={productInput.platform}
+            onChange={handleChange}
+            label='Platform'
+            name='platform'
+            options={platformOptions}
+            placeholder='Select a platform'
             isInvalid={!!productValidation.platform}
             errorMessage={productValidation.platform}
           />
@@ -148,7 +182,6 @@ export const AddProduct = () => {
             isInvalid={!!productValidation.brand}
             errorMessage={productValidation.brand}
           />
-
           <InputField
             type='number'
             value={productInput.stock}
@@ -175,8 +208,57 @@ export const AddProduct = () => {
               rows={4}
             />
           </div>
-          {/* <ImageCropper onCropComplete={handleCroppedImage} /> */}
 
+          {/* System Requirements Section */}
+          <div className='space-y-4'>
+            <h3 className='text-lg font-semibold text-primary-text'>
+              System Requirements
+            </h3>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              <InputField
+                type='text'
+                value={productInput.systemRequirements.cpu}
+                onChange={handleChange}
+                label='CPU'
+                name='cpu'
+                placeHolder='E.g., Intel i5, AMD Ryzen 5'
+                isInvalid={!!productValidation.systemRequirements?.cpu}
+                errorMessage={productValidation.systemRequirements?.cpu}
+              />
+              <InputField
+                type='text'
+                value={productInput.systemRequirements.gpu}
+                onChange={handleChange}
+                label='GPU'
+                name='gpu'
+                placeHolder='E.g., GTX 1060, Radeon RX 580'
+                isInvalid={!!productValidation.systemRequirements?.gpu}
+                errorMessage={productValidation.systemRequirements?.gpu}
+              />
+              <InputField
+                type='text'
+                value={productInput.systemRequirements.ram}
+                onChange={handleChange}
+                label='RAM'
+                name='ram'
+                placeHolder='E.g., 8GB, 16GB'
+                isInvalid={!!productValidation.systemRequirements?.ram}
+                errorMessage={productValidation.systemRequirements?.ram}
+              />
+              <InputField
+                type='text'
+                value={productInput.systemRequirements.storage}
+                onChange={handleChange}
+                label='Storage'
+                name='storage'
+                placeHolder='E.g., 50GB'
+                isInvalid={!!productValidation.systemRequirements?.storage}
+                errorMessage={productValidation.systemRequirements?.storage}
+              />
+            </div>
+          </div>
+
+          {/* Image Uploader */}
           <ImageUploader
             images={images}
             setImages={setImages}

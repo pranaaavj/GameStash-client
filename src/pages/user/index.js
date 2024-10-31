@@ -6,3 +6,4 @@ export { GameListing } from './Game/GameListing';
 export { GameCarousal } from './Game/GameCarousal';
 
 export { StarRating } from './StarRating';
+export { SystemRequirements } from './SystemRequirements';
