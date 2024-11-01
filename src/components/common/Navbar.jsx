@@ -34,9 +34,9 @@ export const Navbar = () => {
           <div className='hidden md:block'>
             <div className='flex items-baseline space-x-4'>
               <Link
-                to='/store'
+                to='/games'
                 className='text-primary-text hover:text-hover-red px-3 py-2 rounded-md text-sm font-medium'>
-                Store
+                Games
               </Link>
               <Link
                 to='/user/support'

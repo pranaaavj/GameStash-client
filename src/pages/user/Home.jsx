@@ -7,6 +7,10 @@ import { useGetProductsQuery } from '@/redux/api/userApi';
 import { Alert } from '@/components/common';
 import { CircleX } from 'lucide-react';
 import { useState } from 'react';
+import { GameBrowse } from './Game/GameBrowse';
+
+// import { GameBrowse } from './Game/GameBrowse';
+// import { GenreListing } from './GenreListing';
 
 export const Home = () => {
   const [pageState, setPageState] = useState({
@@ -26,10 +30,20 @@ export const Home = () => {
 
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
-      <main className='container mx-auto px-4 pt-24'>
+      <main className='container mx-auto pt-24'>
         {/* Home page carousal */}
         <GameCarousal />
-
+        {isSuccess && responseLatest?.data?.products && (
+          <GameBrowse
+            title='Discover Something New'
+            games={responseLatest?.data.products}
+            currentPage={responseLatest?.data.currentPage}
+            totalPage={responseLatest?.data.totalPages}
+            onPageChange={(page) =>
+              setPageState((prev) => ({ ...prev, latestGames: page }))
+            }
+          />
+        )}
         {/* Listing games */}
         {isError && (
           <Alert
@@ -40,19 +54,17 @@ export const Home = () => {
             }
           />
         )}
-
         {isSuccess && responseLatest?.data?.products && (
           <GameListing
             title='Discover Something New'
-            games={responseLatest.data.products}
-            currentPage={responseLatest.data.currentPage}
-            totalPage={responseLatest.data.totalPages}
+            games={responseLatest?.data.products}
+            currentPage={responseLatest?.data.currentPage}
+            totalPage={responseLatest?.data.totalPages}
             onPageChange={(page) =>
               setPageState((prev) => ({ ...prev, latestGames: page }))
             }
           />
         )}
-
         <motion.section
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}

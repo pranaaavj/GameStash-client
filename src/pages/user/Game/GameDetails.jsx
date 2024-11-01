@@ -44,7 +44,7 @@ export function GameDetails() {
 
   return (
     isSuccess && (
-      <div className='mx-20 mt-20 min-h-screen bg-primary-bg text-primary-text font-sans px-4 sm:px-8 lg:px-16'>
+      <div className='mt-20 min-h-screen bg-primary-bg text-primary-text font-sans px-4 sm:px-8 lg:px-16'>
         <div className='container mx-auto py-8'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
             {/* Left Column - Carousel */}
@@ -53,8 +53,9 @@ export function GameDetails() {
                 <h1 className='text-4xl md:text-6xl font-bold mb-2'>
                   {response?.data?.name}
                 </h1>
-                <div className='my-5'>
-                  <StarRating rating={response?.data?.rating} />
+                <div className='my-5 flex items-center'>
+                  <StarRating rating={response?.data?.averageRating} />
+                  <span className='ml-2'>({response?.data?.reviewCount})</span>
                 </div>
               </div>
               <Carousel className='w-full mx-10'>

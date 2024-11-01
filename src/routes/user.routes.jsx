@@ -3,13 +3,14 @@ import { NotFound } from '@/pages/error';
 import { Home } from '@/pages/user';
 import { AuthorizedRoute } from './ProtectedRoutes';
 import { GameDetails } from '@/pages/user';
-import { GameTest } from '@/pages/user/Game/GameTest';
+
+import { GameBrowse } from '@/pages/user/Game/GameBrowse';
 
 export const userRoutes = [
   {
     path: '/',
     element: <UserLayout />,
-    errorElement: <NotFound />,
+    // errorElement: <NotFound />,
     children: [
       {
         index: true,
@@ -29,9 +30,17 @@ export const userRoutes = [
         ],
       },
       {
+        path: 'games',
+        element: <GameBrowse />
+      },
+      {
         path: 'test',
-        element: <GameTest />,
+        element: <GameBrowse />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ];

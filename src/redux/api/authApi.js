@@ -21,6 +21,14 @@ export const authApi = createApi({
         body: userInfo,
       }),
     }),
+    // Google signin
+    googleSignIn: builder.mutation({
+      query: (idToken) => ({
+        url: '/auth/google',
+        method: 'POST',
+        body: { idToken },
+      }),
+    }),
     // User logout
     logoutUser: builder.mutation({
       query: (userInfo) => ({
@@ -72,5 +80,5 @@ export const {
   useVerifyOtpUserMutation,
   useResetPassUserMutation,
   useResetOtpUserMutation,
-  useTestQuery,
+  useGoogleSignInMutation,
 } = authApi;

@@ -9,24 +9,25 @@ import {
   DialogTrigger,
 } from '@/shadcn/components/ui/dialog';
 import {
+  useGoogleSignInMutation,
   useLoginUserMutation,
   useSendOtpUserMutation,
 } from '@/redux/api/authApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import googleLogo from '../../assets/images/google-logo.png';
+import { motion } from 'framer-motion';
 import { setUser } from '@/redux/slices/userSlice';
 import { setToken } from '@/redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
 import { validateSignIn } from '@/utils';
+import { signInWithPopup, auth, provider } from '../../utils/firebase';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
 import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
-//... other imports
 
 const initLoginInput = { email: '', password: '' };
 
@@ -46,6 +47,7 @@ export const Login = () => {
     sendOtpUser,
     { isError: isPassError, error: passError, reset: resetPassError },
   ] = useSendOtpUserMutation();
+  const [googleSignIn] = useGoogleSignInMutation();
 
   useEffect(() => {
     // Clearing errors and loginValidation
@@ -114,7 +116,7 @@ export const Login = () => {
           duration: 1500,
         });
 
-        setTimeout(() => navigate('/auth/otp/verify-pass'), 1500);
+        navigate('/auth/otp/verify-pass');
       }
     } catch (error) {
       // Custom error toast
@@ -122,6 +124,29 @@ export const Login = () => {
         duration: 3500,
         className: 'bg-accent-red text-primary-text',
       });
+      console.log(error);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+
+      const idToken = await result.user.getIdToken();
+      const response = await googleSignIn(idToken).unwrap();
+
+      if (response?.success) {
+        toast.success(response?.message, {
+          duration: 1500,
+        });
+
+        // Setting the user in redux store
+        dispatch(setUser({ user: response?.data?.user }));
+        dispatch(setToken({ token: response?.data?.accessToken }));
+
+        navigate('/');
+      }
+    } catch (error) {
       console.log(error);
     }
   };
@@ -271,7 +296,9 @@ export const Login = () => {
           <hr className='w-full border-gray-600' />
         </div>
 
-        <Button className='bg-primary-text hover:bg-secondary-text text-black rounded-full text-sm sm:text-md'>
+        <Button
+          className='bg-primary-text hover:bg-secondary-text text-black rounded-full text-sm sm:text-md'
+          onClick={handleGoogleLogin}>
           <img
             src={googleLogo}
             alt='google logo'

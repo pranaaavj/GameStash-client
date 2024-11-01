@@ -5,7 +5,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/shadcn/components/ui/table';
 
 import PropTypes from 'prop-types';
 

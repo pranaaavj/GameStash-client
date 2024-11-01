@@ -31,8 +31,6 @@ export const GameCarousal = () => {
     return <div>Loading...</div>;
   }
 
-  console.log(carousalProducts);
-
   return (
     <div className='max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12'>
       <Card className='border-none shadow-none'>
@@ -51,7 +49,7 @@ export const GameCarousal = () => {
                   ''
                 }
                 alt={`Product ${carousalProducts?.data?.products[currentIndex]?._id}`}
-                className='w-full h-[30vh] sm:h-[50vh] lg:h-[70vh] object-cover rounded-t-lg'
+                className='w-full h-[30vh] sm:h-[50vh] lg:h-[70vh] object-cover rounded-lg'
               />
               <div className='absolute bottom-0 left-0 right-0 p-4 lg:p-8'>
                 <p className='text-primary-bg text-xl sm:text-2xl lg:text-3xl font-bold mb-2'>
