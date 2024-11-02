@@ -64,7 +64,7 @@ export const SendOtpEmail = () => {
         <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
           Enter Your Email to Get Started
         </h1>
-        <p className='text-center font-sans font-light text-md sm:text-lg text-secondary-text'>
+        <p className='text-center font-sans font-light text-sm sm:text-md text-secondary-text'>
           We&#39;ll send an OTP to verify your email.
         </p>
 

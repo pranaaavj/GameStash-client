@@ -6,6 +6,64 @@ import { useGetProductsQuery } from '@/redux/api/userApi';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Alert } from '@/components/common';
 
+// const gamesCarouselData = [
+//   {
+//     title: 'The Witcher 3: Wild Hunt',
+//     image: 'https://example.com/high-res-images/witcher3.jpg',
+//     price: '₹999',
+//   },
+//   {
+//     title: 'Cyberpunk 2077',
+//     image: 'https://example.com/high-res-images/cyberpunk2077.jpg',
+//     price: '₹1999',
+//   },
+//   {
+//     title: 'Red Dead Redemption 2',
+//     image: 'https://example.com/high-res-images/rdr2.jpg',
+//     price: '₹2499',
+//   },
+//   {
+//     title: 'Horizon Zero Dawn',
+//     image: 'https://example.com/high-res-images/horizonzerodawn.jpg',
+//     price: '₹1299',
+//   },
+//   {
+//     title: 'God of War',
+//     image: 'https://example.com/high-res-images/godofwar.jpg',
+//     price: '₹1499',
+//   },
+//   {
+//     title: "Assassin's Creed Valhalla",
+//     image: 'https://example.com/high-res-images/assassinscreedvalhalla.jpg',
+//     price: '₹1799',
+//   },
+//   {
+//     title: 'Far Cry 6',
+//     image: 'https://example.com/high-res-images/farcry6.jpg',
+//     price: '₹1599',
+//   },
+//   {
+//     title: 'Ghost of Tsushima',
+//     image: 'https://example.com/high-res-images/ghostoftsushima.jpg',
+//     price: '₹1999',
+//   },
+//   {
+//     title: 'Elden Ring',
+//     image: 'https://example.com/high-res-images/eldenring.jpg',
+//     price: '₹2999',
+//   },
+//   {
+//     title: 'Spider-Man: Miles Morales',
+//     image: 'https://example.com/high-res-images/spidermanmilesmorales.jpg',
+//     price: '₹2299',
+//   },
+//   {
+//     title: 'Death Stranding',
+//     image: 'https://example.com/high-res-images/deathstranding.jpg',
+//     price: '₹1499',
+//   },
+// ];
+
 export const GameCarousal = () => {
   const {
     data: carousalProducts,
@@ -45,8 +103,7 @@ export const GameCarousal = () => {
               className='relative'>
               <img
                 src={
-                  carousalProducts?.data?.products[currentIndex]?.images[0] ||
-                  ''
+                  'https://cdn.akamai.steamstatic.com/steam/apps/1817190/capsule_616x353.jpg?t=1671485057'
                 }
                 alt={`Product ${carousalProducts?.data?.products[currentIndex]?._id}`}
                 className='w-full h-[30vh] sm:h-[50vh] lg:h-[70vh] object-cover rounded-lg'

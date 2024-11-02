@@ -138,6 +138,40 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'Genre', id: 'LIST' }],
     }),
+
+    // User Management
+    // Get all users with pagination
+    getAllUsers: builder.query({
+      query: ({ page = 1, limit = 10 }) => ({
+        url: `/admin/users?page=${page}&limit=${limit}`,
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.users.map(({ id }) => ({
+                type: 'User',
+                id,
+              })), // Tag each user by its unique ID
+              { type: 'User', id: 'LIST' },
+            ] // Tag the entire list
+          : [{ type: 'User', id: 'LIST' }],
+    }),
+
+    // Get a single user by ID
+    getOneUser: builder.query({
+      query: (userId) => ({ url: `/admin/users/${userId}` }),
+      providesTags: (result, error, userId) => [{ type: 'User', id: userId }],
+    }),
+
+    // Toggle block/unblock user status
+    toggleBlockUser: builder.mutation({
+      query: (userId) => ({
+        url: '/admin/users',
+        method: 'PATCH',
+        body: { userId },
+      }),
+      invalidatesTags: [{ type: 'User', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -160,4 +194,8 @@ export const {
   useAddGenreMutation,
   useEditGenreMutation,
   useToggleGenreListMutation,
+  // User Management
+  useGetAllUsersQuery,
+  useGetOneUserQuery,
+  useToggleBlockUserMutation,
 } = adminApi;

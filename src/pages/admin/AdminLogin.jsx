@@ -28,7 +28,6 @@ export const AdminLogin = () => {
   const user = useUsers();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log(user);
   const [showPass, setShowPass] = useState(false);
   const [userInput, setUserInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
@@ -36,9 +35,10 @@ export const AdminLogin = () => {
 
   const [signInUser, { isError, error, reset }] = useLoginUserMutation();
   useEffect(() => {
-    if (user.authStatus === 'loggedIn') {
+    if (user?.userInfo?.role === 'admin' && user.authStatus === 'active') {
       navigate('/admin/dashboard');
     }
+
     setValidation(emptyInput);
     if (isError) reset();
     // eslint-disable-next-line

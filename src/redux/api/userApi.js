@@ -6,9 +6,15 @@ export const userApi = createApi({
   baseQuery: baseQueryWithReAuth,
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: ({ page = 1, limit = 5, queryOptions = {} }) => ({
+      query: ({ page = 1, limit = 5, queryOptions = null }) => ({
         url: '/user/products',
-        params: { page, limit, ...queryOptions },
+        params: { page, limit, queryOptions },
+      }),
+    }),
+    getProductsByGenre: builder.query({
+      query: ({ page = 1, limit = 5, genre }) => ({
+        url: `/user/products/${genre}`,
+        params: { page, limit },
       }),
     }),
     getProduct: builder.query({
@@ -25,7 +31,8 @@ export const userApi = createApi({
 });
 
 export const {
-  useGetProductsQuery,
   useGetProductQuery,
+  useGetProductsQuery,
+  useGetProductsByGenreQuery,
   useGetReviewByProductQuery,
 } = userApi;

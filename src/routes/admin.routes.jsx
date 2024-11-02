@@ -10,6 +10,7 @@ import {
   GenreList,
   AddGenre,
   EditGenre,
+  UsersList,
 } from '@/pages/admin';
 import { AdminError } from '@/pages/error';
 import { AdminLayout } from '@/components/admin';
@@ -84,6 +85,10 @@ export const adminRoutes = [
                 element: <EditGenre />,
               },
             ],
+          },
+          {
+            path: 'users',
+            element: <UsersList />,
           },
         ],
       },

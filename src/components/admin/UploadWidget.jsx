@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 export const UploadWidget = ({ onSetImageUrl }) => {
   const cloudinaryRef = useRef();
   const widgetRef = useRef();
+
   useEffect(() => {
     cloudinaryRef.current = window.cloudinary;
     widgetRef.current = cloudinaryRef.current.createUploadWidget(
@@ -13,12 +14,13 @@ export const UploadWidget = ({ onSetImageUrl }) => {
         cloudName: 'dopbmvmkw',
         uploadPreset: 'product-images',
         cropping: true,
+        multiple: true,
         sources: ['local', 'url'],
       },
       (err, res) => {
         if (!err && res && res.event === 'success') {
           console.log(res.info);
-          onSetImageUrl(res.info.secure_url);
+          onSetImageUrl(res?.info?.secure_url);
         }
       }
     );

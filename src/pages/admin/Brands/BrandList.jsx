@@ -47,10 +47,10 @@ export const BrandList = () => {
     ({ id: brandId }) => (
       <EditButton onClick={() => navigate(`/admin/brands/edit/${brandId}`)} />
     ),
-    ({ id: brandId, title }) => (
+    ({ id: brandId, isActive }) => (
       <ToggleList
         onClick={() => handleListingModal(brandId)}
-        title={title}
+        title={isActive ? 'Unlist' : 'List'}
       />
     ),
   ];

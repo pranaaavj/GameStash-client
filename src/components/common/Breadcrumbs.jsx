@@ -1,59 +1,76 @@
-import { useLocation, Link } from 'react-router-dom';
-import { Home } from 'lucide-react';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/shadcn/components/ui/breadcrumb';
+import { Link, useLocation } from 'react-router-dom';
+import { ChevronRight, Home } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useGetProductQuery } from '@/redux/api/userApi';
 
-export function Breadcrumbs() {
+export const Breadcrumbs = () => {
   const location = useLocation();
+  const pathSegments = location.pathname.split('/').filter(Boolean);
 
-  const generateBreadcrumbs = () => {
-    const pathnames = location.pathname.split("'/'").filter((x) => x);
-    const breadcrumbs = [{ path: "'/'", label: "'Home'" }];
+  const [gameName, setGameName] = useState(null);
 
-    pathnames.forEach((name, index) => {
-      const path = `/${pathnames.slice(0, index + 1).join("'/'")}`;
-      breadcrumbs.push({
-        path,
-        label: name.charAt(0).toUpperCase() + name.slice(1),
-      });
-    });
+  const gameIndex = pathSegments.indexOf('game');
+  const gameId = gameIndex !== -1 ? pathSegments[gameIndex + 1] : null;
 
-    return breadcrumbs;
+  // Fetch game details using RTK Query only if gameId exists
+  const { data: response } = useGetProductQuery(gameId, {
+    skip: !gameId,
+  });
+
+  useEffect(() => {
+    if (response?.data?.name) {
+      setGameName(response?.data?.name);
+    }
+  }, [response]);
+
+  // Format each breadcrumb segment
+  const formatSegment = (segment, isGame) => {
+    if (isGame && gameName) return gameName;
+    if (isGame) return 'Game';
+    return segment.charAt(0).toUpperCase() + segment.slice(1);
   };
 
-  const breadcrumbs = generateBreadcrumbs();
-
   return (
-    <Breadcrumb className='py-4 px-6'>
-      <BreadcrumbList>
-        {breadcrumbs.map((crumb, index) => (
-          <BreadcrumbItem key={crumb.path}>
-            {index < breadcrumbs.length - 1 ? (
-              <BreadcrumbLink
-                as={Link}
-                to={crumb.path}>
-                {index === 0 ? (
-                  <Home
-                    className='h-4 w-4'
-                    aria-label='Home'
-                  />
-                ) : (
-                  crumb.label
-                )}
-              </BreadcrumbLink>
+    <nav className='flex items-center space-x-2 text-sm font-medium text-primary-text mt-4 mb-4'>
+      <Link
+        to='/'
+        className='flex items-center space-x-1 text-accent-blue hover:text-hover-blue'>
+        <Home className='h-4 w-4' />
+        <span>Home</span>
+      </Link>
+
+      {pathSegments.length > 0 && (
+        <ChevronRight className='h-4 w-4 text-secondary-text' />
+      )}
+
+      {pathSegments.map((segment, index) => {
+        if (index === gameIndex + 1) return null; // Skip gameId segment
+
+        const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
+        const isLast = index === pathSegments.length - 1;
+        const isGameSegment = segment === 'game';
+
+        return (
+          <div
+            key={path}
+            className='flex items-center space-x-2'>
+            {!isLast && !isGameSegment ? (
+              <Link
+                to={path}
+                className='hover:text-hover-blue capitalize text-primary-text'>
+                {formatSegment(segment, isGameSegment)}
+              </Link>
             ) : (
-              <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+              <span className='capitalize font-semibold text-accent-blue'>
+                {formatSegment(segment, isGameSegment)}
+              </span>
             )}
-            {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
-          </BreadcrumbItem>
-        ))}
-      </BreadcrumbList>
-    </Breadcrumb>
+            {!isLast && (
+              <ChevronRight className='h-4 w-4 text-secondary-text' />
+            )}
+          </div>
+        );
+      })}
+    </nav>
   );
-}
+};

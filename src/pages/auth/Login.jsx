@@ -47,7 +47,8 @@ export const Login = () => {
     sendOtpUser,
     { isError: isPassError, error: passError, reset: resetPassError },
   ] = useSendOtpUserMutation();
-  const [googleSignIn] = useGoogleSignInMutation();
+  const [googleSignIn, { isError: isGoogleError, error: googleError }] =
+    useGoogleSignInMutation();
 
   useEffect(() => {
     // Clearing errors and loginValidation
@@ -157,7 +158,7 @@ export const Login = () => {
 
   return (
     <motion.div
-      className='flex items-center justify-center min-h-screen w-full overflow-hidden'
+      className='flex pt-10 justify-center min-h-screen w-full overflow-hidden'
       variants={{
         hidden: { opacity: 0, y: 20 },
         visible: {
@@ -278,7 +279,7 @@ export const Login = () => {
             Login
           </Button>
         </form>
-        {isError && (
+        {isError ? (
           <Alert
             Icon={CircleX}
             variant='destructive'
@@ -286,7 +287,16 @@ export const Login = () => {
               error?.data?.message || 'Something went wrong! Please try again.'
             }
           />
-        )}
+        ) : isGoogleError ? (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={
+              googleError?.data?.message ||
+              'Something went wrong! Please try again.'
+            }
+          />
+        ) : null}
 
         <div className='flex items-center justify-between mt-5 sm:mt-6'>
           <hr className='w-full border-gray-600' />

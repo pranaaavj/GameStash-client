@@ -9,11 +9,11 @@ export const Reviews = ({ reviews }) => (
         className='bg-secondary-bg p-4 rounded-lg'>
         <div className='flex justify-between items-center mb-2'>
           <span className='font-bold text-primary-text'>
-            {review.user.name}
+            {review?.user?.name}
           </span>
-          <StarRating rating={review.rating} />
+          <StarRating rating={review?.rating} />
         </div>
-        <p className='text-secondary-text'>{review.comment}</p>
+        <p className='text-secondary-text'>{review?.comment}</p>
       </div>
     ))}
   </div>

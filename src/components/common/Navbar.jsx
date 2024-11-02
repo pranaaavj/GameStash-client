@@ -7,9 +7,11 @@ import logo from '../../assets/images/logo.svg';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Menu, Search, ShoppingCart, User, X } from 'lucide-react';
+import { useUsers } from '@/hooks/users/useUsers';
 
 //Todo: Complete the avatar icon, when the user logs in show avatar else show icon
 export const Navbar = () => {
+  const user = useUsers();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -64,14 +66,21 @@ export const Navbar = () => {
               <ShoppingCart className='h-6 w-6' />
             </Link>
             <Link
-              to='/user/profile'
+              to='/profile'
               aria-label='User Account'
-              className='text-primary-text hover:text-hover-red'>
-              <Avatar>
-                <AvatarImage src='' />
-                <AvatarFallback className='bg-secondary-bg'>
-                  <User className='h-6 w-6' />
-                </AvatarFallback>
+              className='text-primary-text hover:text-hover-red flex items-center justify-center'>
+              <Avatar className='w-10 h-10 bg-primary-bg rounded-full overflow-hidden flex items-center justify-center'>
+                {user?.userInfo ? (
+                  <AvatarImage
+                    src={user?.userInfo?.profilePicture}
+                    alt='User Avatar'
+                    className='w-full h-full object-cover'
+                  />
+                ) : (
+                  <AvatarFallback className='flex items-center justify-center w-full h-full bg-secondary-bg'>
+                    <User className='h-6 w-6 text-primary-text' />
+                  </AvatarFallback>
+                )}
               </Avatar>
             </Link>
           </div>

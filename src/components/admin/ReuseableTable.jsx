@@ -18,13 +18,15 @@ export const ReuseableTable = ({ headers, data, actions }) => {
           {headers.map((header, index) => (
             <TableHead
               key={index}
-              className={`px-2 md:px-6 py-3 text-xs md:text-sm text-center font-semibold text-primary-text uppercase tracking-wider ${
+              className={`px-2 md:px-6 py-3 text-xs md:text-sm text-center font-semibold text-primary-text uppercase tracking-wider`}>
+              {/* ${
                 header === 'Genre' ||
                 header === 'Platform' ||
                 header === 'Stock'
                   ? 'hidden md:table-cell'
                   : ''
-              }`}>
+              }` */}
+
               {header === 'isActive' ? 'status' : header}
             </TableHead>
           ))}
@@ -44,11 +46,13 @@ export const ReuseableTable = ({ headers, data, actions }) => {
             {row?.data?.map((cellData, cellIndex) => (
               <TableCell
                 key={cellIndex}
-                className={`px-2 md:px-6 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 overflow-hidden truncate ${
+                className={`px-2 md:px-6 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 overflow-hidden truncate `}>
+                {/* ${
                   cellIndex === 2 || cellIndex === 3 || cellIndex === 4
                     ? 'hidden md:table-cell'
                     : ''
-                }`}>
+                } */}
+
                 {/* Check if cellData is boolean for isActive status */}
                 {typeof cellData === 'boolean'
                   ? cellData
@@ -66,7 +70,8 @@ export const ReuseableTable = ({ headers, data, actions }) => {
                       className='transition-transform duration-200 hover:scale-105 active:scale-95'>
                       <ActionButton
                         id={row?.id}
-                        title={row?.isActive ? 'UnList' : 'List'}
+                        isActive={row?.isActive}
+                        status={row?.status === 'active'}
                       />
                     </div>
                   ))}

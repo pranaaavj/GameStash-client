@@ -5,7 +5,7 @@ export const mapTableData = (data, headers) => {
     //for specific actions while listing
     id: obj?._id,
     isActive: obj?.isActive,
-
+    status: obj?.status,
     // Mapping data with headers provided
     data: headers.map((header) => {
       const value = obj[header.toLowerCase()] || obj[header];

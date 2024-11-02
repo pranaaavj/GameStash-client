@@ -1,23 +1,30 @@
+import storage from 'redux-persist/es/storage';
 import authReducer from './slices/authSlice';
 import userReducer from './slices/userSlice';
-import { configureStore } from '@reduxjs/toolkit';
 import { authApi } from './api/authApi';
 import { userApi } from './api/userApi';
 import { adminApi } from './api/adminApi';
-// import { loadState, saveState } from '@/utils';
+import { persistReducer, persistStore } from 'redux-persist';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
-// Persisted state in local storage
-// const persistedState = loadState();
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['auth', 'user'],
+};
+
+const rootReducer = combineReducers({
+  user: userReducer,
+  auth: authReducer,
+  [authApi.reducerPath]: authApi.reducer,
+  [userApi.reducerPath]: userApi.reducer,
+  [adminApi.reducerPath]: adminApi.reducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    user: userReducer,
-    auth: authReducer,
-    [authApi.reducerPath]: authApi.reducer,
-    [userApi.reducerPath]: userApi.reducer,
-    [adminApi.reducerPath]: adminApi.reducer,
-  },
-  // preloadedState: persistedState,
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
@@ -27,7 +34,7 @@ export const store = configureStore({
       .concat(adminApi.middleware),
 });
 
-// Any changes to the store would be persisted
-// store.subscribe(() => saveState(store.getState()));
+export const persistor = persistStore(store);
 
 export { Provider } from 'react-redux';
+export { PersistGate } from 'redux-persist/integration/react';

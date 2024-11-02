@@ -5,12 +5,12 @@ import { AuthorizedRoute } from './ProtectedRoutes';
 import { GameDetails } from '@/pages/user';
 
 import { GameBrowse } from '@/pages/user/Game/GameBrowse';
+import UserProfilePage from '@/pages/user/UserProfile';
 
 export const userRoutes = [
   {
     path: '/',
     element: <UserLayout />,
-    // errorElement: <NotFound />,
     children: [
       {
         index: true,
@@ -19,9 +19,15 @@ export const userRoutes = [
       {
         path: 'profile',
         element: <AuthorizedRoute />,
+        children: [
+          {
+            index: true,
+            element: <UserProfilePage />,
+          },
+        ],
       },
       {
-        path: 'product',
+        path: 'game',
         children: [
           {
             path: ':productId',
@@ -31,7 +37,7 @@ export const userRoutes = [
       },
       {
         path: 'games',
-        element: <GameBrowse />
+        element: <GameBrowse />,
       },
       {
         path: 'test',

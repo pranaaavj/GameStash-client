@@ -1,11 +1,16 @@
-import { Footer, Navbar } from '../common';
+import { Footer, Navbar, ScrollToTop } from '../common';
 import { Outlet } from 'react-router-dom';
+import { Breadcrumbs } from '../common/Breadcrumbs';
 
 export const UserLayout = () => {
   return (
     <div className='flex flex-col min-h-screen'>
       <Navbar />
-      <main className='flex-grow mt-10 mx-20'>
+      <div className='pt-16 pl-20'>
+        <Breadcrumbs />
+      </div>
+      <ScrollToTop />
+      <main className='flex-grow mx-20'>
         <Outlet />
       </main>
       <Footer />

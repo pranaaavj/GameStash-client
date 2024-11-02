@@ -60,7 +60,7 @@ export const GameBrowse = () => {
   };
 
   return (
-    <div className='bg-[#121212] py-10 sm:py-10'>
+    <div className='bg-[#121212]'>
       {isGenreSuccess && (
         <GenreListing
           title='Genres'

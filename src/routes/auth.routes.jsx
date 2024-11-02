@@ -1,19 +1,16 @@
 import {
   Login,
+  Blocked,
   Register,
-  ResetPassword,
   SendOtpEmail,
+  Unauthorized,
+  ResetPassword,
   VerifyOtpEmail,
   VerifyOtpPassword,
 } from '@/pages/auth';
-import {
-  // PrivateRegistration,
-  // PrivateResetPassword,
-  UnauthorizedRoute,
-  OtpProtectedRoute,
-} from './ProtectedRoutes';
-import { UserLayout } from '@/components/user';
 import { NotFound } from '@/pages/error';
+import { UserLayout } from '@/components/user';
+import { UnauthorizedRoute, OtpProtectedRoute } from './ProtectedRoutes';
 
 export const authRoutes = [
   {
@@ -63,6 +60,14 @@ export const authRoutes = [
             ],
           },
         ],
+      },
+      {
+        path: 'blocked',
+        element: <Blocked />,
+      },
+      {
+        path: 'unauthorized',
+        element: <Unauthorized />,
       },
     ],
   },

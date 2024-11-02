@@ -14,7 +14,7 @@ export const GenreListing = ({
   const navigate = useNavigate();
 
   return (
-    <div className='bg-[#121212] py-10 sm:py-20'>
+    <div className='bg-[#121212] py-5 sm:py-10'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center justify-between mb-8'>
           <h2 className='text-[#e5e5e5] text-2xl sm:text-3xl font-bold font-poppins flex items-center'>

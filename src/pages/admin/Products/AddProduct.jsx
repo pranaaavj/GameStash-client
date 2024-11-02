@@ -13,22 +13,20 @@ import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ImageUploader } from '@/components/admin/ImageUpload';
+import { ImageUploader } from '@/components/admin';
 import { Alert, InputField, SelectField } from '@/components/common';
-import { validateProduct, mapOptionsData } from '@/utils';
+import { validateProduct, mapOptionsData, validateImages } from '@/utils';
 
 const initialProductState = {
   name: '',
   price: '',
   genre: '',
   platform: '',
-  images: [],
   brand: '',
-  stock: '',
+  stock: 0,
   description: '',
-  // System requirements fields added here
   systemRequirements: {
     cpu: '',
     gpu: '',
@@ -46,12 +44,17 @@ export const AddProduct = () => {
   const { data: responseGenres, isSuccess: genreQuerySuccess } =
     useGetAllGenresQuery({});
   const [addProduct, { isError, error }] = useAddProductMutation();
-
   // Product state
   const [images, setImages] = useState([]);
+  const [imageValidation, setImageValidation] = useState('');
   const [productInput, setProductInput] = useState(initialProductState);
   const [productValidation, setProductValidation] =
     useState(initialProductState);
+
+  useEffect(() => {
+    setProductValidation(initialProductState);
+    setImageValidation('');
+  }, [productInput, images]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,9 +70,8 @@ export const AddProduct = () => {
     } else {
       setProductInput((prev) => ({ ...prev, [name]: value }));
     }
-    setProductValidation((prev) => ({ ...prev, [name]: '' }));
   };
-
+  console.log(images);
   // Mapping options from brands and genres
   const brandOptions = brandQuerySuccess
     ? mapOptionsData(responseBrands?.data?.brands)
@@ -90,8 +92,11 @@ export const AddProduct = () => {
     e.preventDefault();
 
     const productValidation = validateProduct(productInput);
-    if (Object.keys(productValidation).length > 0) {
+    const imageValidation = validateImages(images);
+
+    if (Object.keys(productValidation).length > 0 || imageValidation) {
       setProductValidation(productValidation);
+      setImageValidation(imageValidation);
       return;
     }
 
@@ -137,7 +142,7 @@ export const AddProduct = () => {
             placeHolder='0.00'
             isInvalid={!!productValidation.price}
             errorMessage={productValidation.price}
-            helperText={!productValidation.price && 'Enter price in rupees'}
+            helperText={!productValidation.price ? 'Enter price in rupees' : ''}
           />
           <SelectField
             type='text'
@@ -207,6 +212,11 @@ export const AddProduct = () => {
               className='w-full bg-[#262626] ring-0 focus:ring-2 text-primary-text rounded-md'
               rows={4}
             />
+            {productValidation.description && (
+              <span className='text-red-500 text-sm mt-0'>
+                {productValidation.description}
+              </span>
+            )}
           </div>
 
           {/* System Requirements Section */}
@@ -263,6 +273,9 @@ export const AddProduct = () => {
             images={images}
             setImages={setImages}
           />
+          {imageValidation && (
+            <span className='text-red-500 text-sm mt-0'>{imageValidation}</span>
+          )}
 
           <Button
             type='submit'

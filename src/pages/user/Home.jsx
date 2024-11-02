@@ -1,16 +1,12 @@
+import { Alert } from '@/components/common';
 import { motion } from 'framer-motion';
 import { Button } from '@/shadcn/components/ui/button';
-import { Card, CardContent } from '@/shadcn/components/ui/card';
-import { GameCarousal } from './Game/GameCarousal';
-import { GameListing } from './Game/GameListing';
-import { useGetProductsQuery } from '@/redux/api/userApi';
-import { Alert } from '@/components/common';
 import { CircleX } from 'lucide-react';
 import { useState } from 'react';
-import { GameBrowse } from './Game/GameBrowse';
-
-// import { GameBrowse } from './Game/GameBrowse';
-// import { GenreListing } from './GenreListing';
+import { GameListing } from './Game/GameListing';
+import { GameCarousal } from './Game/GameCarousal';
+import { useGetProductsQuery } from '@/redux/api/userApi';
+import { Card, CardContent } from '@/shadcn/components/ui/card';
 
 export const Home = () => {
   const [pageState, setPageState] = useState({
@@ -30,20 +26,10 @@ export const Home = () => {
 
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
-      <main className='container mx-auto pt-24'>
+      <main className='container mx-auto pt-10'>
         {/* Home page carousal */}
         <GameCarousal />
-        {isSuccess && responseLatest?.data?.products && (
-          <GameBrowse
-            title='Discover Something New'
-            games={responseLatest?.data.products}
-            currentPage={responseLatest?.data.currentPage}
-            totalPage={responseLatest?.data.totalPages}
-            onPageChange={(page) =>
-              setPageState((prev) => ({ ...prev, latestGames: page }))
-            }
-          />
-        )}
+
         {/* Listing games */}
         {isError && (
           <Alert
@@ -56,7 +42,7 @@ export const Home = () => {
         )}
         {isSuccess && responseLatest?.data?.products && (
           <GameListing
-            title='Discover Something New'
+            title='Latest games'
             games={responseLatest?.data.products}
             currentPage={responseLatest?.data.currentPage}
             totalPage={responseLatest?.data.totalPages}

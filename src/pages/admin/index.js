@@ -13,3 +13,5 @@ export { EditBrand } from './Brands/EditBrand';
 export { GenreList } from './Genres/GenreList';
 export { AddGenre } from './Genres/AddGenre';
 export { EditGenre } from './Genres/EditGenre';
+
+export { UsersList } from './UsersList';

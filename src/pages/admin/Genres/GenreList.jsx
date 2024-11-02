@@ -47,10 +47,10 @@ export const GenreList = () => {
     ({ id: genreId }) => (
       <EditButton onClick={() => navigate(`/admin/genres/edit/${genreId}`)} />
     ),
-    ({ id: genreId, title }) => (
+    ({ id: genreId, isActive }) => (
       <ToggleList
         onClick={() => handleListingModal(genreId)}
-        title={title}
+        title={isActive ? 'Unlist' : 'List'}
       />
     ),
   ];
