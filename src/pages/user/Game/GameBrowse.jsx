@@ -19,7 +19,7 @@ export const GameBrowse = () => {
     data: responseGames,
     error,
     isError,
-  } = useGetProductsQuery({ page: pageState.games, limit: 5 });
+  } = useGetProductsQuery({ page: pageState.games, limit: 12 });
 
   const {
     data: responseGenres,
@@ -35,12 +35,12 @@ export const GameBrowse = () => {
   if (isGenreError) {
     console.log(genreError);
   }
-
+  console.log(responseGames);
   const navigate = useNavigate();
   const [filteredGames, setFilteredGames] = useState(
     responseGames?.data?.products
   );
-
+  console.log(filteredGames);
   const handleApplyFilters = (filters) => {
     const newFilteredGames = responseGames?.data?.products.filter((game) => {
       const priceInRange =
@@ -90,8 +90,8 @@ export const GameBrowse = () => {
               )}
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5'>
-              {filteredGames?.length &&
-                filteredGames.map((game) => (
+              {responseGames?.data?.products &&
+                responseGames?.data?.products.map((game) => (
                   <GameCard
                     onClick={() => navigate(`/product/${game._id}`)}
                     key={game._id}
