@@ -69,7 +69,6 @@ export const GameCarousal = () => {
     data: carousalProducts,
     isError,
     error,
-    isLoading,
   } = useGetProductsQuery({ limit: 5 });
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -84,10 +83,6 @@ export const GameCarousal = () => {
       return () => clearInterval(interval);
     }
   }, [carousalProducts?.data?.products]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className='max-w-full lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12'>

@@ -5,13 +5,9 @@ import { useSelector } from 'react-redux';
 export const OtpProtectedRoute = ({ children, requiredOtpType }) => {
   const { otpStatus, otpType } = useSelector((state) => state.auth);
 
-  if (otpStatus === 'verified' && otpType === requiredOtpType) {
-    return children;
-  }
+  if (otpStatus === 'verified' && otpType === requiredOtpType) return children;
 
-  if (!otpStatus || !otpType) {
-    return null;
-  }
+  if (!otpStatus || !otpType) return null;
 
   if (otpType === 'forgotPassword') {
     return (

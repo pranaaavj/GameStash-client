@@ -27,6 +27,11 @@ export const userApi = createApi({
         url: `/user/review/${productId}`,
       }),
     }),
+    getProfileDetails: builder.query({
+      query: (userId) => ({
+        url: `/user/details/${userId}`,
+      }),
+    }),
   }),
 });
 
@@ -35,4 +40,5 @@ export const {
   useGetProductsQuery,
   useGetProductsByGenreQuery,
   useGetReviewByProductQuery,
+  useGetProfileDetailsQuery,
 } = userApi;

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Gamepad2 } from 'lucide-react';
 
-export default function Loading() {
+export const Loading = () => {
   return (
     <div className='fixed top-0 bottom-0 right-0 left-0 z-50 flex min-h-screen items-center justify-center bg-primary-bg'>
       <motion.div
@@ -26,4 +26,4 @@ export default function Loading() {
       </motion.div>
     </div>
   );
-}
+};

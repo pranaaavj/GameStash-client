@@ -1,66 +1,55 @@
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/shadcn/components/ui/dialog';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
-import { setUser } from '@/redux/slices/userSlice';
-import { setToken } from '@/redux/slices/userSlice';
+import { useAdmins } from '@/hooks';
 import { useDispatch } from 'react-redux';
 import { validateSignIn } from '@/utils';
-import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
+import { Alert, InputField } from '../../components/common';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
-import { useLoginUserMutation } from '@/redux/api/authApi';
+import { useLoginAdminMutation } from '@/redux/api/adminApi';
+import { setAdmin, setTokenAdmin } from '@/redux/slices/adminSlice';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
-import { useUsers } from '@/hooks/users/useUsers';
 
 const emptyInput = { email: '', password: '' };
 
 export const AdminLogin = () => {
-  const user = useUsers();
+  const admin = useAdmins();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPass, setShowPass] = useState(false);
-  const [userInput, setUserInput] = useState(emptyInput);
+  const [adminInput, setAdminInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
-  const [forgotEmail, setForgotEmail] = useState('');
 
-  const [signInUser, { isError, error, reset }] = useLoginUserMutation();
+  const [loginAdmin, { isError, error, reset }] = useLoginAdminMutation();
   useEffect(() => {
-    if (user?.userInfo?.role === 'admin' && user.authStatus === 'active') {
+    if (admin?.adminInfo?.role === 'admin' && admin.authStatus === 'active') {
       navigate('/admin/dashboard');
     }
 
     setValidation(emptyInput);
     if (isError) reset();
     // eslint-disable-next-line
-  }, [userInput, user]);
+  }, [adminInput, admin]);
 
   const handleChange = ({ target: { value, name } }) => {
-    setUserInput((prevState) => ({ ...prevState, [name]: value }));
+    setAdminInput((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validation = validateSignIn(userInput);
+    const validation = validateSignIn(adminInput);
     if (Object.keys(validation).length > 0) {
       setValidation(validation);
       return;
     }
+
     try {
-      const response = await signInUser(userInput).unwrap();
+      const response = await loginAdmin(adminInput).unwrap();
 
       if (response.success) {
-        dispatch(setUser({ user: response?.data?.user }));
-        dispatch(setToken({ token: response?.data?.accessToken }));
+        dispatch(setAdmin({ admin: response?.data?.user }));
+        dispatch(setTokenAdmin({ token: response?.data?.accessToken }));
 
         toast.success('Login successful', {
           duration: 1000,
@@ -85,7 +74,7 @@ export const AdminLogin = () => {
           <div className='space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6 font-poppins relative'>
             <InputField
               type='email'
-              value={userInput.email}
+              value={adminInput.email}
               onChange={handleChange}
               label='Email'
               name='email'
@@ -94,62 +83,10 @@ export const AdminLogin = () => {
               errorMessage={validation.email}
             />
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <p className='z-10 absolute right-0 text-[9px] sm:text-[10px] md:text-[12px] lg:text-[14px] top-[68px] sm:top-[70px] md:top-[75px] lg:top-[78px] font-roboto font-medium hover:text-accent-red cursor-pointer'>
-                  Forgot Password ?
-                </p>
-              </DialogTrigger>
-              <DialogContent className='sm:max-w-xs md:max-w-md lg:max-w-lg bg-primary-bg text-primary-text border-none font-poppins'>
-                <DialogHeader>
-                  <DialogTitle>Forgot Password</DialogTitle>
-                  <DialogDescription className='font-sans text-secondary-text'>
-                    Enter the email address that was associated with your
-                    account
-                  </DialogDescription>
-                </DialogHeader>
-                <div className='flex items-center space-x-2'>
-                  <div className='grid flex-1 gap-2'>
-                    <InputField
-                      type='email'
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      label='Email'
-                      name='email'
-                      placeHolder='name@work.com'
-                    />
-                  </div>
-                </div>
-
-                <div className='flex justify-start gap-4 sm:gap-5 mt-4 sm:mt-6'>
-                  <DialogFooter className='p-0'>
-                    <DialogClose asChild>
-                      <Button
-                        type='button'
-                        variant='secondary'
-                        className='font-sans'
-                        onClick={() => setForgotEmail('')}>
-                        Close
-                      </Button>
-                    </DialogClose>
-                  </DialogFooter>
-                  <DialogClose asChild>
-                    <Button
-                      className='bg-accent-red hover:bg-hover-red text-md sm:text-lg md:text-xl lg:text-2xl font-medium font-sans'
-                      onClick={() => {
-                        setForgotEmail('');
-                      }}>
-                      Send OTP
-                    </Button>
-                  </DialogClose>
-                </div>
-              </DialogContent>
-            </Dialog>
-
             <InputGroup>
               <InputField
                 type={showPass ? 'text' : 'password'}
-                value={userInput.password}
+                value={adminInput.password}
                 onChange={handleChange}
                 label='Password'
                 name='password'

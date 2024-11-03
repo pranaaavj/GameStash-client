@@ -1,5 +1,5 @@
 import { UserLayout } from '@/components/user';
-import { NotFound } from '@/pages/error';
+import { NotFound } from '@/components/error';
 import { Home } from '@/pages/user';
 import { AuthorizedRoute } from './ProtectedRoutes';
 import { GameDetails } from '@/pages/user';

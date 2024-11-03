@@ -8,7 +8,7 @@ import {
   VerifyOtpEmail,
   VerifyOtpPassword,
 } from '@/pages/auth';
-import { NotFound } from '@/pages/error';
+import { NotFound } from '@/components/error';
 import { UserLayout } from '@/components/user';
 import { UnauthorizedRoute, OtpProtectedRoute } from './ProtectedRoutes';
 

@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import { useUsers } from '@/hooks/users/useUsers';
+import { useUsers } from '@/hooks';
 import { Navigate, Outlet } from 'react-router-dom';
+import { Loading } from '@/components/error';
 
 export const AuthorizedRoute = () => {
   const user = useUsers();
 
-  if (!user) return <h1>Loading...</h1>;
+  if (!user) return <Loading />;
 
   if (!user?.token)
     return (

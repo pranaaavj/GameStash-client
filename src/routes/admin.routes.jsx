@@ -12,7 +12,7 @@ import {
   EditGenre,
   UsersList,
 } from '@/pages/admin';
-import { AdminError } from '@/pages/error';
+import { AdminError } from '@/components/error';
 import { AdminLayout } from '@/components/admin';
 import { AuthorizeAdminRoute } from './ProtectedRoutes';
 

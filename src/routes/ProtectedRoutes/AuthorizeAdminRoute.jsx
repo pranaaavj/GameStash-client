@@ -1,34 +1,21 @@
-import { useUsers } from '@/hooks/users/useUsers';
+import { Loading } from '@/components/error';
+import { useAdmins } from '@/hooks';
 import { Outlet, Navigate } from 'react-router-dom';
 
 export const AuthorizeAdminRoute = () => {
-  const user = useUsers();
+  const admin = useAdmins();
+  console.log(admin);
+  if (!admin) return <Loading />;
 
-  if (!user) {
-    return <h1>Loading...</h1>;
-  }
-
-  if (!user?.token) {
+  if (!admin?.token)
     return (
       <Navigate
         to='/admin/login'
         replace
       />
     );
-  }
 
-  if (user?.authStatus === 'blocked') {
-    return (
-      <Navigate
-        to='/auth/blocked'
-        replace
-      />
-    );
-  }
-
-  if (user?.userInfo?.role === 'admin') {
-    return <Outlet />;
-  }
+  if (admin?.adminInfo?.role === 'admin') return <Outlet />;
 
   return <Navigate to='/auth/unauthorized' />;
 };

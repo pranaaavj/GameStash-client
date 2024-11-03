@@ -9,14 +9,13 @@ import {
   useToggleProductListMutation,
 } from '@/redux/api/adminApi';
 import { toast } from 'sonner';
-import { Alert } from '@/components/common';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
-import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
 import { CircleX, Plus, Search } from 'lucide-react';
+import { Alert, ConfirmationModal } from '@/components/common';
 
 export const ProductList = () => {
   const navigate = useNavigate();

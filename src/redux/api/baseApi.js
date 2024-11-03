@@ -19,19 +19,7 @@ const baseQuery = fetchBaseQuery({
 export const baseQueryWithReAuth = async (args, api, extraOptions) => {
   let response = await baseQuery(args, api, extraOptions);
   console.log('Response', response);
-  // Checking for blocked users
-  if (
-    response?.error?.status === 403 &&
-    response?.error?.data?.message === 'User has been blocked'
-  ) {
-    api.dispatch(setStatus({ status: 'blocked' }));
-    toast.error('Your account has been blocked.');
-    api.dispatch(logout());
 
-    return response;
-  }
-
-  //
   if (response?.error?.status === 403 || response?.error?.status === 401) {
     const refreshResponse = await baseQuery(
       '/auth/refresh-token',
@@ -40,15 +28,24 @@ export const baseQueryWithReAuth = async (args, api, extraOptions) => {
     );
     console.log('Refresh Response', response);
 
-    // If refresh is successful, update the token
+    // Updating token if refresh is successful
     if (refreshResponse?.data?.success) {
       api.dispatch(
         setToken({ token: refreshResponse?.data?.data?.accessToken })
       );
 
-      // Retry the initial query with the new access token
+      // Retrying initial with new access token
       response = await baseQuery(args, api, extraOptions);
     } else {
+      if (
+        response?.error?.status === 403 &&
+        response?.error?.data?.message === 'User has been blocked'
+      ) {
+        api.dispatch(setStatus({ status: 'blocked' }));
+        toast.error('Your account has been blocked.');
+
+        return response;
+      }
       // Logout if refresh fails
       api.dispatch(logout());
     }

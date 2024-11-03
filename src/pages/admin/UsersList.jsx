@@ -37,7 +37,6 @@ export const UsersList = () => {
 
   const actions = [
     ({ id: userId, status }) => {
-      console.log(userId, status);
       return (
         <ToggleList
           onClick={() => handleBlockUnblockModal(userId)}
@@ -55,7 +54,6 @@ export const UsersList = () => {
   const handleConfirmBlockUnblock = async () => {
     try {
       const responseToggleBlock = await toggleBlockUser(selectedUser);
-      console.log(responseToggleBlock);
 
       if (responseToggleBlock.success) {
         toast.success(responseToggleBlock.message, { duration: 1500 });

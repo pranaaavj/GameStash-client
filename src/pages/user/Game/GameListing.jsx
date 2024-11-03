@@ -4,6 +4,7 @@ import { GameCard } from './GameCard';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { UserPagination } from '@/components/user';
+import { motion } from 'framer-motion';
 
 export const GameListing = ({
   title,
@@ -32,11 +33,14 @@ export const GameListing = ({
         </div>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5'>
           {games.map((game) => (
-            <GameCard
-              onClick={() => navigate(`/game/${game._id}`)}
+            <motion.div
               key={game._id}
-              game={game}
-            />
+              onClick={() => navigate(`/game/${game._id}`)}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: games.indexOf(game) * 0.05 }}>
+              <GameCard game={game} />
+            </motion.div>
           ))}
         </div>
       </div>

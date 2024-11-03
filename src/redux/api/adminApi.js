@@ -1,10 +1,25 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithReAuth } from './baseApi';
+import { baseQueryWithReAuthAdmin } from './baseApiAdmin';
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
-  baseQuery: baseQueryWithReAuth,
+  baseQuery: baseQueryWithReAuthAdmin,
   endpoints: (builder) => ({
+    // Authorization
+    loginAdmin: builder.mutation({
+      query: (adminInfo) => ({
+        url: '/admin/login',
+        method: 'POST',
+        body: adminInfo,
+      }),
+    }),
+    logoutAdmin: builder.mutation({
+      query: (adminInfo) => ({
+        url: '/admin/logout',
+        method: 'POST',
+        body: adminInfo,
+      }),
+    }),
     // Products - CRUD Operations
     getAllProducts: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
@@ -176,6 +191,9 @@ export const adminApi = createApi({
 });
 
 export const {
+  // Authorization
+  useLoginAdminMutation,
+  useLogoutAdminMutation,
   // Product CRUD Hooks
   useGetAllProductsQuery,
   useGetOneProductQuery,

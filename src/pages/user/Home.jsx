@@ -1,12 +1,11 @@
-import { Alert } from '@/components/common';
 import { motion } from 'framer-motion';
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { useState } from 'react';
 import { GameListing } from './Game/GameListing';
 import { GameCarousal } from './Game/GameCarousal';
 import { useGetProductsQuery } from '@/redux/api/userApi';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
+import { GameErrorFallback, GameLoading } from '@/components/error';
 
 export const Home = () => {
   const [pageState, setPageState] = useState({
@@ -17,40 +16,40 @@ export const Home = () => {
     data: responseLatest,
     error,
     isError,
+    isLoading,
     isSuccess,
+    refetch,
   } = useGetProductsQuery({ page: pageState.latestGames, limit: 5 });
-
-  if (isError) {
-    console.log(error);
-  }
 
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
       <main className='container mx-auto pt-10'>
-        {/* Home page carousal */}
+        {/* Home page carousel */}
         <GameCarousal />
 
         {/* Listing games */}
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
+        {isError ? (
+          <GameErrorFallback
+            message={error?.data?.message}
+            onRetry={refetch}
           />
+        ) : isLoading ? (
+          <GameLoading count={5} />
+        ) : (
+          isSuccess &&
+          responseLatest?.data?.products && (
+            <GameListing
+              title='Latest games'
+              games={responseLatest?.data.products}
+              currentPage={responseLatest?.data.currentPage}
+              totalPage={responseLatest?.data.totalPages}
+              onPageChange={(page) =>
+                setPageState((prev) => ({ ...prev, latestGames: page }))
+              }
+            />
+          )
         )}
-        {isSuccess && responseLatest?.data?.products && (
-          <GameListing
-            title='Latest games'
-            games={responseLatest?.data.products}
-            currentPage={responseLatest?.data.currentPage}
-            totalPage={responseLatest?.data.totalPages}
-            onPageChange={(page) =>
-              setPageState((prev) => ({ ...prev, latestGames: page }))
-            }
-          />
-        )}
+
         <motion.section
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}

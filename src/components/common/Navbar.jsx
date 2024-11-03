@@ -7,7 +7,7 @@ import logo from '../../assets/images/logo.svg';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Menu, Search, ShoppingCart, User, X } from 'lucide-react';
-import { useUsers } from '@/hooks/users/useUsers';
+import { useUsers } from '@/hooks/useUsers';
 
 //Todo: Complete the avatar icon, when the user logs in show avatar else show icon
 export const Navbar = () => {

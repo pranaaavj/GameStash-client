@@ -1,7 +1,7 @@
-import { Footer, Navbar, ScrollToTop } from '../common';
-import { Outlet, useNavigation } from 'react-router-dom';
+import { Loading } from '../error';
 import { Breadcrumbs } from '../common/Breadcrumbs';
-import Loading from '../common/Loading';
+import { Outlet, useNavigation } from 'react-router-dom';
+import { Footer, Navbar, ScrollToTop } from '../common';
 
 export const UserLayout = () => {
   const navigation = useNavigation();
@@ -12,7 +12,7 @@ export const UserLayout = () => {
       <div className='pt-16 pl-20'>
         <Breadcrumbs />
       </div>
-      {navigation.state && <Loading />}
+      {navigation.state === 'loading' && <Loading />}
       <ScrollToTop />
       <main className='flex-grow mx-20'>
         <Outlet />

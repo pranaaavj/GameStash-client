@@ -1,6 +1,7 @@
 import storage from 'redux-persist/es/storage';
 import authReducer from './slices/authSlice';
 import userReducer from './slices/userSlice';
+import adminReducer from './slices/adminSlice';
 import { authApi } from './api/authApi';
 import { userApi } from './api/userApi';
 import { adminApi } from './api/adminApi';
@@ -10,12 +11,13 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'user'],
+  whitelist: ['auth', 'user', 'admin'],
 };
 
 const rootReducer = combineReducers({
   user: userReducer,
   auth: authReducer,
+  admin: adminReducer,
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [adminApi.reducerPath]: adminApi.reducer,
