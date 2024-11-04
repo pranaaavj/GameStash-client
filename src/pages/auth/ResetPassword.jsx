@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { resetAuthState } from '@/redux/slices/authSlice';
 import { InputField, Alert } from '../../components/common';
 import { useEffect, useState } from 'react';
-import { useResetPassUserMutation } from '../../redux/api/authApi';
+import { useResetPassUserMutation } from '../../redux/api/user/authApi';
 import { useSelector, useDispatch } from 'react-redux';
 
 const emptyInput = { password: '', cPassword: '' };

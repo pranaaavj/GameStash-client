@@ -1,11 +1,7 @@
-import { UserLayout } from '@/components/user';
 import { NotFound } from '@/components/error';
-import { Home } from '@/pages/user';
+import { UserLayout } from '@/components/user';
 import { AuthorizedRoute } from './ProtectedRoutes';
-import { GameDetails } from '@/pages/user';
-
-import { GameBrowse } from '@/pages/user/Game/GameBrowse';
-import UserProfilePage from '@/pages/user/UserProfile';
+import { GameDetails, GameBrowse, UserProfile, Home } from '@/pages/user';
 
 export const userRoutes = [
   {
@@ -22,7 +18,7 @@ export const userRoutes = [
         children: [
           {
             index: true,
-            element: <UserProfilePage />,
+            element: <UserProfile />,
           },
         ],
       },

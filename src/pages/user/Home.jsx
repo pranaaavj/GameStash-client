@@ -1,10 +1,7 @@
-import { motion } from 'framer-motion';
-import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { GameListing } from './Game/GameListing';
 import { GameCarousal } from './Game/GameCarousal';
-import { useGetProductsQuery } from '@/redux/api/userApi';
-import { Card, CardContent } from '@/shadcn/components/ui/card';
+import { useGetProductsQuery } from '@/redux/api/user/userApi';
 import { GameErrorFallback, GameLoading } from '@/components/error';
 
 export const Home = () => {
@@ -50,11 +47,7 @@ export const Home = () => {
           )
         )}
 
-        <motion.section
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className='mt-12'>
+        {/* <section className='mt-12'>
           <h2 className='text-2xl font-bold mb-4 font-poppins'>
             Promotion Cards
           </h2>
@@ -82,7 +75,7 @@ export const Home = () => {
               </CardContent>
             </Card>
           </div>
-        </motion.section>
+        </section> */}
       </main>
     </div>
   );

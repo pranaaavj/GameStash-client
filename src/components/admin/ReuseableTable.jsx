@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/shadcn/components/ui/table';
-
 import PropTypes from 'prop-types';
 
 export const ReuseableTable = ({ headers, data, actions }) => {

@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithReAuthAdmin } from './baseApiAdmin';
+import { baseQueryWithReAuthAdmin } from './baseQueryAdmin';
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
@@ -13,6 +13,7 @@ export const adminApi = createApi({
         body: adminInfo,
       }),
     }),
+
     logoutAdmin: builder.mutation({
       query: (adminInfo) => ({
         url: '/admin/logout',
@@ -20,6 +21,7 @@ export const adminApi = createApi({
         body: adminInfo,
       }),
     }),
+
     // Products - CRUD Operations
     getAllProducts: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
@@ -27,19 +29,15 @@ export const adminApi = createApi({
       }),
       providesTags: (result) =>
         result
-          ? [
-              ...result.data.products.map(({ id }) => ({
-                type: 'Product',
-                id,
-              })), // Tag each product by its unique ID
-              { type: 'Product', id: 'LIST' },
-            ] // Tag the entire list
+          ? [{ type: 'Product', id: 'LIST' }]
           : [{ type: 'Product', id: 'LIST' }],
     }),
+
     getOneProduct: builder.query({
       query: (productId) => ({ url: `/admin/products/${productId}` }),
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
+
     addProduct: builder.mutation({
       query: (newProductDetails) => ({
         url: '/admin/products',
@@ -48,6 +46,7 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
+
     editProduct: builder.mutation({
       query: (updatedProduct) => ({
         url: '/admin/products',
@@ -56,6 +55,7 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
+
     toggleProductList: builder.mutation({
       query: (productId) => ({
         url: '/admin/products',
@@ -64,6 +64,7 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
+
     // Brands - CRUD Operations
     getAllBrands: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
@@ -71,19 +72,15 @@ export const adminApi = createApi({
       }),
       providesTags: (result) =>
         result
-          ? [
-              ...result.data.brands.map(({ id }) => ({
-                type: 'Brand',
-                id,
-              })), // Tag each brand by its unique ID
-              { type: 'Brand', id: 'LIST' },
-            ] // Tag the entire list
+          ? [{ type: 'Brand', id: 'LIST' }]
           : [{ type: 'Brand', id: 'LIST' }],
     }),
+
     getOneBrand: builder.query({
       query: (brandId) => ({ url: `/admin/brands/${brandId}` }),
       invalidatesTags: [{ type: 'Brand', id: 'LIST' }],
     }),
+
     addBrand: builder.mutation({
       query: (newBrandDetails) => ({
         url: '/admin/brands',
@@ -92,6 +89,7 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'Brand', id: 'LIST' }],
     }),
+
     editBrand: builder.mutation({
       query: (updatedBrand) => ({
         url: '/admin/brands',
@@ -100,6 +98,7 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'Brand', id: 'LIST' }],
     }),
+
     toggleBrandList: builder.mutation({
       query: (brandId) => ({
         url: '/admin/brands',
@@ -116,19 +115,15 @@ export const adminApi = createApi({
       }),
       providesTags: (result) =>
         result
-          ? [
-              ...result.data.genres.map(({ id }) => ({
-                type: 'Genre',
-                id,
-              })), // Tag each genre by its unique ID
-              { type: 'Genre', id: 'LIST' },
-            ] // Tag the entire list
+          ? [{ type: 'Genre', id: 'LIST' }]
           : [{ type: 'Genre', id: 'LIST' }],
     }),
+
     getOneGenre: builder.query({
       query: (genreId) => ({ url: `/admin/genres/${genreId}` }),
       invalidatesTags: [{ type: 'Genre', id: 'LIST' }],
     }),
+
     addGenre: builder.mutation({
       query: (newGenreDetails) => ({
         url: '/admin/genres',
@@ -137,6 +132,7 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'Genre', id: 'LIST' }],
     }),
+
     editGenre: builder.mutation({
       query: (updatedGenre) => ({
         url: '/admin/genres',
@@ -145,6 +141,7 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'Genre', id: 'LIST' }],
     }),
+
     toggleGenreList: builder.mutation({
       query: (genreId) => ({
         url: '/admin/genres',
@@ -155,20 +152,13 @@ export const adminApi = createApi({
     }),
 
     // User Management
-    // Get all users with pagination
     getAllUsers: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/admin/users?page=${page}&limit=${limit}`,
       }),
       providesTags: (result) =>
         result
-          ? [
-              ...result.data.users.map(({ id }) => ({
-                type: 'User',
-                id,
-              })), // Tag each user by its unique ID
-              { type: 'User', id: 'LIST' },
-            ] // Tag the entire list
+          ? [{ type: 'User', id: 'LIST' }] // Tag the entire user list only
           : [{ type: 'User', id: 'LIST' }],
     }),
 

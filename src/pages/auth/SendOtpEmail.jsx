@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import { InputField, Alert } from '../../components/common';
 import { useEffect, useState } from 'react';
-import { useSendOtpUserMutation } from '@/redux/api/authApi';
+import { useSendOtpUserMutation } from '@/redux/api/user/authApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
 

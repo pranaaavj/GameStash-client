@@ -12,7 +12,7 @@ import {
   useGoogleSignInMutation,
   useLoginUserMutation,
   useSendOtpUserMutation,
-} from '@/redux/api/authApi';
+} from '@/redux/api/user/authApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import googleLogo from '../../assets/images/google-logo.png';
@@ -20,7 +20,7 @@ import { motion } from 'framer-motion';
 import { setUser } from '@/redux/slices/userSlice';
 import { setToken } from '@/redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
-import { validateSignIn } from '@/utils';
+import { validateLogin } from '@/utils';
 import { signInWithPopup, auth, provider } from '../../utils/firebase';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
@@ -63,7 +63,7 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const loginValidation = validateSignIn(loginInput);
+    const loginValidation = validateLogin(loginInput);
     // Setting validation errors
     if (Object.keys(loginValidation).length > 0) {
       setLoginValidation(loginValidation);
@@ -159,16 +159,9 @@ export const Login = () => {
   return (
     <motion.div
       className='flex pt-10 justify-center min-h-screen w-full overflow-hidden'
-      variants={{
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.3, ease: 'easeInOut' },
-        },
-      }}
-      initial='hidden'
-      animate='visible'>
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}>
       <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md lg:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
         <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
           Login to Your Account

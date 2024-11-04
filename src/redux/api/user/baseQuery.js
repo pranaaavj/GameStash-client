@@ -1,5 +1,5 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { logout, setToken, setStatus } from '../slices/userSlice';
+import { logout, setToken, setStatus } from '../../slices/userSlice';
 import { toast } from 'sonner';
 
 const baseQuery = fetchBaseQuery({

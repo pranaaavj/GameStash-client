@@ -3,10 +3,12 @@ export { mapOptionsData } from './mapData';
 
 export { validateBrand } from './validation/validateBrand';
 export { validateGenre } from './validation/validateGenre';
-export { validateSignUp } from './validation/validateSignUp';
-export { validateSignIn } from './validation/validateSignIn';
-export { validateProduct } from './validation/validateProduct';
+export { validateLogin } from './validation/validateLogin';
 export { validateImages } from './validation/validateImages';
+export { validateProduct } from './validation/validateProduct';
+export { validateProfile } from './validation/validateProfile';
+export { validateRegister } from './validation/validateRegister';
+export { validateChangePassword } from './validation/validateChangePassword';
 
-export { loadState, saveState } from './localStorage';
 export { uploadToCloudinary } from './uploadToCloudinary';
+export { loadState, saveState } from './localStorage';

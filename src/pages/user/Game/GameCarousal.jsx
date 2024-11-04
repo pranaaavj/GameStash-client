@@ -2,7 +2,7 @@ import { CircleX, Heart } from 'lucide-react';
 import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { useState, useEffect } from 'react';
-import { useGetProductsQuery } from '@/redux/api/userApi';
+import { useGetProductsQuery } from '@/redux/api/user/userApi';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Alert } from '@/components/common';
 

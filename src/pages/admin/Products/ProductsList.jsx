@@ -7,7 +7,7 @@ import {
 import {
   useGetAllProductsQuery,
   useToggleProductListMutation,
-} from '@/redux/api/adminApi';
+} from '@/redux/api/admin/adminApi';
 import { toast } from 'sonner';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';

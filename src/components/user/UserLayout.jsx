@@ -9,11 +9,11 @@ export const UserLayout = () => {
   return (
     <div className='flex flex-col min-h-screen'>
       <Navbar />
+      <ScrollToTop />
       <div className='pt-16 pl-20'>
         <Breadcrumbs />
       </div>
       {navigation.state === 'loading' && <Loading />}
-      <ScrollToTop />
       <main className='flex-grow mx-20'>
         <Outlet />
       </main>

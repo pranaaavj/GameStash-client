@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { validateBrand } from '@/utils';
 import { Alert, InputField } from '@/components/common';
-import { useAddBrandMutation } from '@/redux/api/adminApi';
+import { useAddBrandMutation } from '@/redux/api/admin/adminApi';
 
 const initialBrandState = {
   name: '',

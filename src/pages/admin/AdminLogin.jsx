@@ -2,12 +2,12 @@ import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { useAdmins } from '@/hooks';
 import { useDispatch } from 'react-redux';
-import { validateSignIn } from '@/utils';
+import { validateLogin } from '@/utils';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert, InputField } from '../../components/common';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
-import { useLoginAdminMutation } from '@/redux/api/adminApi';
+import { useLoginAdminMutation } from '@/redux/api/admin/adminApi';
 import { setAdmin, setTokenAdmin } from '@/redux/slices/adminSlice';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
 
@@ -38,7 +38,7 @@ export const AdminLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validation = validateSignIn(adminInput);
+    const validation = validateLogin(adminInput);
     if (Object.keys(validation).length > 0) {
       setValidation(validation);
       return;

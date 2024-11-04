@@ -1,7 +1,7 @@
 import {
   useResetOtpUserMutation,
   useVerifyOtpUserMutation,
-} from '@/redux/api/authApi';
+} from '@/redux/api/user/authApi';
 import { toast } from 'sonner';
 import { Alert } from '../../components/common';
 import { Button } from '@/shadcn/components/ui/button';

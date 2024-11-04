@@ -9,7 +9,7 @@ import {
   useGetAllGenresQuery,
   useGetOneProductQuery,
   useEditProductMutation,
-} from '@/redux/api/adminApi';
+} from '@/redux/api/admin/adminApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';

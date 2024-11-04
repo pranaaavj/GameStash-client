@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useGetProductQuery } from '@/redux/api/userApi';
+import { useGetProductQuery } from '@/redux/api/user/userApi';
 
 export const Breadcrumbs = () => {
   const location = useLocation();
@@ -34,7 +34,7 @@ export const Breadcrumbs = () => {
     <nav className='flex items-center space-x-2 text-sm font-medium text-primary-text mt-4 mb-4'>
       <Link
         to='/'
-        className='flex items-center space-x-1 text-accent-blue hover:text-hover-blue'>
+        className='flex items-center space-x-1 text-accent-red hover:text-accent-blue'>
         <Home className='h-4 w-4' />
         <span>Home</span>
       </Link>
@@ -57,11 +57,11 @@ export const Breadcrumbs = () => {
             {!isLast && !isGameSegment ? (
               <Link
                 to={path}
-                className='hover:text-hover-blue capitalize text-primary-text'>
+                className='hover:text-accent-blue capitalize text-primary-text'>
                 {formatSegment(segment, isGameSegment)}
               </Link>
             ) : (
-              <span className='capitalize font-semibold text-accent-blue'>
+              <span className='capitalize font-semibold text-accent-red'>
                 {formatSegment(segment, isGameSegment)}
               </span>
             )}

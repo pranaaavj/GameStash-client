@@ -10,7 +10,7 @@ import {
   useGetProductQuery,
   useGetReviewByProductQuery,
   useGetProductsByGenreQuery,
-} from '@/redux/api/userApi';
+} from '@/redux/api/user/userApi';
 import { Button } from '@/shadcn/components/ui/button';
 import { Reviews } from '../Reviews';
 import { useState } from 'react';

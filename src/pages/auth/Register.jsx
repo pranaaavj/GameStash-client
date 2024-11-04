@@ -1,11 +1,11 @@
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { toast } from 'sonner';
-import { validateSignUp } from '@/utils';
+import { validateRegister } from '@/utils';
 import { Alert, InputField } from '../../components/common';
 import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useRegisterUserMutation } from '@/redux/api/authApi';
+import { useRegisterUserMutation } from '@/redux/api/user/authApi';
 import { resetAuthState } from '@/redux/slices/authSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -34,7 +34,7 @@ export const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const validation = validateSignUp(userInput);
+    const validation = validateRegister(userInput);
     if (Object.keys(validation).length > 0) {
       setValidation(validation);
       return;

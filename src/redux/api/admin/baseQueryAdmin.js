@@ -1,5 +1,5 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { logoutAdmin, setTokenAdmin } from '../slices/adminSlice';
+import { logoutAdmin, setTokenAdmin } from '../../slices/adminSlice';
 
 const baseQueryAdmin = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_SERVER_URL,

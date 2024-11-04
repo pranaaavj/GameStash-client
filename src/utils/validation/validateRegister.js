@@ -1,4 +1,4 @@
-export const validateSignUp = (userInput) => {
+export const validateRegister = (userInput) => {
   let validation = {};
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
   if (userInput.password !== userInput.cPassword) {

@@ -8,7 +8,7 @@ import {
   useGetAllBrandsQuery,
   useGetAllGenresQuery,
   useAddProductMutation,
-} from '@/redux/api/adminApi';
+} from '@/redux/api/admin/adminApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
@@ -25,7 +25,7 @@ const initialProductState = {
   genre: '',
   platform: '',
   brand: '',
-  stock: 0,
+  stock: '',
   description: '',
   systemRequirements: {
     cpu: '',
@@ -134,7 +134,7 @@ export const AddProduct = () => {
             errorMessage={productValidation.name}
           />
           <InputField
-            type='number'
+            type='text'
             value={productInput.price}
             onChange={handleChange}
             label='Price'
@@ -188,7 +188,7 @@ export const AddProduct = () => {
             errorMessage={productValidation.brand}
           />
           <InputField
-            type='number'
+            type='text'
             value={productInput.stock}
             onChange={handleChange}
             label='Stock'

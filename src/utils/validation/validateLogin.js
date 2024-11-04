@@ -1,4 +1,4 @@
-export const validateSignIn = (userInput) => {
+export const validateLogin = (userInput) => {
   let validation = {};
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

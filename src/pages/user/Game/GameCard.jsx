@@ -5,7 +5,7 @@ export const GameCard = ({ game, onClick }) => {
   return (
     <motion.div
       onClick={onClick}
-      className='bg-transparent rounded-lg overflow-hidden h-[23rem] max-w-[14rem] transition-transform duration-300 flex flex-col justify-between'
+      className='bg-transparent rounded-lg overflow-hidden h-[23rem] max-w-[14rem] transition-transform duration-300 flex flex-col justify-between cursor-pointer'
       whileHover={{ scale: 1.03 }}>
       <div className='relative'>
         <img

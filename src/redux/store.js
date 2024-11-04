@@ -2,9 +2,9 @@ import storage from 'redux-persist/es/storage';
 import authReducer from './slices/authSlice';
 import userReducer from './slices/userSlice';
 import adminReducer from './slices/adminSlice';
-import { authApi } from './api/authApi';
-import { userApi } from './api/userApi';
-import { adminApi } from './api/adminApi';
+import { authApi } from './api/user/authApi';
+import { userApi } from './api/user/userApi';
+import { adminApi } from './api/admin/adminApi';
 import { persistReducer, persistStore } from 'redux-persist';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
