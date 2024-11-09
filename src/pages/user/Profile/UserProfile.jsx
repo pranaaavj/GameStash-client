@@ -12,11 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shadcn/components/ui/card';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/shadcn/components/ui/avatar';
 import { Button } from '@/shadcn/components/ui/button';
 import { User, MapPin, ShoppingBag } from 'lucide-react';
 import ProfileView from './ProfileView';
@@ -27,20 +22,6 @@ export const UserProfile = () => {
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text p-4 sm:p-6 lg:p-8'>
       <div className='max-w-6xl mx-auto space-y-8'>
-        <div className='flex items-center justify-between'>
-          <h1 className='text-4xl font-bold'>Account Settings</h1>
-          <div className='flex items-center space-x-4'>
-            <Avatar className='h-10 w-10'>
-              <AvatarImage src='/placeholder.svg' />
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <div className='text-right'>
-              <p className='text-sm font-medium'>John Doe</p>
-              <p className='text-xs text-secondary-text'>Premium Member</p>
-            </div>
-          </div>
-        </div>
-
         <Tabs
           defaultValue='profile'
           className='w-full'>

@@ -1,9 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithReAuthAdmin } from './baseQueryAdmin';
+import { AdminBaseQueryWithReAuth } from './adminBaseQuery';
 
 export const adminApi = createApi({
   reducerPath: 'adminApi',
-  baseQuery: baseQueryWithReAuthAdmin,
+  baseQuery: AdminBaseQueryWithReAuth,
   endpoints: (builder) => ({
     // Authorization
     loginAdmin: builder.mutation({
@@ -177,6 +177,8 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'User', id: 'LIST' }],
     }),
+
+    
   }),
 });
 

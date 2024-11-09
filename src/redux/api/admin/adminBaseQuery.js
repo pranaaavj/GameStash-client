@@ -1,7 +1,7 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { logoutAdmin, setTokenAdmin } from '../../slices/adminSlice';
 
-const baseQueryAdmin = fetchBaseQuery({
+const AdminBaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_SERVER_URL,
   credentials: 'include',
 
@@ -14,11 +14,11 @@ const baseQueryAdmin = fetchBaseQuery({
   },
 });
 
-export const baseQueryWithReAuthAdmin = async (args, api, extraOptions) => {
-  let response = await baseQueryAdmin(args, api, extraOptions);
+export const AdminBaseQueryWithReAuth = async (args, api, extraOptions) => {
+  let response = await AdminBaseQuery(args, api, extraOptions);
 
   if (response?.error?.status === 403 || response?.error?.status === 401) {
-    const refreshResponse = await baseQueryAdmin(
+    const refreshResponse = await AdminBaseQuery(
       '/auth/refresh-token',
       api,
       extraOptions
@@ -28,7 +28,7 @@ export const baseQueryWithReAuthAdmin = async (args, api, extraOptions) => {
       api.dispatch(
         setTokenAdmin({ token: refreshResponse?.data?.data?.accessToken })
       );
-      response = await baseQueryAdmin(args, api, extraOptions);
+      response = await AdminBaseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logoutAdmin());
     }

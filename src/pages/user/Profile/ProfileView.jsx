@@ -26,7 +26,6 @@ const emptyProfileInput = {
 
 export default function ProfileView() {
   const user = useUsers();
-
   const [isEditMode, setIsEditMode] = useState(false);
   const [profileData, setProfileData] = useState(emptyProfileInput);
   const [validationErrors, setValidationErrors] = useState({});
@@ -67,7 +66,6 @@ export default function ProfileView() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const validationErrors = validateProfile(profileData);
     setValidationErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
@@ -87,17 +85,14 @@ export default function ProfileView() {
   };
 
   return (
-    <Card className='bg-gradient-to-br from-primary-bg to-secondary-bg border-none shadow-lg text-primary-text p-6 md:p-8'>
-      <div className='h-56 bg-secondary-bg/50 relative'>
-        <div className='w-full h-full object-cover opacity-50'></div>
+    <Card className='bg-gradient-to-br from-primary-bg to-secondary-bg border-none shadow-lg text-primary-text p-4'>
+      <div className='relative h-32 bg-secondary-bg/50 rounded-md mb-4'>
         <Button
           variant='outline'
-          className='absolute bottom-4 right-4 bg-primary-bg/80 hover:bg-secondary-bg border-none'>
-          <Camera className='mr-2 h-5 w-5' /> Change Cover
+          className='absolute bottom-2 right-2 bg-primary-bg/80 hover:bg-secondary-bg border-none'>
+          <Camera className='mr-1 h-4 w-4' /> Change Cover
         </Button>
-      </div>
-      <div className='relative px-8 md:px-10'>
-        <Avatar className='h-36 w-36 md:h-40 md:w-40 absolute -top-20 ring-4 ring-primary-bg'>
+        <Avatar className='h-20 w-20 absolute -bottom-10 left-4 ring-4 ring-primary-bg'>
           <AvatarImage
             src={profileData?.profilePicture}
             alt='Profile picture'
@@ -107,11 +102,7 @@ export default function ProfileView() {
           </AvatarFallback>
         </Avatar>
       </div>
-
-      {/* Set a fixed min-height for CardContent to prevent layout shifts */}
-      <CardContent
-        className='pt-24 space-y-8'
-        style={{ minHeight: '300px' }}>
+      <CardContent className='pt-10'>
         <AnimatePresence mode='wait'>
           {isEditMode ? (
             <motion.div
@@ -120,10 +111,10 @@ export default function ProfileView() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.1 }}>
-              <h3 className='text-2xl font-semibold mb-4'>Edit Profile</h3>
+              <h3 className='text-xl font-semibold mb-2'>Edit Profile</h3>
               <form
                 onSubmit={handleSubmit}
-                className='space-y-6'>
+                className='space-y-4'>
                 <InputField
                   type='text'
                   label='Name'
@@ -143,7 +134,7 @@ export default function ProfileView() {
                   isInvalid={!!validationErrors.phoneNumber}
                   errorMessage={validationErrors.phoneNumber}
                 />
-                <CardFooter className='flex justify-end space-x-6 px-0'>
+                <CardFooter className='flex justify-end space-x-4 px-0'>
                   <Button
                     variant='outline'
                     type='button'
@@ -166,65 +157,42 @@ export default function ProfileView() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.1 }}
-              className='space-y-6'>
-              <div>
-                <h2 className='text-4xl font-bold'>{profileData?.name}</h2>
+              className='space-y-4'>
+              <div className='flex items-center justify-between'>
+                <h2 className='text-2xl font-bold'>{profileData?.name}</h2>
+                <Button
+                  size='sm'
+                  onClick={handleEditModeToggle}
+                  className='bg-accent-blue hover:bg-hover-blue text-white'>
+                  <Edit2 className='mr-1 h-4 w-4' /> Edit
+                </Button>
               </div>
-              <div className='space-y-6'>
-                <div className='flex items-center space-x-6'>
-                  <User className='text-secondary-text h-6 w-6' />
-                  <div className='flex-grow'>
-                    <p className='text-sm text-secondary-text'>Name</p>
-                    <p className='text-lg text-primary-text mt-1'>
-                      {profileData?.name}
-                    </p>
-                  </div>
+              <div className='grid grid-cols-2 gap-4'>
+                <div className='flex items-center space-x-3'>
+                  <Mail className='text-secondary-text h-5 w-5' />
+                  <p className='text-sm text-primary-text'>
+                    {responseUserDetails?.data?.email || 'Not provided'}
+                  </p>
                 </div>
-                <div className='flex items-center space-x-6'>
-                  <Mail className='text-secondary-text h-6 w-6' />
-                  <div className='flex-grow'>
-                    <p className='text-sm text-secondary-text'>Email</p>
-                    <p className='text-lg text-primary-text mt-1'>
-                      {responseUserDetails?.data?.email || ''}
-                    </p>
-                  </div>
+                <div className='flex items-center space-x-3'>
+                  <Phone className='text-secondary-text h-5 w-5' />
+                  <p className='text-sm text-primary-text'>
+                    {profileData?.phoneNumber || 'Not provided'}
+                  </p>
                 </div>
-                <div className='flex items-center space-x-6'>
-                  <Phone className='text-secondary-text h-6 w-6' />
-                  <div className='flex-grow'>
-                    <p className='text-sm text-secondary-text'>Phone Number</p>
-                    <p className='text-lg text-primary-text mt-1'>
-                      {profileData?.phoneNumber || 'Not provided'}
-                    </p>
-                  </div>
-                </div>
-                <div className='flex items-center space-x-6'>
-                  <div className='text-secondary-text h-6 w-6 flex items-center justify-center'>
-                    <div className='h-4 w-4 rounded-full bg-green-500'></div>
-                  </div>
-                  <div className='flex-grow'>
-                    <p className='text-sm text-secondary-text'>
-                      Account Status
-                    </p>
-                    <p className='text-lg text-primary-text mt-1'>
-                      {responseUserDetails?.data?.status || ''}
-                    </p>
-                  </div>
+                <div className='flex items-center space-x-3 col-span-1'>
+                  <User className='text-secondary-text h-5 w-5' />
+                  <p className='text-sm text-primary-text'>
+                    Account Status: {responseUserDetails?.data?.status || ''}
+                  </p>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </CardContent>
-      {!isEditMode && (
-        <CardFooter className='justify-end'>
-          <Button
-            onClick={handleEditModeToggle}
-            className='bg-accent-blue hover:bg-hover-blue text-white'>
-            <Edit2 className='mr-2 h-5 w-5' /> Edit Profile
-          </Button>
-        </CardFooter>
-      )}
+
+      {/* Error Handling */}
       {isUserDetailsError && (
         <Alert
           Icon={CircleX}
@@ -239,7 +207,7 @@ export default function ProfileView() {
           Icon={CircleX}
           variant='destructive'
           description={
-            editProfileError?.data?.message || 'Error editing profile profile'
+            editProfileError?.data?.message || 'Error editing profile'
           }
         />
       )}

@@ -35,10 +35,6 @@ export const userRoutes = [
         path: 'games',
         element: <GameBrowse />,
       },
-      {
-        path: 'test',
-        element: <GameBrowse />,
-      },
     ],
   },
   {

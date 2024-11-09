@@ -35,12 +35,13 @@ export const GameBrowse = () => {
   if (isGenreError) {
     console.log(genreError);
   }
-  console.log(responseGames);
+
   const navigate = useNavigate();
   const [filteredGames, setFilteredGames] = useState(
     responseGames?.data?.products
   );
   console.log(filteredGames);
+
   const handleApplyFilters = (filters) => {
     const newFilteredGames = responseGames?.data?.products.filter((game) => {
       const priceInRange =

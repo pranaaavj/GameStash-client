@@ -5,11 +5,11 @@ import {
   CardContent,
 } from '@/shadcn/components/ui/card';
 import {
-  useGetAllBrandsQuery,
-  useGetAllGenresQuery,
   useGetOneProductQuery,
   useEditProductMutation,
-} from '@/redux/api/admin/adminApi';
+} from '@/redux/api/admin/productsApi';
+import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
+import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';

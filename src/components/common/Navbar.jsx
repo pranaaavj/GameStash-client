@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import {
   Avatar,
   AvatarImage,
@@ -8,9 +9,10 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Menu, Search, ShoppingCart, User, X } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
+import { Button } from '@/shadcn/components/ui/button';
 
 //Todo: Complete the avatar icon, when the user logs in show avatar else show icon
-export const Navbar = () => {
+export const Navbar = ({ onCartClick }) => {
   const user = useUsers();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -59,12 +61,11 @@ export const Navbar = () => {
               className='text-primary-text hover:text-hover-red'>
               <Search className='h-6 w-6' />
             </button>
-            <Link
-              to='/cart'
-              aria-label='Shopping Cart'
-              className='text-primary-text hover:text-hover-red'>
-              <ShoppingCart className='h-6 w-6' />
-            </Link>
+            <Button
+              onClick={onCartClick}
+              className='text-primary-text hover:text-hover-red bg-secondary-bg ring-0 hover:bg-secondary-bg shadow-none'>
+              <ShoppingCart className='h-8 w-8' />
+            </Button>
             <Link
               to='/profile'
               aria-label='User Account'

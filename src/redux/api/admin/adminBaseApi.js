@@ -1,9 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { baseQueryWithReAuthAdmin } from '../baseQueryAdmin';
+import { AdminBaseQueryWithReAuth } from './adminBaseQuery';
 
 export const adminBaseApi = createApi({
-  reducerPath: 'api',
-  baseQuery: baseQueryWithReAuthAdmin,
+  reducerPath: 'adminApi',
+  baseQuery: AdminBaseQueryWithReAuth,
   tagTypes: ['Product', 'Brand', 'Genre', 'User', 'Address'],
   endpoints: () => ({}),
 });

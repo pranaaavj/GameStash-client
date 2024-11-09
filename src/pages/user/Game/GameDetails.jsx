@@ -35,7 +35,7 @@ export function GameDetails() {
     isSuccess: isProductsSuccess,
   } = useGetProductQuery(productId);
 
-  const { data: responseRelated, isProductsSuccess: isRelatedProductSuccess } =
+  const { data: responseRelated, isSuccess: isRelatedProductSuccess } =
     useGetProductsByGenreQuery(
       {
         page: pageState.relatedGames,
@@ -53,9 +53,11 @@ export function GameDetails() {
 
   const filteredRelatedProducts =
     isRelatedProductSuccess &&
-    responseRelated?.data?.products?.map(
+    responseRelated?.data?.products?.filter(
       (product) => product._id !== productId
     );
+
+  console.log(filteredRelatedProducts);
 
   if (isReviewError) {
     console.log(reviewError);
@@ -219,7 +221,7 @@ export function GameDetails() {
           </div>
 
           <div className='mt-12 space-y-8'>
-            {isRelatedProductSuccess ? (
+            {filteredRelatedProducts?.length ? (
               <GameListing
                 title='Related Games'
                 games={filteredRelatedProducts}
@@ -229,9 +231,9 @@ export function GameDetails() {
                   setPageState((prev) => ({ ...prev, latestGames: page }))
                 }
               />
-            ) : !filteredRelatedProducts?.length ? (
+            ) : (
               <RelatedGamesFallback />
-            ) : null}
+            )}
           </div>
         </div>
       </div>
