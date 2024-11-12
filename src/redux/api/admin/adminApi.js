@@ -177,8 +177,6 @@ export const adminApi = createApi({
       }),
       invalidatesTags: [{ type: 'User', id: 'LIST' }],
     }),
-
-    
   }),
 });
 

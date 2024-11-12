@@ -2,6 +2,7 @@ import { NotFound } from '@/components/error';
 import { UserLayout } from '@/components/user';
 import { AuthorizedRoute } from './ProtectedRoutes';
 import { GameDetails, GameBrowse, UserProfile, Home } from '@/pages/user';
+import { CheckoutPage } from '@/pages/user/Checkout/Checkout';
 
 export const userRoutes = [
   {
@@ -13,12 +14,16 @@ export const userRoutes = [
         element: <Home />,
       },
       {
-        path: 'profile',
+        path: '',
         element: <AuthorizedRoute />,
         children: [
           {
-            index: true,
+            path: 'profile',
             element: <UserProfile />,
+          },
+          {
+            path: 'checkout',
+            element: <CheckoutPage />,
           },
         ],
       },

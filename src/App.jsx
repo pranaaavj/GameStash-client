@@ -15,7 +15,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <ChakraProvider>
-        <Toaster position='top-left' />
+        <Toaster position='top-center' />
         <RouterProvider router={router} />
       </ChakraProvider>
     </Provider>

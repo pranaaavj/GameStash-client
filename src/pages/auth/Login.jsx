@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 import { validateLogin } from '@/utils';
 import { signInWithPopup, auth, provider } from '../../utils/firebase';
 import { Alert, InputField } from '../../components/common';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
 import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
@@ -34,6 +34,7 @@ const initLoginInput = { email: '', password: '' };
 export const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const [showPass, toggleShowPass] = useState(false);
   const [loginInput, setLoginInput] = useState(initLoginInput);
@@ -83,7 +84,9 @@ export const Login = () => {
         dispatch(setUser({ user: response?.data?.user }));
         dispatch(setToken({ token: response?.data?.accessToken }));
 
-        navigate('/');
+        const redirect = location.state?.from || '/';
+        console.log(redirect);
+        navigate(redirect);
       }
     } catch (error) {
       console.log(error);

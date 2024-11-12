@@ -10,23 +10,39 @@ import {
   useGetProductQuery,
   useGetReviewByProductQuery,
   useGetProductsByGenreQuery,
+  useGetCartQuery,
 } from '@/redux/api/user/userApi';
 import { Button } from '@/shadcn/components/ui/button';
 import { Reviews } from '../Reviews';
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ImageZoomPreview } from '@/components/user/ImageZoom';
 import { RelatedGamesFallback } from '@/components/error/RelatedFallback';
 import { ShoppingCart, Heart, Minus, Plus } from 'lucide-react';
 import { GameListing, StarRating, SystemRequirements } from '..';
+import { useAddItemToCartMutation } from '@/redux/api/user/userApi';
+import { toast } from 'sonner';
+import { useUsers } from '@/hooks';
+import { requireLogin } from '@/utils';
 
 export function GameDetails() {
+  const user = useUsers();
   const { productId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { data: cartData } = useGetCartQuery(user?.userInfo?.id, {
+    skip: !user?.userInfo?.id,
+  });
 
   const [quantity, setQuantity] = useState(1);
   const [pageState, setPageState] = useState({
     relatedGames: 1,
   });
+
+  useEffect(() => {
+    setQuantity(1);
+  }, [productId]);
 
   const {
     data: responseProducts,
@@ -51,13 +67,36 @@ export function GameDetails() {
     productsError: reviewError,
   } = useGetReviewByProductQuery(productId);
 
+  const [addItemToCart, { isError: isAddCartError, error: addCartError }] =
+    useAddItemToCartMutation();
+
   const filteredRelatedProducts =
     isRelatedProductSuccess &&
     responseRelated?.data?.products?.filter(
       (product) => product._id !== productId
     );
 
-  console.log(filteredRelatedProducts);
+  const handleAddToCart = async () => {
+    if (!requireLogin(user, navigate, location)) return;
+
+    const item = cartData?.data?.items.find(
+      (item) => item.product._id === productId
+    );
+
+    if (item?.quantity + quantity > 5) {
+      toast.error('Maximum quantity added.');
+      return;
+    }
+
+    try {
+      const response = await addItemToCart({ productId, quantity }).unwrap();
+      if (response.success) {
+        toast.success('Added to cart successfully !');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (isReviewError) {
     console.log(reviewError);
@@ -65,6 +104,10 @@ export function GameDetails() {
 
   if (isProductsError) {
     console.log(productsError);
+  }
+
+  if (isAddCartError) {
+    console.log(addCartError);
   }
 
   return (
@@ -130,19 +173,34 @@ export function GameDetails() {
                     variant='outline'
                     size='icon'
                     className='bg-[#2A2A2A] hover:bg-[#353535] text-white border-none'
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}>
                     <Minus className='h-4 w-4' />
                   </Button>
-                  <span className='mx-4 text-lg'>{quantity}</span>
+                  {/* Fixed width for quantity display */}
+                  <span className='mx-4 text-lg w-[2ch] text-center'>
+                    {quantity}
+                  </span>
                   <Button
                     variant='outline'
                     className='bg-[#2A2A2A] hover:bg-[#353535] text-white border-none'
                     size='icon'
-                    onClick={() => setQuantity(quantity + 1)}>
+                    onClick={() => setQuantity(quantity + 1)}
+                    disabled={
+                      quantity >= responseProducts?.data?.stock || quantity >= 5
+                    }>
                     <Plus className='h-4 w-4 ' />
                   </Button>
                 </div>
               </div>
+              {/* Additional space for message to avoid layout shift */}
+              <span className='text-red-500 text-sm mt-2 min-h-[1.5rem] block'>
+                {quantity >= responseProducts?.data?.stock
+                  ? `Only ${responseProducts?.data?.stock} items are available in stock.`
+                  : quantity >= 5
+                  ? 'You can only order up to 5 items at a time.'
+                  : ''}
+              </span>
 
               <div className='space-y-3'>
                 <Button
@@ -156,7 +214,8 @@ export function GameDetails() {
                 <Button
                   variant='secondary'
                   className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white'
-                  disabled={responseProducts?.data?.stock < 1}>
+                  disabled={responseProducts?.data?.stock < 1}
+                  onClick={handleAddToCart}>
                   <ShoppingCart className='w-4 h-4 mr-2' />
                   {responseProducts?.data?.stock > 1
                     ? 'Add To Cart'

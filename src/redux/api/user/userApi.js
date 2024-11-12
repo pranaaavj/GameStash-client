@@ -113,20 +113,20 @@ export const userApi = createApi({
 
     // Add an item to the cart
     addItemToCart: builder.mutation({
-      query: (item) => ({
+      query: ({ productId, quantity }) => ({
         url: '/user/cart',
         method: 'POST',
-        body: item,
+        body: { productId, quantity },
       }),
       invalidatesTags: ['Cart'],
     }),
 
     // Update the quantity of a specific item
     updateCartItem: builder.mutation({
-      query: (item) => ({
+      query: ({ productId, quantity }) => ({
         url: '/user/cart',
         method: 'PATCH',
-        body: item,
+        body: { productId, quantity },
       }),
       invalidatesTags: ['Cart'],
     }),

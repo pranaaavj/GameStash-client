@@ -16,14 +16,15 @@ import {
 import { Button } from '@/shadcn/components/ui/button';
 import { X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { useUsers } from '@/hooks';
+import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
+import { toast } from 'sonner';
 
 export default function Cart({ isOpen, onClose }) {
   const user = useUsers();
-  const {
-    data: cartData,
-    isLoading,
-    isError,
-  } = useGetCartQuery(user?.userInfo?.id, { skip: !user?.userInfo?.id });
+  const { data: cartData, isError } = useGetCartQuery(user?.userInfo?.id, {
+    skip: !user?.userInfo?.id,
+  });
+
   const [updateCartItem] = useUpdateCartItemMutation();
   const [removeItemFromCart] = useRemoveItemFromCartMutation();
 
@@ -37,35 +38,50 @@ export default function Cart({ isOpen, onClose }) {
     }
   }, [cartData]);
 
-  console.log(cartData);
+  const debouncedUpdateQuantity = useDebouncedCallback(
+    async (productId, quantity) => {
+      try {
+        const response = await updateCartItem({ productId, quantity }).unwrap();
 
-  const handleUpdateQuantity = async (productId, quantity) => {
-    if (quantity < 1) return;
-    try {
-      const updatedCart = await updateCartItem({
-        productId,
-        quantity,
-      }).unwrap();
-      setCartItems(updatedCart.data.items);
-      setTotal(updatedCart.data.total);
-    } catch (error) {
-      console.error('Failed to update cart item:', error);
+        if (response?.success) {
+          setCartItems(response.data.items);
+          setTotal(response.data.total);
+        }
+      } catch (error) {
+        console.error('Failed to update cart item:', error);
+      }
+    },
+    700
+  );
+
+  const handleUpdateQuantity = (productId, quantity) => {
+    if (quantity >= 5) {
+      toast.error('Maximum quantity reached.');
     }
+
+    if (quantity < 1) return;
+
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.product._id === productId ? { ...item, quantity } : item
+      )
+    );
+
+    debouncedUpdateQuantity(productId, quantity);
   };
 
   const handleRemoveItem = async (productId) => {
     try {
-      const updatedCart = await removeItemFromCart(productId).unwrap();
-      setCartItems(updatedCart.data.items);
-      setTotal(updatedCart.data.total);
+      const response = await removeItemFromCart(productId).unwrap();
+      console.log(response);
+      if (response?.success) {
+        setCartItems(response.data.items);
+        setTotal(response.data.total);
+      }
     } catch (error) {
       console.error('Failed to remove item from cart:', error);
     }
   };
-
-  if (isLoading) {
-    console.log('loading.. cart..');
-  }
 
   if (isError) {
     console.log();
@@ -75,10 +91,20 @@ export default function Cart({ isOpen, onClose }) {
     <Sheet
       open={isOpen}
       onOpenChange={onClose}
-      aria-describedby={'Cart'}
+      aria-describedby='dialog-description'
+      aria-labelledby='cart-title'
       className='text-primary-text'>
-      <SheetContent className='w-full sm:max-w-lg bg-secondary-bg border-l border-none'>
-        <SheetHeader className='space-y-2.5 pb-6 border-none  '>
+      <SheetContent
+        className='w-full sm:max-w-lg bg-secondary-bg border-l border-none'
+        aria-describedby='dialog-description'
+        aria-labelledby='cart-title'>
+        <p
+          id='dialog-description'
+          className='sr-only'>
+          Review and manage items in your cart. You can update quantities,
+          remove items, and proceed to checkout.
+        </p>
+        <SheetHeader className='space-y-2.5 pb-6 border-none text-primary-text'>
           <div className='flex items-center justify-between'>
             <SheetTitle className='text-2xl font-bold text-primary-text'>
               My Cart
@@ -86,8 +112,8 @@ export default function Cart({ isOpen, onClose }) {
           </div>
         </SheetHeader>
 
-        <ScrollArea className='flex-1 -mx-6 px-6'>
-          {cartItems.length > 0 ? (
+        <ScrollArea className='flex-1 -mx-6 px-6 text-primary-text'>
+          {cartItems?.length > 0 ? (
             <div className='space-y-6'>
               {cartItems.map((item) => (
                 <div
@@ -95,22 +121,22 @@ export default function Cart({ isOpen, onClose }) {
                   className='flex gap-4'>
                   <div className='h-24 w-24 rounded-lg bg-primary-bg/50 p-2'>
                     <img
-                      src={item.product.images[0] || '/placeholder.svg'}
-                      alt={item.product.name}
+                      src={item.product?.images?.[0] || '/placeholder.svg'}
+                      alt={item.product?.name}
                       className='h-full w-full object-cover rounded-md'
                     />
                   </div>
                   <div className='flex flex-1 flex-col justify-between'>
                     <div>
                       <h3 className='font-medium text-primary-text'>
-                        {item.product.name}
+                        {item.product?.name}
                       </h3>
                       <p className='text-sm text-secondary-text'>
-                        {item.product.platform}
+                        {item.product?.platform}
                       </p>
                     </div>
                     <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-2'>
+                      <div className='flex items-center gap-2 pt-4'>
                         <Button
                           variant='outline'
                           size='icon'
@@ -120,7 +146,8 @@ export default function Cart({ isOpen, onClose }) {
                               item.product._id,
                               item.quantity - 1
                             )
-                          }>
+                          }
+                          disabled={item.quantity <= 1}>
                           <Minus className='h-4 w-4' />
                         </Button>
                         <span className='w-8 text-center'>{item.quantity}</span>
@@ -133,14 +160,18 @@ export default function Cart({ isOpen, onClose }) {
                               item.product._id,
                               item.quantity + 1
                             )
-                          }>
+                          }
+                          disabled={item.quantity >= 5}>
                           <Plus className='h-4 w-4' />
                         </Button>
                       </div>
                       <p className='font-medium text-primary-text'>
-                        ${(item.product.price * item.quantity).toFixed(2)} USD
+                        ${(item.product.price * item.quantity).toFixed(2)} INR
                       </p>
                     </div>
+                    {/* <span className='text-red-500 text-sm mt-2 min-h-[1.5rem] block'>
+                      {item.quantity >= 5 ? 'Maximum order limit reached.' : ''}
+                    </span> */}
                   </div>
                   <Button
                     variant='ghost'
@@ -160,14 +191,10 @@ export default function Cart({ isOpen, onClose }) {
           )}
         </ScrollArea>
 
-        {cartItems.length > 0 && (
+        {cartItems?.length > 0 && (
           <div className='space-y-4 pt-6'>
             <Separator className='bg-primary-bg/20' />
             <div className='space-y-1.5'>
-              <div className='flex items-center justify-between text-sm'>
-                <span className='text-secondary-text'>Taxes</span>
-                <span className='text-primary-text'>$0.00 USD</span>
-              </div>
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-secondary-text'>Shipping</span>
                 <span className='text-secondary-text'>
@@ -179,7 +206,7 @@ export default function Cart({ isOpen, onClose }) {
                   Total
                 </span>
                 <span className='text-lg font-bold text-primary-text'>
-                  ${total.toFixed(2)} USD
+                  ${total.toFixed(2)} INR
                 </span>
               </div>
             </div>
