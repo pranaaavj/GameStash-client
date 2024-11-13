@@ -22,9 +22,12 @@ import { motion } from 'framer-motion';
 
 export default function Cart({ isOpen, onClose }) {
   const user = useUsers();
-  const { data: cartData, isError } = useGetCartQuery(user?.userInfo?.id, {
-    skip: !user?.userInfo?.id,
-  });
+  const { data: responseCart, isError: isCartError } = useGetCartQuery(
+    user?.userInfo?.id,
+    {
+      skip: !user?.userInfo?.id,
+    }
+  );
 
   const [updateCartItem] = useUpdateCartItemMutation();
   const [removeItemFromCart] = useRemoveItemFromCartMutation();
@@ -33,11 +36,11 @@ export default function Cart({ isOpen, onClose }) {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    if (cartData) {
-      setCartItems(cartData.data.items);
-      setTotal(cartData.data.total);
+    if (responseCart) {
+      setCartItems(responseCart.data.items);
+      setTotal(responseCart.data.total);
     }
-  }, [cartData]);
+  }, [responseCart]);
 
   const debouncedUpdateQuantity = useDebouncedCallback(
     async (productId, quantity) => {
@@ -84,7 +87,7 @@ export default function Cart({ isOpen, onClose }) {
     }
   };
 
-  if (isError) {
+  if (isCartError) {
     console.log();
   }
 
@@ -171,7 +174,7 @@ export default function Cart({ isOpen, onClose }) {
                             </Button>
                           </div>
                           <p className='font-medium text-primary-text'>
-                            ${(item.product.price * item.quantity).toFixed(2)}{' '}
+                            ₹{(item.product.price * item.quantity).toFixed(2)}{' '}
                             INR
                           </p>
                         </div>

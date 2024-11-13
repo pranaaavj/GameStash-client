@@ -1,30 +1,20 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
-import { Button } from '@/shadcn/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/shadcn/components/ui/radio-group';
-import { Checkbox } from '@/shadcn/components/ui/checkbox';
 import { Label } from '@/shadcn/components/ui/label';
 import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
-import { Package, Truck, Clock, AlertCircle } from 'lucide-react';
+import { Truck, Package, AlertCircle } from 'lucide-react';
 
-export default function ReviewOrder({ onComplete }) {
+export default function ReviewOrder({ onDeliverySelect, cartItems }) {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
-  const [subscribeAndSave, setSubscribeAndSave] = useState(false);
 
   const handleDeliverySelection = (value) => {
+    const selectedOption = deliveryOptions.find(
+      (option) => option.id === value
+    );
     setSelectedDelivery(value);
-    onComplete(true);
+    onDeliverySelect(selectedOption); // Pass selected delivery option to parent
   };
-
-  const cartItems = [
-    {
-      id: 1,
-      name: 'Gaming Headset Pro X',
-      price: 129.99,
-      image: '/placeholder.svg',
-      quantity: 1,
-    },
-  ];
 
   const deliveryOptions = [
     {
@@ -80,7 +70,7 @@ export default function ReviewOrder({ onComplete }) {
                   </p>
                 </div>
                 <span className='text-accent-red font-semibold ml-4'>
-                  {option.price === 0 ? 'FREE' : `$${option.price.toFixed(2)}`}
+                  {option.price === 0 ? 'FREE' : `₹${option.price.toFixed(2)}`}
                 </span>
               </Label>
             </div>
@@ -94,79 +84,38 @@ export default function ReviewOrder({ onComplete }) {
           <Package className='w-5 h-5 text-accent-red' />
           <h3 className='font-medium'>Review your items</h3>
         </div>
-        {cartItems.map((item) => (
-          <div
-            key={item.id}
-            className='flex items-center space-x-4 bg-secondary-bg/50 p-4 rounded-lg'>
-            <img
-              src={item.image}
-              alt={item.name}
-              className='w-16 h-16 object-cover rounded-md'
-            />
-            <div className='flex-1'>
-              <h4 className='font-medium'>{item.name}</h4>
-              <p className='text-sm text-secondary-text'>
-                Quantity: {item.quantity}
-              </p>
-              <p className='font-semibold'>${item.price.toFixed(2)}</p>
+        {cartItems &&
+          cartItems.map((item) => (
+            <div
+              key={item?.product?._id}
+              className='flex items-center space-x-4 bg-secondary-bg/50 p-4 rounded-lg'>
+              <img
+                src={item?.product?.images?.[0]}
+                alt={item?.product?.name}
+                className='w-16 h-16 object-cover rounded-md'
+              />
+              <div className='flex-1'>
+                <h4 className='font-medium'>{item?.product?.name}</h4>
+                <p className='text-sm text-secondary-text'>
+                  Quantity: {item?.quantity}
+                </p>
+                <p className='font-semibold'>
+                  ₹{item?.product?.price.toFixed(2)}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Subscribe & Save */}
-      <div className='bg-secondary-bg/50 p-4 rounded-lg space-y-4'>
-        <div className='flex items-center space-x-2'>
-          <Clock className='w-5 h-5 text-accent-red' />
-          <h3 className='font-medium'>Subscribe & Save</h3>
-        </div>
-        <div className='flex items-center space-x-2'>
-          <Checkbox
-            id='subscribe'
-            checked={subscribeAndSave}
-            onCheckedChange={setSubscribeAndSave}
-          />
-          <div className='grid gap-1.5 leading-none'>
-            <Label
-              htmlFor='subscribe'
-              className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
-              Auto-deliver every:
-            </Label>
-            <p className='text-sm text-secondary-text'>
-              2 months (most common)
-            </p>
-          </div>
-        </div>
-        {subscribeAndSave && (
-          <Alert className='bg-accent-red/10 border-accent-red/20'>
-            <AlertCircle className='h-4 w-4 text-accent-red' />
-            <AlertDescription className='text-sm text-accent-red'>
-              Save 5% now and up to 10% on future auto-deliveries.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-
-      {/* Delivery Instructions */}
-      <div className='bg-secondary-bg/50 p-4 rounded-lg space-y-2'>
-        <h3 className='font-medium'>Delivery Instructions</h3>
-        <p className='text-sm text-secondary-text'>
-          Add any special instructions for your delivery.
-        </p>
-        <Button
-          variant='outline'
-          className='w-full justify-start text-accent-red'>
-          Add delivery instructions
-        </Button>
+          ))}
       </div>
 
       {/* Order Policies */}
-      <Alert className='bg-secondary-bg/50 border-accent-red/20'>
-        <AlertCircle className='h-4 w-4 text-accent-red' />
-        <AlertDescription className='text-sm text-secondary-text'>
-          By placing your order, you agree to our privacy notice and conditions
-          of use.
-        </AlertDescription>
+      <Alert className='bg-secondary-bg/50 border-accent-red/20 flex items-center'>
+        <div className='flex items-center space-x-2'>
+          <AlertCircle className='h-5 w-5 text-accent-red' />
+          <AlertDescription className='text-sm text-secondary-text'>
+            By placing your order, you agree to our privacy notice and
+            conditions of use.
+          </AlertDescription>
+        </div>
       </Alert>
     </div>
   );

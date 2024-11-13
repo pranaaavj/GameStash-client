@@ -25,6 +25,7 @@ export default function PaymentSection({ onPaymentSelect }) {
       isDefault: false,
     },
   ]);
+
   const [showNewCard, setShowNewCard] = useState(false);
   const [newCardDetails, setNewCardDetails] = useState({
     number: '',
@@ -33,11 +34,11 @@ export default function PaymentSection({ onPaymentSelect }) {
     cvv: '',
     saveCard: true,
   });
-  console.log(setSavedCards);
 
   const handlePaymentSelection = (value) => {
     setSelectedMethod(value);
     onPaymentSelect(value);
+    setSavedCards;
   };
 
   const handleNewCardSubmit = (e) => {

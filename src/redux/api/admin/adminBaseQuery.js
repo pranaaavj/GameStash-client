@@ -19,7 +19,7 @@ export const AdminBaseQueryWithReAuth = async (args, api, extraOptions) => {
 
   if (response?.error?.status === 403 || response?.error?.status === 401) {
     const refreshResponse = await AdminBaseQuery(
-      '/auth/refresh-token',
+      '/admin/refresh-token',
       api,
       extraOptions
     );

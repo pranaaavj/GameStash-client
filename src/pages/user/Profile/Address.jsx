@@ -26,6 +26,7 @@ const initialAddressState = {
   state: '',
   zip: '',
   country: '',
+  isDefault: false,
 };
 
 export function Address({ onAddressSelect }) {
@@ -35,7 +36,6 @@ export function Address({ onAddressSelect }) {
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [validation, setValidation] = useState(initialAddressState);
   const [selectedAddress, setSelectedAddress] = useState(null);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // API Hooks
@@ -48,16 +48,7 @@ export function Address({ onAddressSelect }) {
   useEffect(() => {
     if (responseAddresses) {
       setAddresses(responseAddresses.data);
-
-      const defaultAddress = responseAddresses.data.find(
-        (addr) => addr.isDefault
-      );
-      if (defaultAddress) {
-        setSelectedAddress(defaultAddress);
-        onAddressSelect && onAddressSelect(defaultAddress);
-      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseAddresses]);
 
   const handleAddressClick = (address) => {
@@ -67,8 +58,11 @@ export function Address({ onAddressSelect }) {
 
   // Handle input changes for the form
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setAddressForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setAddressForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
     setValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -82,11 +76,9 @@ export function Address({ onAddressSelect }) {
 
     try {
       const response = await addAddress(addressForm).unwrap();
-
       if (response.success) {
         toast.success('Address added successfully!');
       }
-
       setAddressForm(initialAddressState);
       setIsAddingNew(false);
     } catch (error) {
@@ -115,7 +107,6 @@ export function Address({ onAddressSelect }) {
         );
         toast.success('Address updated successfully!');
       }
-
       setAddressForm(initialAddressState);
       setEditingId(null);
     } catch (error) {
@@ -128,7 +119,6 @@ export function Address({ onAddressSelect }) {
   const handleDeleteAddress = async (id) => {
     try {
       const response = await deleteAddress(id).unwrap();
-
       if (response.success) {
         toast.success('Address deleted successfully!');
         setAddresses((prev) => prev.filter((addr) => addr.id !== id));
@@ -159,7 +149,6 @@ export function Address({ onAddressSelect }) {
         {addresses.map((address) => (
           <Card
             key={address.id}
-            onClick={() => handleAddressClick(address)}
             className={`bg-primary-bg/50 border ${
               address.id === selectedAddress?.id
                 ? 'border-accent-red'
@@ -190,6 +179,17 @@ export function Address({ onAddressSelect }) {
                     isInvalid={!!validation.addressLine}
                     errorMessage={validation.addressLine}
                   />
+                  {/* Default Address Checkbox */}
+                  <label className='flex items-center'>
+                    <input
+                      type='checkbox'
+                      name='isDefault'
+                      checked={addressForm.isDefault}
+                      onChange={handleChange}
+                      className='mr-2'
+                    />
+                    Set as default address
+                  </label>
 
                   <div className='grid grid-cols-2 gap-2'>
                     <InputField
@@ -251,7 +251,6 @@ export function Address({ onAddressSelect }) {
                       <h3 className='font-bold text-lg text-accent-blue'>
                         {address.addressName || 'Unnamed Location'}
                       </h3>
-
                       <p className='text-sm text-secondary-text'>
                         {address.addressLine}
                       </p>
@@ -267,7 +266,6 @@ export function Address({ onAddressSelect }) {
                         {address.country}
                       </p>
                     </div>
-
                     <div className='flex space-x-2'>
                       <Button
                         size='icon'
@@ -285,7 +283,6 @@ export function Address({ onAddressSelect }) {
                         <Trash2 className='w-4 h-4' />
                         <span className='sr-only'>Delete</span>
                       </Button>
-
                       <ConfirmationModal
                         isOpen={isModalOpen}
                         onClose={() => {
@@ -302,10 +299,19 @@ export function Address({ onAddressSelect }) {
                     </div>
                   </div>
                   <div>
-                    {address.isDefault && (
+                    {address.isDefault && !onAddressSelect && (
                       <span className='text-xs bg-accent-red/10 text-accent-red px-2 py-1 rounded'>
                         Default
                       </span>
+                    )}
+                    {onAddressSelect && (
+                      <Button
+                        className='text-xs bg-accent-red/10 text-accent-red px-2 py-1 rounded'
+                        onClick={() => handleAddressClick(address)}>
+                        {address.id === selectedAddress?.id
+                          ? 'Selected'
+                          : 'Select'}
+                      </Button>
                     )}
                   </div>
                 </>
@@ -402,6 +408,17 @@ export function Address({ onAddressSelect }) {
                 errorMessage={validation.country}
               />
             </div>
+            {/* Default Address Checkbox */}
+            <label className='flex items-center'>
+              <input
+                type='checkbox'
+                name='isDefault'
+                checked={addressForm.isDefault}
+                onChange={handleChange}
+                className='mr-2'
+              />
+              Set as default address
+            </label>
             <div className='flex justify-end'>
               <Button
                 type='submit'

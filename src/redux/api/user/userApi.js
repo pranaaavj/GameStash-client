@@ -50,15 +50,12 @@ export const userApi = createApi({
         body: passData,
       }),
     }),
-
+    // Get all addresses of user
     getAllAddresses: builder.query({
       query: () => ({
         url: '/user/address',
       }),
-      providesTags: (result) =>
-        result
-          ? [{ type: 'Address', id: 'LIST' }]
-          : [{ type: 'Address', id: 'LIST' }],
+      providesTags: ['Address'],
     }),
 
     // Get a specific address by ID
@@ -66,9 +63,7 @@ export const userApi = createApi({
       query: (addressId) => ({
         url: `/user/address/${addressId}`,
       }),
-      providesTags: (result, error, addressId) => [
-        { type: 'Address', id: addressId },
-      ],
+      providesTags: ['Address'],
     }),
 
     // Add a new address
@@ -78,7 +73,7 @@ export const userApi = createApi({
         method: 'POST',
         body: newAddress,
       }),
-      invalidatesTags: [{ type: 'Address', id: 'LIST' }],
+      invalidatesTags: ['Address'],
     }),
 
     // Update an address by ID
@@ -88,9 +83,7 @@ export const userApi = createApi({
         method: 'PATCH',
         body: updatedAddress,
       }),
-      invalidatesTags: (result, error, { addressId }) => [
-        { type: 'Address', id: addressId },
-      ],
+      invalidatesTags: ['Address'],
     }),
 
     // Delete an address by ID
@@ -99,12 +92,8 @@ export const userApi = createApi({
         url: `/user/address/${addressId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, addressId) => [
-        { type: 'Address', id: addressId },
-        { type: 'Address', id: 'LIST' },
-      ],
+      invalidatesTags: ['Address'],
     }),
-
     // Get the cart for a specific user
     getCart: builder.query({
       query: () => '/user/cart',

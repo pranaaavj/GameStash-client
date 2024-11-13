@@ -115,13 +115,13 @@ export const Navbar = ({ onCartClick }) => {
                       My Account
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className='text-primary-text hover:text-accent-red hover:bg-primary-bg/10'>
-                      <Link
-                        to='/profile'
-                        className='w-full'>
+                    <Link
+                      to='/profile'
+                      className='w-full'>
+                      <DropdownMenuItem className='text-primary-text hover:text-accent-red hover:bg-primary-bg/10'>
                         Profile
-                      </Link>
-                    </DropdownMenuItem>
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem
                       onClick={handleLogout}
                       className='text-primary-text hover:text-accent-red hover:bg-primary-bg/10'>
