@@ -103,8 +103,8 @@ export const Navbar = ({ onCartClick }) => {
                           <User className='h-4 w-4' />
                         </AvatarFallback>
                       </Avatar>
-                      <span className='text-primary-text text-sm font-medium max-w-[100px] truncate'>
-                        {user.userInfo.name}
+                      <span className='text-primary-text text-sm font-medium max-w-[60px] truncate'>
+                        {user.userInfo.name.split(' ')[0]}
                       </span>
                     </div>
                   </DropdownMenuTrigger>

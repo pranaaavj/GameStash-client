@@ -1,27 +1,19 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/shadcn/components/ui/button';
+import { Input } from '@/shadcn/components/ui/input';
+import { Label } from '@/shadcn/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/shadcn/components/ui/radio-group';
+import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
 import {
   CreditCard,
   Wallet,
-  Building2,
   Smartphone,
   AlertCircle,
   Plus,
 } from 'lucide-react';
 
-export default function PaymentSection({ onComplete }) {
+export default function PaymentSection({ onPaymentSelect }) {
   const [selectedMethod, setSelectedMethod] = useState('');
   const [savedCards, setSavedCards] = useState([
     { id: 1, last4: '4242', type: 'visa', name: 'John Doe', isDefault: true },
@@ -33,7 +25,6 @@ export default function PaymentSection({ onComplete }) {
       isDefault: false,
     },
   ]);
-  console.log(setSavedCards);
   const [showNewCard, setShowNewCard] = useState(false);
   const [newCardDetails, setNewCardDetails] = useState({
     number: '',
@@ -42,29 +33,19 @@ export default function PaymentSection({ onComplete }) {
     cvv: '',
     saveCard: true,
   });
+  console.log(setSavedCards);
 
   const handlePaymentSelection = (value) => {
     setSelectedMethod(value);
-    // Only mark as complete if a valid payment method is selected
-    if (value && (value === 'cod' || value.startsWith('saved_'))) {
-      onComplete(true);
-    }
+    onPaymentSelect(value);
   };
 
   const handleNewCardSubmit = (e) => {
     e.preventDefault();
-    // Add validation and card processing logic here
     console.log('New card details:', newCardDetails);
     setShowNewCard(false);
-    onComplete(true);
+    onPaymentSelect('new_card');
   };
-
-  const banks = [
-    { id: 'hdfc', name: 'HDFC Bank' },
-    { id: 'sbi', name: 'State Bank of India' },
-    { id: 'icici', name: 'ICICI Bank' },
-    { id: 'axis', name: 'Axis Bank' },
-  ];
 
   return (
     <div className='space-y-6'>
@@ -109,7 +90,7 @@ export default function PaymentSection({ onComplete }) {
                 </div>
               </div>
               {card.isDefault && (
-                <span className='text-xs bg-accent-red/10 text-accent-red px-2 py-1 rounded'>
+                <span className='absolute bottom-2 right-2 text-xs bg-accent-red/10 text-accent-red px-2 py-1 rounded'>
                   Default
                 </span>
               )}
@@ -121,7 +102,7 @@ export default function PaymentSection({ onComplete }) {
         {!showNewCard ? (
           <Button
             variant='outline'
-            className='w-full justify-start space-x-2'
+            className='w-full justify-start space-x-2 bg-primary-bg/65 border-none'
             onClick={() => setShowNewCard(true)}>
             <Plus className='w-4 h-4' />
             <span>Add New Card</span>
@@ -206,48 +187,15 @@ export default function PaymentSection({ onComplete }) {
           </form>
         )}
 
-        {/* Net Banking */}
-        <div className='relative'>
-          <RadioGroupItem
-            value='netbanking'
-            id='netbanking'
-            className='peer sr-only'
-          />
-          <Label
-            htmlFor='netbanking'
-            className='flex items-center justify-between p-4 bg-secondary-bg/50 rounded-lg cursor-pointer border border-transparent peer-data-[state=checked]:border-accent-red'>
-            <div className='flex items-center space-x-3'>
-              <Building2 className='w-5 h-5' />
-              <div>
-                <p className='font-medium'>Net Banking</p>
-                <Select>
-                  <SelectTrigger className='w-[180px] bg-transparent border-none shadow-none focus:ring-0'>
-                    <SelectValue placeholder='Choose Bank' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {banks.map((bank) => (
-                      <SelectItem
-                        key={bank.id}
-                        value={bank.id}>
-                        {bank.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </Label>
-        </div>
-
         {/* UPI */}
         <div className='relative'>
           <RadioGroupItem
-            value='upi'
-            id='upi'
+            value='UPI'
+            id='UPI'
             className='peer sr-only'
           />
           <Label
-            htmlFor='upi'
+            htmlFor='UPI'
             className='flex items-center justify-between p-4 bg-secondary-bg/50 rounded-lg cursor-pointer border border-transparent peer-data-[state=checked]:border-accent-red'>
             <div className='flex items-center space-x-3'>
               <Smartphone className='w-5 h-5' />
@@ -264,12 +212,12 @@ export default function PaymentSection({ onComplete }) {
         {/* Cash on Delivery */}
         <div className='relative'>
           <RadioGroupItem
-            value='cod'
-            id='cod'
+            value='COD'
+            id='COD'
             className='peer sr-only'
           />
           <Label
-            htmlFor='cod'
+            htmlFor='COD'
             className='flex items-center justify-between p-4 bg-secondary-bg/50 rounded-lg cursor-pointer border border-transparent peer-data-[state=checked]:border-accent-red'>
             <div className='flex items-center space-x-3'>
               <Wallet className='w-5 h-5' />

@@ -154,6 +154,8 @@ export const ProductList = () => {
         title='Confirm Action'
         description='Are you sure you want to proceed with this action?'
       />
+
+      {/* Error message */}
       {isProductListError && (
         <Alert
           Icon={CircleX}

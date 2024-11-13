@@ -10,8 +10,13 @@ import {
   PanelRightOpen,
   Tag,
   Gift,
+  LogOut,
 } from 'lucide-react';
 import Logo from '../../assets/images/logo.svg';
+import { Button } from '@/shadcn/components/ui/button';
+import { useDispatch } from 'react-redux';
+import { useLogoutAdminMutation } from '@/redux/api/admin/adminBaseApi';
+import { logoutAdmin } from '@/redux/slices/adminSlice';
 
 const menuItems = [
   { name: 'Dashboard', icon: Home, to: '/admin/dashboard' },
@@ -25,6 +30,9 @@ const menuItems = [
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(window.innerWidth >= 768);
+  const dispatch = useDispatch();
+
+  const [logout] = useLogoutAdminMutation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,6 +42,11 @@ export const Sidebar = () => {
 
     return () => window.removeEventListener('resize', handleResize);
   });
+
+  const handleLogout = async () => {
+    await logout();
+    dispatch(logoutAdmin());
+  };
 
   return (
     <motion.aside
@@ -99,6 +112,14 @@ export const Sidebar = () => {
       </nav>
 
       <div className='p-4'>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={handleLogout}
+          className='bg-secondary-bg mb-10 text-primary-text hover:bg-secondary-bg/80 '>
+          <LogOut className='w-4 h-4 mr-2' />
+          Logout
+        </Button>
         <span
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}

@@ -14,10 +14,11 @@ import {
   SheetTitle,
 } from '@/shadcn/components/ui/sheet';
 import { Button } from '@/shadcn/components/ui/button';
-import { X, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { X, Plus, Minus, ShoppingCart, Lock } from 'lucide-react';
 import { useUsers } from '@/hooks';
 import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 export default function Cart({ isOpen, onClose }) {
   const user = useUsers();
@@ -95,127 +96,181 @@ export default function Cart({ isOpen, onClose }) {
       aria-labelledby='cart-title'
       className='text-primary-text'>
       <SheetContent
-        className='w-full sm:max-w-lg bg-secondary-bg border-l border-none'
+        className='w-full sm:max-w-lg bg-secondary-bg text-primary-text border-l border-none'
         aria-describedby='dialog-description'
         aria-labelledby='cart-title'>
-        <p
-          id='dialog-description'
-          className='sr-only'>
-          Review and manage items in your cart. You can update quantities,
-          remove items, and proceed to checkout.
-        </p>
-        <SheetHeader className='space-y-2.5 pb-6 border-none text-primary-text'>
-          <div className='flex items-center justify-between'>
-            <SheetTitle className='text-2xl font-bold text-primary-text'>
-              My Cart
-            </SheetTitle>
-          </div>
-        </SheetHeader>
+        {user?.userInfo ? (
+          <>
+            <p
+              id='dialog-description'
+              className='sr-only'>
+              Review and manage items in your cart. You can update quantities,
+              remove items, and proceed to checkout.
+            </p>
+            <SheetHeader className='space-y-2.5 pb-6 border-none text-primary-text'>
+              <div className='flex items-center justify-between'>
+                <SheetTitle className='text-2xl font-bold text-primary-text'>
+                  My Cart
+                </SheetTitle>
+              </div>
+            </SheetHeader>
 
-        <ScrollArea className='flex-1 -mx-6 px-6 text-primary-text'>
-          {cartItems?.length > 0 ? (
-            <div className='space-y-6'>
-              {cartItems.map((item) => (
-                <div
-                  key={item._id}
-                  className='flex gap-4'>
-                  <div className='h-24 w-24 rounded-lg bg-primary-bg/50 p-2'>
-                    <img
-                      src={item.product?.images?.[0] || '/placeholder.svg'}
-                      alt={item.product?.name}
-                      className='h-full w-full object-cover rounded-md'
-                    />
-                  </div>
-                  <div className='flex flex-1 flex-col justify-between'>
-                    <div>
-                      <h3 className='font-medium text-primary-text'>
-                        {item.product?.name}
-                      </h3>
-                      <p className='text-sm text-secondary-text'>
-                        {item.product?.platform}
-                      </p>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-2 pt-4'>
-                        <Button
-                          variant='outline'
-                          size='icon'
-                          className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
-                          onClick={() =>
-                            handleUpdateQuantity(
-                              item.product._id,
-                              item.quantity - 1
-                            )
-                          }
-                          disabled={item.quantity <= 1}>
-                          <Minus className='h-4 w-4' />
-                        </Button>
-                        <span className='w-8 text-center'>{item.quantity}</span>
-                        <Button
-                          variant='outline'
-                          size='icon'
-                          className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
-                          onClick={() =>
-                            handleUpdateQuantity(
-                              item.product._id,
-                              item.quantity + 1
-                            )
-                          }
-                          disabled={item.quantity >= 5}>
-                          <Plus className='h-4 w-4' />
-                        </Button>
+            <ScrollArea className='flex-1 -mx-6 px-6 text-primary-text'>
+              {cartItems?.length > 0 ? (
+                <div className='space-y-6'>
+                  {cartItems.map((item) => (
+                    <div
+                      key={item._id}
+                      className='flex gap-4'>
+                      <div className='h-24 w-24 rounded-lg bg-primary-bg/50 p-2'>
+                        <img
+                          src={item.product?.images?.[0] || '/placeholder.svg'}
+                          alt={item.product?.name}
+                          className='h-full w-full object-cover rounded-md'
+                        />
                       </div>
-                      <p className='font-medium text-primary-text'>
-                        ${(item.product.price * item.quantity).toFixed(2)} INR
-                      </p>
+                      <div className='flex flex-1 flex-col justify-between'>
+                        <div>
+                          <h3 className='font-medium text-primary-text'>
+                            {item.product?.name}
+                          </h3>
+                          <p className='text-sm text-secondary-text'>
+                            {item.product?.platform}
+                          </p>
+                        </div>
+                        <div className='flex items-center justify-between'>
+                          <div className='flex items-center gap-2 pt-4'>
+                            <Button
+                              variant='outline'
+                              size='icon'
+                              className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
+                              onClick={() =>
+                                handleUpdateQuantity(
+                                  item.product._id,
+                                  item.quantity - 1
+                                )
+                              }
+                              disabled={item.quantity <= 1}>
+                              <Minus className='h-4 w-4' />
+                            </Button>
+                            <span className='w-8 text-center'>
+                              {item.quantity}
+                            </span>
+                            <Button
+                              variant='outline'
+                              size='icon'
+                              className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
+                              onClick={() =>
+                                handleUpdateQuantity(
+                                  item.product._id,
+                                  item.quantity + 1
+                                )
+                              }
+                              disabled={item.quantity >= 5}>
+                              <Plus className='h-4 w-4' />
+                            </Button>
+                          </div>
+                          <p className='font-medium text-primary-text'>
+                            ${(item.product.price * item.quantity).toFixed(2)}{' '}
+                            INR
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        className='text-red-500 hover:bg-red-500/20'
+                        onClick={() => handleRemoveItem(item.product._id)}>
+                        <X className='h-4 w-4' />
+                      </Button>
                     </div>
-                    {/* <span className='text-red-500 text-sm mt-2 min-h-[1.5rem] block'>
-                      {item.quantity >= 5 ? 'Maximum order limit reached.' : ''}
-                    </span> */}
-                  </div>
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    className='text-red-500 hover:bg-red-500/20'
-                    onClick={() => handleRemoveItem(item.product._id)}>
-                    <X className='h-4 w-4' />
-                  </Button>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className='flex flex-col items-center justify-center h-[50vh] text-secondary-text'>
-              <ShoppingCart className='h-12 w-12 mb-4' />
-              <p>Your cart is empty</p>
-            </div>
-          )}
-        </ScrollArea>
+              ) : (
+                <div className='flex flex-col items-center justify-center h-[50vh] text-secondary-text'>
+                  <ShoppingCart className='h-12 w-12 mb-4' />
+                  <p>Your cart is empty</p>
+                </div>
+              )}
+            </ScrollArea>
 
-        {cartItems?.length > 0 && (
-          <div className='space-y-4 pt-6'>
-            <Separator className='bg-primary-bg/20' />
-            <div className='space-y-1.5'>
-              <div className='flex items-center justify-between text-sm'>
-                <span className='text-secondary-text'>Shipping</span>
-                <span className='text-secondary-text'>
-                  Calculated at checkout
-                </span>
+            {cartItems?.length > 0 && (
+              <div className='space-y-4 pt-6'>
+                <Separator className='bg-primary-bg/20' />
+                <div className='space-y-1.5'>
+                  <div className='flex items-center justify-between text-sm'>
+                    <span className='text-secondary-text'>Shipping</span>
+                    <span className='text-secondary-text'>
+                      Calculated at checkout
+                    </span>
+                  </div>
+                  <div className='flex items-center justify-between pt-2'>
+                    <span className='text-base font-medium text-primary-text'>
+                      Total
+                    </span>
+                    <span className='text-lg font-bold text-primary-text'>
+                      ${total.toFixed(2)} INR
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium'
+                  onClick={() => console.log('Proceeding to checkout')}>
+                  Proceed to Checkout
+                </Button>
               </div>
-              <div className='flex items-center justify-between pt-2'>
-                <span className='text-base font-medium text-primary-text'>
-                  Total
-                </span>
-                <span className='text-lg font-bold text-primary-text'>
-                  ${total.toFixed(2)} INR
-                </span>
-              </div>
-            </div>
-            <Button
-              className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium'
-              onClick={() => console.log('Proceeding to checkout')}>
-              Proceed to Checkout
-            </Button>
-          </div>
+            )}
+          </>
+        ) : (
+          <motion.div
+            className='flex flex-col items-center justify-center h-full bg-primary-bg text-primary-text'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}>
+            <motion.div
+              className='relative w-24 h-24 mb-8'
+              animate={{
+                rotate: [0, 10, -10, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}>
+              <motion.div
+                className='absolute inset-0 bg-accent-blue rounded-full opacity-20'
+                animate={{
+                  scale: [1, 1.2, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+              <Lock className='w-full h-full text-accent-blue' />
+            </motion.div>
+            <motion.h2
+              className='text-2xl font-bold mb-4 text-center'
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}>
+              Your Cart is Locked
+            </motion.h2>
+            <motion.p
+              className='text-secondary-text mb-8 text-center'
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}>
+              Log in to view your cart and start shopping
+            </motion.p>
+            <motion.button
+              className='px-6 py-3 bg-accent-red text-white rounded-md font-medium hover:bg-opacity-90 transition duration-300'
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}>
+              Log In
+            </motion.button>
+          </motion.div>
         )}
       </SheetContent>
     </Sheet>

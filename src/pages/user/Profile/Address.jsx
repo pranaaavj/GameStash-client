@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { Button } from '@/shadcn/components/ui/button';
 import {
@@ -27,12 +28,13 @@ const initialAddressState = {
   country: '',
 };
 
-export function Address() {
+export function Address({ onAddressSelect }) {
   const [addresses, setAddresses] = useState([]);
   const [addressForm, setAddressForm] = useState(initialAddressState);
   const [editingId, setEditingId] = useState(null);
-  const [isAddingNew, setIsAddingNew] = useState(false); // Track new address form visibility
+  const [isAddingNew, setIsAddingNew] = useState(false);
   const [validation, setValidation] = useState(initialAddressState);
+  const [selectedAddress, setSelectedAddress] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -46,8 +48,22 @@ export function Address() {
   useEffect(() => {
     if (responseAddresses) {
       setAddresses(responseAddresses.data);
+
+      const defaultAddress = responseAddresses.data.find(
+        (addr) => addr.isDefault
+      );
+      if (defaultAddress) {
+        setSelectedAddress(defaultAddress);
+        onAddressSelect && onAddressSelect(defaultAddress);
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseAddresses]);
+
+  const handleAddressClick = (address) => {
+    setSelectedAddress(address);
+    onAddressSelect && onAddressSelect(address);
+  };
 
   // Handle input changes for the form
   const handleChange = (e) => {
@@ -143,7 +159,12 @@ export function Address() {
         {addresses.map((address) => (
           <Card
             key={address.id}
-            className='bg-primary-bg/50 border border-accent-blue/20 text-primary-text shadow-md hover:shadow-lg transition-all duration-300'>
+            onClick={() => handleAddressClick(address)}
+            className={`bg-primary-bg/50 border ${
+              address.id === selectedAddress?.id
+                ? 'border-accent-red'
+                : 'border-accent-blue/20'
+            } text-primary-text shadow-md hover:shadow-lg transition-all duration-300`}>
             <CardContent className='p-4 space-y-4'>
               {editingId === address.id ? (
                 <form
@@ -230,6 +251,7 @@ export function Address() {
                       <h3 className='font-bold text-lg text-accent-blue'>
                         {address.addressName || 'Unnamed Location'}
                       </h3>
+
                       <p className='text-sm text-secondary-text'>
                         {address.addressLine}
                       </p>
@@ -245,6 +267,7 @@ export function Address() {
                         {address.country}
                       </p>
                     </div>
+
                     <div className='flex space-x-2'>
                       <Button
                         size='icon'
@@ -262,6 +285,7 @@ export function Address() {
                         <Trash2 className='w-4 h-4' />
                         <span className='sr-only'>Delete</span>
                       </Button>
+
                       <ConfirmationModal
                         isOpen={isModalOpen}
                         onClose={() => {
@@ -276,6 +300,13 @@ export function Address() {
                         description='Are you sure you want to proceed with this action?'
                       />
                     </div>
+                  </div>
+                  <div>
+                    {address.isDefault && (
+                      <span className='text-xs bg-accent-red/10 text-accent-red px-2 py-1 rounded'>
+                        Default
+                      </span>
+                    )}
                   </div>
                 </>
               )}

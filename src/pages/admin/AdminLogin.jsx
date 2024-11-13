@@ -7,7 +7,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Alert, InputField } from '../../components/common';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
-import { useLoginAdminMutation } from '@/redux/api/admin/adminApi';
+import { useLoginAdminMutation } from '@/redux/api/admin/adminBaseApi';
 import { setAdmin, setTokenAdmin } from '@/redux/slices/adminSlice';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
 

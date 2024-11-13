@@ -6,7 +6,7 @@ import {
 import {
   useGetAllUsersQuery,
   useToggleBlockUserMutation,
-} from '@/redux/api/admin/adminApi';
+} from '@/redux/api/admin/usersApi';
 import { toast } from 'sonner';
 import { Alert } from '@/components/common';
 import { Input } from '@/shadcn/components/ui/input';

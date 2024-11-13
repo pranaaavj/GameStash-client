@@ -29,6 +29,12 @@ const initialProductState = {
   brand: '',
   stock: '',
   description: '',
+  systemRequirements: {
+    cpu: '',
+    gpu: '',
+    ram: '',
+    storage: '',
+  },
 };
 
 export const EditProduct = () => {
@@ -66,6 +72,12 @@ export const EditProduct = () => {
         brand: responseProduct.data.brand.name,
         stock: responseProduct.data.stock,
         description: responseProduct.data.description,
+        systemRequirements: responseProduct.data.systemRequirements || {
+          cpu: '',
+          gpu: '',
+          ram: '',
+          storage: '',
+        },
       });
       setImages(responseProduct.data.images);
     }
@@ -73,7 +85,17 @@ export const EditProduct = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProductInput((prev) => ({ ...prev, [name]: value }));
+    if (name in productInput.systemRequirements) {
+      setProductInput((prev) => ({
+        ...prev,
+        systemRequirements: {
+          ...prev.systemRequirements,
+          [name]: value,
+        },
+      }));
+    } else {
+      setProductInput((prev) => ({ ...prev, [name]: value }));
+    }
     setProductValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -102,7 +124,7 @@ export const EditProduct = () => {
         images,
       }).unwrap();
 
-      if (response.success) {
+      if (response?.success) {
         toast.success(response.message, {
           duration: 1500,
         });
@@ -203,6 +225,55 @@ export const EditProduct = () => {
               className='w-full bg-[#262626] ring-0 focus:ring-2 text-primary-text rounded-md'
               rows={4}
             />
+          </div>
+
+          {/* System Requirements Section */}
+          <div className='space-y-4'>
+            <h3 className='text-lg font-semibold text-primary-text'>
+              System Requirements
+            </h3>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              <InputField
+                type='text'
+                value={productInput.systemRequirements.cpu}
+                onChange={handleChange}
+                label='CPU'
+                name='cpu'
+                placeHolder='E.g., Intel i5, AMD Ryzen 5'
+                isInvalid={!!productValidation.systemRequirements?.cpu}
+                errorMessage={productValidation.systemRequirements?.cpu}
+              />
+              <InputField
+                type='text'
+                value={productInput.systemRequirements.gpu}
+                onChange={handleChange}
+                label='GPU'
+                name='gpu'
+                placeHolder='E.g., GTX 1060, Radeon RX 580'
+                isInvalid={!!productValidation.systemRequirements?.gpu}
+                errorMessage={productValidation.systemRequirements?.gpu}
+              />
+              <InputField
+                type='text'
+                value={productInput.systemRequirements.ram}
+                onChange={handleChange}
+                label='RAM'
+                name='ram'
+                placeHolder='E.g., 8GB, 16GB'
+                isInvalid={!!productValidation.systemRequirements?.ram}
+                errorMessage={productValidation.systemRequirements?.ram}
+              />
+              <InputField
+                type='text'
+                value={productInput.systemRequirements.storage}
+                onChange={handleChange}
+                label='Storage'
+                name='storage'
+                placeHolder='E.g., 50GB'
+                isInvalid={!!productValidation.systemRequirements?.storage}
+                errorMessage={productValidation.systemRequirements?.storage}
+              />
+            </div>
           </div>
 
           <ImageUploader

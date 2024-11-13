@@ -1,29 +1,24 @@
-'use client';
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
-import { Input } from '@/shadcn/components/ui/input';
-import { Label } from '@/shadcn/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/shadcn/components/ui/radio-group';
-import {
-  MapPin,
-  CreditCard,
-  Gift,
-  Package,
-  ChevronDown,
-  Clock,
-} from 'lucide-react';
-
-// Assuming AddressManagement is your existing component
+import { MapPin, CreditCard, Gift, Package, ChevronDown } from 'lucide-react';
 import { Address } from '../Profile/Address';
+import PaymentSection from './Payment';
+import OffersSection from './Offers';
+import ReviewOrder from './ReviewOrder';
 
 export function CheckoutPage() {
   const [activeSection, setActiveSection] = useState('address');
-  const [selectedPayment, setSelectedPayment] = useState('cod');
-  const [promoCode, setPromoCode] = useState('');
-  const [selectedDelivery, setSelectedDelivery] = useState('standard');
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [selectedOffers, setSelectedOffers] = useState(null);
+  const [completedSections, setCompletedSections] = useState({
+    address: false,
+    payment: false,
+    offers: false,
+    review: false,
+  });
 
   const cartItems = [
     {
@@ -34,6 +29,28 @@ export function CheckoutPage() {
       quantity: 1,
     },
   ];
+
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address);
+    setCompletedSections((prev) => ({ ...prev, address: true }));
+    setActiveSection('payment');
+  };
+
+  const handlePaymentSelect = (payment) => {
+    setSelectedPayment(payment);
+    setCompletedSections((prev) => ({ ...prev, payment: true }));
+    setActiveSection('offers');
+  };
+
+  const handleOfferSelect = (offers) => {
+    setSelectedOffers(offers);
+    setCompletedSections((prev) => ({ ...prev, offers: true }));
+    setActiveSection('review');
+  };
+
+  const handleReviewComplete = () => {
+    setCompletedSections((prev) => ({ ...prev, review: true }));
+  };
 
   const deliveryOptions = [
     { id: 'express', label: 'Express Delivery', price: 9.99, date: 'Tomorrow' },
@@ -50,8 +67,9 @@ export function CheckoutPage() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
   const shipping =
-    deliveryOptions.find((opt) => opt.id === selectedDelivery)?.price || 0;
+    deliveryOptions.find((opt) => opt.id === 'express')?.price || 0;
   const discount = 15.0;
   const total = subtotal + shipping - discount;
 
@@ -62,21 +80,74 @@ export function CheckoutPage() {
     { id: 'review', title: 'Review & Delivery', icon: Package },
   ];
 
+  const renderSectionTitle = (section) => {
+    let selectedValue;
+    switch (section.id) {
+      case 'address':
+        selectedValue = selectedAddress
+          ? `${selectedAddress?.addressName} `
+          : '';
+        break;
+      case 'payment':
+        selectedValue = selectedPayment ? `${selectedPayment} ` : '';
+        break;
+      case 'offers':
+        selectedValue = selectedOffers ? `${selectedOffers} ` : '';
+        break;
+      default:
+        selectedValue = '';
+    }
+    return (
+      <>
+        {section.title}
+        {selectedValue && (
+          <span className='ml-2 text-sm text-secondary-text'>
+            : {selectedValue}
+            <button
+              className='ml-2 underline text-accent-red text-sm'
+              onClick={() => setActiveSection(section.id)}>
+              Change
+            </button>
+          </span>
+        )}
+      </>
+    );
+  };
+
+  const isSectionDisabled = (sectionId) => {
+    switch (sectionId) {
+      case 'payment':
+        return !completedSections.address;
+      case 'offers':
+        return !completedSections.payment;
+      case 'review':
+        return !completedSections.offers;
+      default:
+        return false;
+    }
+  };
+
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text p-4 md:p-6'>
       <div className='max-w-7xl mx-auto'>
         <h1 className='text-3xl font-bold mb-8'>Checkout</h1>
 
         <div className='grid lg:grid-cols-[1fr,400px] gap-6'>
-          {/* Left Column - Checkout Sections */}
           <div className='space-y-4'>
             {sections.map((section, index) => (
               <div
                 key={section.id}
                 className='bg-secondary-bg rounded-lg overflow-hidden'>
                 <button
-                  onClick={() => setActiveSection(section.id)}
-                  className='w-full p-4 flex items-center justify-between hover:bg-primary-bg/50 transition-colors'>
+                  onClick={() => {
+                    if (!isSectionDisabled(section.id))
+                      setActiveSection(section.id);
+                  }}
+                  className={`w-full p-4 flex items-center justify-between transition-colors ${
+                    isSectionDisabled(section.id)
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:bg-primary-bg/50'
+                  }`}>
                   <div className='flex items-center space-x-4'>
                     <div className='w-8 h-8 rounded-full bg-primary-bg flex items-center justify-center'>
                       <span className='text-accent-red font-bold'>
@@ -85,7 +156,9 @@ export function CheckoutPage() {
                     </div>
                     <div className='flex items-center space-x-2'>
                       <section.icon className='w-5 h-5' />
-                      <span className='font-semibold'>{section.title}</span>
+                      <span className='font-semibold'>
+                        {renderSectionTitle(section)}
+                      </span>
                     </div>
                   </div>
                   <ChevronDown
@@ -103,95 +176,21 @@ export function CheckoutPage() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}>
                       <div className='p-4 border-t border-primary-bg/20'>
-                        {section.id === 'address' && <Address />}
-
+                        {section.id === 'address' && (
+                          <Address onAddressSelect={handleAddressSelect} />
+                        )}
                         {section.id === 'payment' && (
-                          <div className='space-y-4'>
-                            <RadioGroup
-                              value={selectedPayment}
-                              onValueChange={setSelectedPayment}>
-                              <div className='flex items-center space-x-2 p-3 rounded-lg bg-primary-bg/50'>
-                                <RadioGroupItem
-                                  value='cod'
-                                  id='cod'
-                                />
-                                <Label htmlFor='cod'>
-                                  Cash/Card on Delivery
-                                </Label>
-                              </div>
-                              <div className='flex items-center space-x-2 p-3 rounded-lg bg-primary-bg/50'>
-                                <RadioGroupItem
-                                  value='card'
-                                  id='card'
-                                />
-                                <Label htmlFor='card'>Credit/Debit Card</Label>
-                              </div>
-                              <div className='flex items-center space-x-2 p-3 rounded-lg bg-primary-bg/50'>
-                                <RadioGroupItem
-                                  value='upi'
-                                  id='upi'
-                                />
-                                <Label htmlFor='upi'>UPI Payment</Label>
-                              </div>
-                            </RadioGroup>
-                          </div>
+                          <PaymentSection
+                            onPaymentSelect={handlePaymentSelect}
+                          />
                         )}
-
                         {section.id === 'offers' && (
-                          <div className='space-y-4'>
-                            <div className='flex space-x-2'>
-                              <Input
-                                placeholder='Enter promo code'
-                                value={promoCode}
-                                onChange={(e) => setPromoCode(e.target.value)}
-                                className='bg-primary-bg/50 border-none'
-                              />
-                              <Button variant='outline'>Apply</Button>
-                            </div>
-                            <div className='p-3 rounded-lg bg-accent-red/10 text-accent-red flex items-center space-x-2'>
-                              <Gift className='w-5 h-5' />
-                              <span>15% off on your first order!</span>
-                            </div>
-                          </div>
+                          <OffersSection onOfferSelect={handleOfferSelect} />
                         )}
-
                         {section.id === 'review' && (
-                          <div className='space-y-4'>
-                            <RadioGroup
-                              value={selectedDelivery}
-                              onValueChange={setSelectedDelivery}>
-                              {deliveryOptions.map((option) => (
-                                <div
-                                  key={option.id}
-                                  className='flex items-center space-x-2 p-3 rounded-lg bg-primary-bg/50'>
-                                  <RadioGroupItem
-                                    value={option.id}
-                                    id={option.id}
-                                  />
-                                  <Label
-                                    htmlFor={option.id}
-                                    className='flex-1'>
-                                    <div className='flex items-center justify-between'>
-                                      <div>
-                                        <div className='font-medium'>
-                                          {option.label}
-                                        </div>
-                                        <div className='text-sm text-secondary-text flex items-center'>
-                                          <Clock className='w-4 h-4 mr-1' />
-                                          {option.date}
-                                        </div>
-                                      </div>
-                                      <div className='font-medium'>
-                                        {option.price === 0
-                                          ? 'FREE'
-                                          : `$${option.price.toFixed(2)}`}
-                                      </div>
-                                    </div>
-                                  </Label>
-                                </div>
-                              ))}
-                            </RadioGroup>
-                          </div>
+                          <ReviewOrder
+                            onReviewComplete={handleReviewComplete}
+                          />
                         )}
                       </div>
                     </motion.div>
@@ -201,9 +200,8 @@ export function CheckoutPage() {
             ))}
           </div>
 
-          {/* Right Column - Order Summary */}
-          <div className='lg:sticky lg:top-6 h-fit'>
-            <Card className='bg-secondary-bg border-none'>
+          <div className='lg:sticky lg:top-6 h-fit text-primary-text'>
+            <Card className='bg-secondary-bg border-none text-primary-text'>
               <CardContent className='p-6 space-y-6'>
                 <div className='flex items-center justify-between'>
                   <h2 className='text-xl font-bold'>Order Summary</h2>
