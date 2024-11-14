@@ -3,7 +3,7 @@ import authReducer from './slices/authSlice';
 import userReducer from './slices/userSlice';
 import adminReducer from './slices/adminSlice';
 import { authApi } from './api/user/authApi';
-import { userApi } from './api/user/userApi';
+import { userBaseApi } from './api/user/userBaseApi';
 import { adminBaseApi } from './api/admin/adminBaseApi';
 import { persistReducer, persistStore } from 'redux-persist';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
@@ -19,8 +19,8 @@ const rootReducer = combineReducers({
   auth: authReducer,
   admin: adminReducer,
   [authApi.reducerPath]: authApi.reducer,
-  [userApi.reducerPath]: userApi.reducer,
-  // [adminApi.reducerPath]: adminApi.reducer,
+  // [userApi.reducerPath]: userApi.reducer,
+  [userBaseApi.reducerPath]: userBaseApi.reducer,
   [adminBaseApi.reducerPath]: adminBaseApi.reducer,
 });
 
@@ -33,7 +33,7 @@ export const store = configureStore({
       serializableCheck: false,
     })
       .concat(authApi.middleware)
-      .concat(userApi.middleware)
+      .concat(userBaseApi.middleware)
       .concat(adminBaseApi.middleware),
 });
 

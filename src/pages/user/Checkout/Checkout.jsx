@@ -13,7 +13,7 @@ import { Address } from '../Profile/Address';
 import PaymentSection from './Payment';
 import OffersSection from './Offers';
 import ReviewOrder from './ReviewOrder';
-import { useGetCartQuery } from '@/redux/api/user/userApi';
+import { useGetCartQuery } from '@/redux/api/user/cartApi';
 import { useUsers } from '@/hooks';
 
 export function CheckoutPage() {

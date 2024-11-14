@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { GameListing } from './Game/GameListing';
 import { GameCarousal } from './Game/GameCarousal';
-import { useGetProductsQuery } from '@/redux/api/user/userApi';
+import { useGetProductsQuery } from '@/redux/api/user/productApi';
 import { GameErrorFallback, GameLoading } from '@/components/error';
 
 export const Home = () => {

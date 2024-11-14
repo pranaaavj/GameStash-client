@@ -7,7 +7,7 @@ import {
 import {
   useGetAllGenresQuery,
   useToggleGenreListMutation,
-} from '@/redux/api/admin/adminApi';
+} from '@/redux/api/admin/genresApi';
 import { toast } from 'sonner';
 import { Alert } from '@/components/common';
 import { Input } from '@/shadcn/components/ui/input';

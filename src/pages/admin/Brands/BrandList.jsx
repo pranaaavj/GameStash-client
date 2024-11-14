@@ -7,7 +7,7 @@ import {
 import {
   useGetAllBrandsQuery,
   useToggleBrandListMutation,
-} from '@/redux/api/admin/adminApi';
+} from '@/redux/api/admin/brandsApi';
 import { toast } from 'sonner';
 import { Alert } from '@/components/common';
 import { Input } from '@/shadcn/components/ui/input';

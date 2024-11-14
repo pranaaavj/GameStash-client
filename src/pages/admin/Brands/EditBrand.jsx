@@ -7,7 +7,7 @@ import {
 import {
   useGetOneBrandQuery,
   useEditBrandMutation,
-} from '@/redux/api/admin/adminApi';
+} from '@/redux/api/admin/brandsApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';

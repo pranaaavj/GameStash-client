@@ -6,7 +6,7 @@ import {
 import {
   useGetProfileDetailsQuery,
   useEditUserProfileMutation,
-} from '@/redux/api/user/userApi';
+} from '@/redux/api/user/profileApi';
 import { Alert } from '@/components/common';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';

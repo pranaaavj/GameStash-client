@@ -10,8 +10,7 @@ import {
   useGetProductQuery,
   useGetReviewByProductQuery,
   useGetProductsByGenreQuery,
-  useGetCartQuery,
-} from '@/redux/api/user/userApi';
+} from '@/redux/api/user/productApi';
 import { Button } from '@/shadcn/components/ui/button';
 import { Reviews } from '../Reviews';
 import { useEffect, useState } from 'react';
@@ -20,7 +19,10 @@ import { ImageZoomPreview } from '@/components/user/ImageZoom';
 import { RelatedGamesFallback } from '@/components/error/RelatedFallback';
 import { ShoppingCart, Heart, Minus, Plus } from 'lucide-react';
 import { GameListing, StarRating, SystemRequirements } from '..';
-import { useAddItemToCartMutation } from '@/redux/api/user/userApi';
+import {
+  useAddItemToCartMutation,
+  useGetCartQuery,
+} from '@/redux/api/user/cartApi';
 import { toast } from 'sonner';
 import { useUsers } from '@/hooks';
 import { requireLogin } from '@/utils';

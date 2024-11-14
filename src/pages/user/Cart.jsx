@@ -4,7 +4,7 @@ import {
   useGetCartQuery,
   useUpdateCartItemMutation,
   useRemoveItemFromCartMutation,
-} from '@/redux/api/user/userApi';
+} from '@/redux/api/user/cartApi';
 import { ScrollArea } from '@/shadcn/components/ui/scroll-area';
 import { Separator } from '@/shadcn/components/ui/separator';
 import {
@@ -18,7 +18,7 @@ import { X, Plus, Minus, ShoppingCart, Lock } from 'lucide-react';
 import { useUsers } from '@/hooks';
 import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Cart({ isOpen, onClose }) {
   const user = useUsers();
@@ -103,7 +103,11 @@ export default function Cart({ isOpen, onClose }) {
         aria-describedby='dialog-description'
         aria-labelledby='cart-title'>
         {user?.userInfo ? (
-          <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}>
             <p
               id='dialog-description'
               className='sr-only'>
@@ -119,86 +123,118 @@ export default function Cart({ isOpen, onClose }) {
             </SheetHeader>
 
             <ScrollArea className='flex-1 -mx-6 px-6 text-primary-text'>
-              {cartItems?.length > 0 ? (
-                <div className='space-y-6'>
-                  {cartItems.map((item) => (
-                    <div
-                      key={item._id}
-                      className='flex gap-4'>
-                      <div className='h-24 w-24 rounded-lg bg-primary-bg/50 p-2'>
-                        <img
-                          src={item.product?.images?.[0] || '/placeholder.svg'}
-                          alt={item.product?.name}
-                          className='h-full w-full object-cover rounded-md'
-                        />
-                      </div>
-                      <div className='flex flex-1 flex-col justify-between'>
-                        <div>
-                          <h3 className='font-medium text-primary-text'>
-                            {item.product?.name}
-                          </h3>
-                          <p className='text-sm text-secondary-text'>
-                            {item.product?.platform}
-                          </p>
+              <AnimatePresence>
+                {cartItems?.length > 0 ? (
+                  <motion.div className='space-y-6'>
+                    {cartItems.map((item) => (
+                      <motion.div
+                        key={item._id}
+                        className='flex gap-4'
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}>
+                        <div className='h-24 w-24 rounded-lg bg-primary-bg/50 p-2'>
+                          <img
+                            src={
+                              item.product?.images?.[0] || '/placeholder.svg'
+                            }
+                            alt={item.product?.name}
+                            className='h-full w-full object-cover rounded-md'
+                          />
                         </div>
-                        <div className='flex items-center justify-between'>
-                          <div className='flex items-center gap-2 pt-4'>
-                            <Button
-                              variant='outline'
-                              size='icon'
-                              className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
-                              onClick={() =>
-                                handleUpdateQuantity(
-                                  item.product._id,
-                                  item.quantity - 1
-                                )
-                              }
-                              disabled={item.quantity <= 1}>
-                              <Minus className='h-4 w-4' />
-                            </Button>
-                            <span className='w-8 text-center'>
-                              {item.quantity}
-                            </span>
-                            <Button
-                              variant='outline'
-                              size='icon'
-                              className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
-                              onClick={() =>
-                                handleUpdateQuantity(
-                                  item.product._id,
-                                  item.quantity + 1
-                                )
-                              }
-                              disabled={item.quantity >= 5}>
-                              <Plus className='h-4 w-4' />
-                            </Button>
+                        <div className='flex flex-1 flex-col justify-between'>
+                          <div>
+                            <h3 className='font-medium text-primary-text'>
+                              {item.product?.name}
+                            </h3>
+                            <p className='text-sm text-secondary-text'>
+                              {item.product?.platform}
+                            </p>
                           </div>
-                          <p className='font-medium text-primary-text'>
-                            ₹{(item.product.price * item.quantity).toFixed(2)}{' '}
-                            INR
-                          </p>
+                          <div className='flex items-center justify-between'>
+                            <div className='flex items-center gap-2 pt-4'>
+                              <motion.div whileTap={{ scale: 0.95 }}>
+                                <Button
+                                  variant='outline'
+                                  size='icon'
+                                  className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
+                                  onClick={() =>
+                                    handleUpdateQuantity(
+                                      item.product._id,
+                                      item.quantity - 1
+                                    )
+                                  }
+                                  disabled={item.quantity <= 1}>
+                                  <Minus className='h-4 w-4' />
+                                </Button>
+                              </motion.div>
+                              <motion.span
+                                key={item.quantity}
+                                initial={{ scale: 1.2 }}
+                                animate={{ scale: 1 }}
+                                className='w-8 text-center'>
+                                {item.quantity}
+                              </motion.span>
+                              <motion.div whileTap={{ scale: 0.95 }}>
+                                <Button
+                                  variant='outline'
+                                  size='icon'
+                                  className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
+                                  onClick={() =>
+                                    handleUpdateQuantity(
+                                      item.product._id,
+                                      item.quantity + 1
+                                    )
+                                  }
+                                  disabled={item.quantity >= 5}>
+                                  <Plus className='h-4 w-4' />
+                                </Button>
+                              </motion.div>
+                            </div>
+                            <motion.p
+                              key={item.quantity}
+                              initial={{ scale: 1.1 }}
+                              animate={{ scale: 1 }}
+                              className='font-medium text-primary-text'>
+                              ₹{(item.product.price * item.quantity).toFixed(2)}{' '}
+                              INR
+                            </motion.p>
+                          </div>
                         </div>
-                      </div>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        className='text-red-500 hover:bg-red-500/20'
-                        onClick={() => handleRemoveItem(item.product._id)}>
-                        <X className='h-4 w-4' />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className='flex flex-col items-center justify-center h-[50vh] text-secondary-text'>
-                  <ShoppingCart className='h-12 w-12 mb-4' />
-                  <p>Your cart is empty</p>
-                </div>
-              )}
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            className='text-red-500 hover:bg-red-500/20'
+                            onClick={() => handleRemoveItem(item.product._id)}>
+                            <X className='h-4 w-4' />
+                          </Button>
+                        </motion.div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    className='flex flex-col items-center justify-center h-[50vh] text-secondary-text'
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}>
+                    <ShoppingCart className='h-12 w-12 mb-4' />
+                    <p>Your cart is empty</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </ScrollArea>
 
             {cartItems?.length > 0 && (
-              <div className='space-y-4 pt-6'>
+              <motion.div
+                className='space-y-4 pt-6'
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}>
                 <Separator className='bg-primary-bg/20' />
                 <div className='space-y-1.5'>
                   <div className='flex items-center justify-between text-sm'>
@@ -211,19 +247,27 @@ export default function Cart({ isOpen, onClose }) {
                     <span className='text-base font-medium text-primary-text'>
                       Total
                     </span>
-                    <span className='text-lg font-bold text-primary-text'>
+                    <motion.span
+                      key={total}
+                      initial={{ scale: 1.1 }}
+                      animate={{ scale: 1 }}
+                      className='text-lg font-bold text-primary-text'>
                       ${total.toFixed(2)} INR
-                    </span>
+                    </motion.span>
                   </div>
                 </div>
-                <Button
-                  className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium'
-                  onClick={() => console.log('Proceeding to checkout')}>
-                  Proceed to Checkout
-                </Button>
-              </div>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}>
+                  <Button
+                    className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium'
+                    onClick={() => console.log('Proceeding to checkout')}>
+                    Proceed to Checkout
+                  </Button>
+                </motion.div>
+              </motion.div>
             )}
-          </>
+          </motion.div>
         ) : (
           <motion.div
             className='flex flex-col items-center justify-center h-full bg-primary-bg text-primary-text'

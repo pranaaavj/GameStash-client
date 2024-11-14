@@ -6,8 +6,8 @@ import { GameCard } from './GameCard';
 import { UserPagination } from '@/components/user';
 import { FilterComponent } from '../FilterSection';
 import { GenreListing } from '../GenreListing';
-import { useGetProductsQuery } from '@/redux/api/user/userApi';
-import { useGetAllGenresQuery } from '@/redux/api/admin/adminApi';
+import { useGetProductsQuery } from '@/redux/api/user/productApi';
+import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
 
 export const GameBrowse = () => {
   const [pageState, setPageState] = useState({

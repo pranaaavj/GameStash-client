@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useGetProductQuery } from '@/redux/api/user/userApi';
+import { useGetProductQuery } from '@/redux/api/user/productApi';
 
 export const Breadcrumbs = () => {
   const location = useLocation();

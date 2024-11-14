@@ -14,7 +14,7 @@ import {
   useAddAddressMutation,
   useEditAddressMutation,
   useDeleteAddressMutation,
-} from '@/redux/api/user/userApi';
+} from '@/redux/api/user/addressApi';
 import { toast } from 'sonner';
 import { validateAddress } from '@/utils/validation/validateAddress';
 

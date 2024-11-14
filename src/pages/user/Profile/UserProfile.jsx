@@ -4,19 +4,12 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/shadcn/components/ui/tabs';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/shadcn/components/ui/card';
-import { Button } from '@/shadcn/components/ui/button';
+
 import { User, MapPin, ShoppingBag } from 'lucide-react';
 import ProfileView from './ProfileView';
 import { ChangePassword } from './ChangePassword';
 import { Address } from './Address';
+import { Orders } from './Orders';
 
 export const UserProfile = () => {
   return (
@@ -53,64 +46,7 @@ export const UserProfile = () => {
           </TabsContent>
 
           <TabsContent value='orders'>
-            <Card className='bg-gradient-to-br from-primary-bg to-secondary-bg border-none shadow-lg'>
-              <CardHeader>
-                <CardTitle className='text-2xl'>Order History</CardTitle>
-                <CardDescription>View and manage your orders</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-                  {[
-                    {
-                      id: 'ORD001',
-                      date: 'Oct 28, 2023',
-                      status: 'Delivered',
-                      total: '$129.99',
-                    },
-                    {
-                      id: 'ORD002',
-                      date: 'Oct 15, 2023',
-                      status: 'Shipped',
-                      total: '$79.99',
-                    },
-                    {
-                      id: 'ORD003',
-                      date: 'Oct 02, 2023',
-                      status: 'Processing',
-                      total: '$199.99',
-                    },
-                  ].map((order) => (
-                    <Card
-                      key={order.id}
-                      className='bg-primary-bg/50 border-none'>
-                      <CardHeader>
-                        <CardTitle className='text-lg'>{order.id}</CardTitle>
-                        <CardDescription>{order.date}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className='space-y-2'>
-                          <div className='flex justify-between'>
-                            <span className='text-secondary-text'>Status</span>
-                            <span>{order.status}</span>
-                          </div>
-                          <div className='flex justify-between'>
-                            <span className='text-secondary-text'>Total</span>
-                            <span>{order.total}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter>
-                        <Button
-                          variant='outline'
-                          className='w-full bg-primary-bg/50 hover:bg-secondary-bg border-none'>
-                          View Details
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <Orders />
           </TabsContent>
         </Tabs>
       </div>

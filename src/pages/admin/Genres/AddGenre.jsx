@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardContent,
 } from '@/shadcn/components/ui/card';
-import { useAddGenreMutation } from '@/redux/api/admin/adminApi';
+import { useAddGenreMutation } from '@/redux/api/admin/genresApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';

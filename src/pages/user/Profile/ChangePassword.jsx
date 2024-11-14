@@ -15,7 +15,7 @@ import {
 } from '@/shadcn/components/ui/collapsible';
 import { ChevronRight, CircleX } from 'lucide-react';
 import { Alert, InputField } from '@/components/common';
-import { useChangeUserPassMutation } from '@/redux/api/user/userApi';
+import { useChangeUserPassMutation } from '@/redux/api/user/profileApi';
 import { toast } from 'sonner';
 import { validateChangePassword } from '@/utils';
 import { useUsers } from '@/hooks';
