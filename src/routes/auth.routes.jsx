@@ -10,7 +10,7 @@ import {
 } from '@/pages/auth';
 import { NotFound } from '@/components/error';
 import { UserLayout } from '@/components/user';
-import { UnauthorizedRoute, OtpProtectedRoute } from './ProtectedRoutes';
+import { UnauthorizedRoute, ProtectOtp } from './ProtectedRoutes';
 
 export const authRoutes = [
   {
@@ -29,17 +29,17 @@ export const authRoutes = [
           {
             path: 'register',
             element: (
-              <OtpProtectedRoute requiredOtpType='registration'>
+              <ProtectOtp requiredOtpType='registration'>
                 <Register />
-              </OtpProtectedRoute>
+              </ProtectOtp>
             ),
           },
           {
             path: 'reset-pass',
             element: (
-              <OtpProtectedRoute requiredOtpType='forgotPassword'>
+              <ProtectOtp requiredOtpType='forgotPassword'>
                 <ResetPassword />
-              </OtpProtectedRoute>
+              </ProtectOtp>
             ),
           },
           {

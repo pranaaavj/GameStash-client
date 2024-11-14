@@ -166,8 +166,6 @@ export function CheckoutPage() {
   const discount = 15.0;
   const total = subtotal + shipping - discount;
 
-  console.log(total);
-
   return (
     <TooltipProvider>
       <div className='min-h-screen bg-primary-bg text-primary-text p-4 md:p-6'>

@@ -1,8 +1,7 @@
 import { NotFound } from '@/components/error';
 import { UserLayout } from '@/components/user';
-import { AuthorizedRoute } from './ProtectedRoutes';
+import { AuthorizedRoute, ProtectCheckout } from './ProtectedRoutes';
 import { GameDetails, GameBrowse, UserProfile, Home } from '@/pages/user';
-import { CheckoutPage } from '@/pages/user/Checkout/Checkout';
 
 export const userRoutes = [
   {
@@ -23,7 +22,7 @@ export const userRoutes = [
           },
           {
             path: 'checkout',
-            element: <CheckoutPage />,
+            element: <ProtectCheckout />,
           },
         ],
       },

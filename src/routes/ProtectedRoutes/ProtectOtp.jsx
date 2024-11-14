@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-export const OtpProtectedRoute = ({ children, requiredOtpType }) => {
+export const ProtectOtp = ({ children, requiredOtpType }) => {
   const { otpStatus, otpType } = useSelector((state) => state.auth);
 
   if (otpStatus === 'verified' && otpType === requiredOtpType) return children;
@@ -33,7 +33,7 @@ export const OtpProtectedRoute = ({ children, requiredOtpType }) => {
   }
 };
 
-OtpProtectedRoute.propTypes = {
+ProtectOtp.propTypes = {
   children: PropTypes.any,
   requiredOtpType: PropTypes.string,
 };

@@ -19,9 +19,12 @@ import { useUsers } from '@/hooks';
 import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export default function Cart({ isOpen, onClose }) {
   const user = useUsers();
+  const navigate = useNavigate();
+
   const { data: responseCart, isError: isCartError } = useGetCartQuery(
     user?.userInfo?.id,
     {
@@ -84,6 +87,15 @@ export default function Cart({ isOpen, onClose }) {
       }
     } catch (error) {
       console.error('Failed to remove item from cart:', error);
+    }
+  };
+
+  const handleCheckout = () => {
+    if (cartItems.length > 0) {
+      navigate('/checkout', { state: { isCheckoutAllowed: true } });
+      onClose();
+    } else {
+      alert('Your cart is empty!');
     }
   };
 
@@ -261,7 +273,7 @@ export default function Cart({ isOpen, onClose }) {
                   whileTap={{ scale: 0.98 }}>
                   <Button
                     className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium'
-                    onClick={() => console.log('Proceeding to checkout')}>
+                    onClick={handleCheckout}>
                     Proceed to Checkout
                   </Button>
                 </motion.div>
