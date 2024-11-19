@@ -80,7 +80,6 @@ export default function Cart({ isOpen, onClose }) {
   const handleRemoveItem = async (productId) => {
     try {
       const response = await removeItemFromCart(productId).unwrap();
-      console.log(response);
       if (response?.success) {
         setCartItems(response.data.items);
         setTotal(response.data.total);
@@ -135,7 +134,7 @@ export default function Cart({ isOpen, onClose }) {
             </SheetHeader>
 
             <ScrollArea className='flex-1 -mx-6 px-6 text-primary-text'>
-              <AnimatePresence>
+              <AnimatePresence initial={false}>
                 {cartItems?.length > 0 ? (
                   <motion.div className='space-y-6'>
                     {cartItems.map((item) => (
@@ -166,65 +165,49 @@ export default function Cart({ isOpen, onClose }) {
                           </div>
                           <div className='flex items-center justify-between'>
                             <div className='flex items-center gap-2 pt-4'>
-                              <motion.div whileTap={{ scale: 0.95 }}>
-                                <Button
-                                  variant='outline'
-                                  size='icon'
-                                  className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
-                                  onClick={() =>
-                                    handleUpdateQuantity(
-                                      item.product._id,
-                                      item.quantity - 1
-                                    )
-                                  }
-                                  disabled={item.quantity <= 1}>
-                                  <Minus className='h-4 w-4' />
-                                </Button>
-                              </motion.div>
-                              <motion.span
-                                key={item.quantity}
-                                initial={{ scale: 1.2 }}
-                                animate={{ scale: 1 }}
-                                className='w-8 text-center'>
+                              <Button
+                                variant='outline'
+                                size='icon'
+                                className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
+                                onClick={() =>
+                                  handleUpdateQuantity(
+                                    item.product._id,
+                                    item.quantity - 1
+                                  )
+                                }
+                                disabled={item.quantity <= 1}>
+                                <Minus className='h-4 w-4' />
+                              </Button>
+                              <span className='w-8 text-center'>
                                 {item.quantity}
-                              </motion.span>
-                              <motion.div whileTap={{ scale: 0.95 }}>
-                                <Button
-                                  variant='outline'
-                                  size='icon'
-                                  className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
-                                  onClick={() =>
-                                    handleUpdateQuantity(
-                                      item.product._id,
-                                      item.quantity + 1
-                                    )
-                                  }
-                                  disabled={item.quantity >= 5}>
-                                  <Plus className='h-4 w-4' />
-                                </Button>
-                              </motion.div>
+                              </span>
+                              <Button
+                                variant='outline'
+                                size='icon'
+                                className='h-8 w-8 rounded-lg bg-primary-bg/50 border-none'
+                                onClick={() =>
+                                  handleUpdateQuantity(
+                                    item.product._id,
+                                    item.quantity + 1
+                                  )
+                                }
+                                disabled={item.quantity >= 5}>
+                                <Plus className='h-4 w-4' />
+                              </Button>
                             </div>
-                            <motion.p
-                              key={item.quantity}
-                              initial={{ scale: 1.1 }}
-                              animate={{ scale: 1 }}
-                              className='font-medium text-primary-text'>
+                            <p className='font-medium text-primary-text'>
                               ₹{(item.product.price * item.quantity).toFixed(2)}{' '}
                               INR
-                            </motion.p>
+                            </p>
                           </div>
                         </div>
-                        <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}>
-                          <Button
-                            variant='ghost'
-                            size='icon'
-                            className='text-red-500 hover:bg-red-500/20'
-                            onClick={() => handleRemoveItem(item.product._id)}>
-                            <X className='h-4 w-4' />
-                          </Button>
-                        </motion.div>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          className='text-red-500 hover:bg-red-500/20'
+                          onClick={() => handleRemoveItem(item.product._id)}>
+                          <X className='h-4 w-4' />
+                        </Button>
                       </motion.div>
                     ))}
                   </motion.div>
@@ -246,7 +229,7 @@ export default function Cart({ isOpen, onClose }) {
                 className='space-y-4 pt-6'
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}>
+                transition={{ duration: 0.5 }}>
                 <Separator className='bg-primary-bg/20' />
                 <div className='space-y-1.5'>
                   <div className='flex items-center justify-between text-sm'>
@@ -259,24 +242,16 @@ export default function Cart({ isOpen, onClose }) {
                     <span className='text-base font-medium text-primary-text'>
                       Total
                     </span>
-                    <motion.span
-                      key={total}
-                      initial={{ scale: 1.1 }}
-                      animate={{ scale: 1 }}
-                      className='text-lg font-bold text-primary-text'>
+                    <span className='text-lg font-bold text-primary-text'>
                       ${total.toFixed(2)} INR
-                    </motion.span>
+                    </span>
                   </div>
                 </div>
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}>
-                  <Button
-                    className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium'
-                    onClick={handleCheckout}>
-                    Proceed to Checkout
-                  </Button>
-                </motion.div>
+                <Button
+                  className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium'
+                  onClick={handleCheckout}>
+                  Proceed to Checkout
+                </Button>
               </motion.div>
             )}
           </motion.div>

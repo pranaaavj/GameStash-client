@@ -13,11 +13,13 @@ const productsEndpoints = adminBaseApi.injectEndpoints({
           : [{ type: 'Product', id: 'LIST' }],
     }),
 
+    // Get one product
     getOneProduct: builder.query({
       query: (productId) => ({ url: `/admin/products/${productId}` }),
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
 
+    // Add a product
     addProduct: builder.mutation({
       query: (newProductDetails) => ({
         url: '/admin/products',
@@ -27,6 +29,7 @@ const productsEndpoints = adminBaseApi.injectEndpoints({
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
 
+    // Edit a product
     editProduct: builder.mutation({
       query: (updatedProduct) => ({
         url: '/admin/products',
@@ -36,6 +39,7 @@ const productsEndpoints = adminBaseApi.injectEndpoints({
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
 
+    // Toggle listing of products
     toggleProductList: builder.mutation({
       query: (productId) => ({
         url: '/admin/products',

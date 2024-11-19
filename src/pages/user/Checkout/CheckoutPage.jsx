@@ -9,25 +9,40 @@ import {
   TooltipContent,
 } from '@/shadcn/components/ui/tooltip';
 import { MapPin, CreditCard, Gift, Package, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Address } from '../Profile/Address';
 import PaymentSection from './Payment';
 import OffersSection from './Offers';
 import ReviewOrder from './ReviewOrder';
 import { useGetCartQuery } from '@/redux/api/user/cartApi';
 import { useUsers } from '@/hooks';
+import { toast } from 'sonner';
+import { usePlaceOrderMutation } from '@/redux/api/user/ordersApi';
+import OrderConfirmation from './OrderConfirm';
 
 export function CheckoutPage() {
   const user = useUsers();
+  const navigate = useNavigate();
+
   const { data: responseCart } = useGetCartQuery(user?.userInfo?.id, {
     skip: !user?.userInfo?.id,
   });
+  const [placeOrder, { isError: isPlaceOrderError }] = usePlaceOrderMutation();
+
   const [cartItems, setCartItems] = useState([]);
+  const [isOrderComplete, setIsOrderComplete] = useState(false);
 
   useEffect(() => {
     if (responseCart) {
       setCartItems(responseCart.data.items);
+      if (responseCart?.data?.items?.length == 0) {
+        navigate('/games');
+        toast(
+          `Your cart is empty, Please add something and proceed to checkout.`
+        );
+      }
     }
-  }, [responseCart]);
+  }, [responseCart, navigate]);
 
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
@@ -71,7 +86,8 @@ export function CheckoutPage() {
     setCompletedSections((prev) => ({ ...prev, review: true }));
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
+    // For showing required field if any fields were not selected
     const incompleteSections = Object.keys(completedSections).filter(
       (key) => !completedSections[key]
     );
@@ -95,11 +111,31 @@ export function CheckoutPage() {
         3000
       );
     } else {
-      console.log('Place order');
-      // Place order logic here
+      console.log(cartItems);
+      const orderItems = cartItems.map((item) => {
+        return {
+          product: item?.product._id,
+          quantity: item?.quantity,
+          price: item?.product?.price,
+          totalPrice: item?.product?.price * item?.quantity,
+        };
+      });
+      try {
+        const response = await placeOrder({
+          orderItems,
+          shippingAddress: selectedAddress.id,
+          paymentMethod: selectedPayment,
+        }).unwrap();
+        if (response?.success) {
+          setIsOrderComplete(true);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
+  console.log(selectedAddress);
   const isSectionDisabled = (sectionId) => {
     switch (sectionId) {
       case 'payment':
@@ -161,10 +197,18 @@ export function CheckoutPage() {
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
-  console.log(cartItems);
+
   const shipping = 9.99; // Example shipping fee
   const discount = 15.0;
   const total = subtotal + shipping - discount;
+
+  if (isPlaceOrderError) {
+    console.log('Error occurred while placing order');
+  }
+
+  if (isOrderComplete) {
+    return <OrderConfirmation />;
+  }
 
   return (
     <TooltipProvider>
@@ -185,6 +229,7 @@ export function CheckoutPage() {
                           if (!isSectionDisabled(section.id))
                             setActiveSection(section.id);
                         }}
+                        type='button'
                         className={`w-full p-4 flex items-center justify-between transition-colors ${
                           isSectionDisabled(section.id)
                             ? 'opacity-50 cursor-not-allowed'

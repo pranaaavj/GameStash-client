@@ -213,7 +213,7 @@ export default function PaymentSection({ onPaymentSelect }) {
         {/* Cash on Delivery */}
         <div className='relative'>
           <RadioGroupItem
-            value='COD'
+            value='Cash on Delivery'
             id='COD'
             className='peer sr-only'
           />

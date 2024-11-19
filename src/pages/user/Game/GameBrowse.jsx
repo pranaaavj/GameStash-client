@@ -7,7 +7,7 @@ import { UserPagination } from '@/components/user';
 import { FilterComponent } from '../FilterSection';
 import { GenreListing } from '../GenreListing';
 import { useGetProductsQuery } from '@/redux/api/user/productApi';
-import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
+import { useGetAllGenresQuery } from '@/redux/api/user/productApi';
 
 export const GameBrowse = () => {
   const [pageState, setPageState] = useState({
@@ -38,8 +38,9 @@ export const GameBrowse = () => {
 
   const navigate = useNavigate();
   const [filteredGames, setFilteredGames] = useState(
-    responseGames?.data?.products
+    responseGames?.data?.products || []
   );
+
   console.log(filteredGames);
 
   const handleApplyFilters = (filters) => {
@@ -61,13 +62,14 @@ export const GameBrowse = () => {
   };
 
   return (
-    <div className='bg-[#121212]'>
+    <div className='bg-primary-bg'>
       {isGenreSuccess && (
         <GenreListing
           title='Genres'
           genres={responseGenres?.data?.genres}
         />
       )}
+
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex flex-col lg:flex-row gap-8'>
           {/* Left Column - Filter */}

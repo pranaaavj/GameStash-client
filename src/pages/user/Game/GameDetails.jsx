@@ -1,12 +1,5 @@
 /* eslint-disable react/prop-types */
 import {
-  Carousel,
-  CarouselItem,
-  CarouselNext,
-  CarouselContent,
-  CarouselPrevious,
-} from '@/shadcn/components/ui/carousel';
-import {
   useGetProductQuery,
   useGetReviewByProductQuery,
   useGetProductsByGenreQuery,
@@ -15,7 +8,7 @@ import { Button } from '@/shadcn/components/ui/button';
 import { Reviews } from '../Reviews';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ImageZoomPreview } from '@/components/user/ImageZoom';
+// import { ImageZoomPreview } from '@/components/user/ImageZoom';
 import { RelatedGamesFallback } from '@/components/error/RelatedFallback';
 import { ShoppingCart, Heart, Minus, Plus } from 'lucide-react';
 import { GameListing, StarRating, SystemRequirements } from '..';
@@ -26,6 +19,7 @@ import {
 import { toast } from 'sonner';
 import { useUsers } from '@/hooks';
 import { requireLogin } from '@/utils';
+import { ImageGallery } from '@/components/common/ImageGallery';
 
 export function GameDetails() {
   const user = useUsers();
@@ -130,7 +124,11 @@ export function GameDetails() {
                   </span>
                 </div>
               </div>
-              <Carousel className='w-full mx-10'>
+              <ImageGallery
+                images={responseProducts?.data?.images || []}
+                alt={responseProducts?.data?.images}
+              />
+              {/* <Carousel className='w-full mx-10'>
                 <CarouselContent>
                   {responseProducts?.data?.images.map((image, index) => (
                     <CarouselItem
@@ -145,7 +143,7 @@ export function GameDetails() {
                 </CarouselContent>
                 <CarouselPrevious />
                 <CarouselNext />
-              </Carousel>
+              </Carousel> */}
             </div>
 
             {/* Right Column - Game Info and Action Buttons */}

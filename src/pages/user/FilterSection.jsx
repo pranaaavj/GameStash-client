@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import { Button } from '@/shadcn/components/ui/button';
 import { Checkbox } from '@/shadcn/components/ui/checkbox';
 import { Slider } from '@/shadcn/components/ui/slider';
@@ -9,7 +11,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/shadcn/components/ui/collapsible';
-import { useState } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shadcn/components/ui/select';
 
 const FilterSection = ({ title, children }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -19,15 +27,28 @@ const FilterSection = ({ title, children }) => {
       open={isOpen}
       onOpenChange={setIsOpen}
       className='mb-4'>
-      <CollapsibleTrigger className='flex items-center justify-between w-full py-2 text-lg md:text-xl font-semibold'>
+      <CollapsibleTrigger className='flex items-center justify-between w-full py-2 text-sm font-semibold'>
         {title}
-        {isOpen ? (
-          <ChevronUp className='h-5 w-5' />
-        ) : (
+        <motion.div
+          initial={false}
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}>
           <ChevronDown className='h-5 w-5' />
-        )}
+        </motion.div>
       </CollapsibleTrigger>
-      <CollapsibleContent className='pt-2 pb-4'>{children}</CollapsibleContent>
+      <CollapsibleContent className='pt-2'>
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}>
+              {children}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </CollapsibleContent>
     </Collapsible>
   );
 };
@@ -37,6 +58,7 @@ export const FilterComponent = ({ onApplyFilters }) => {
   const [brands, setBrands] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 100]);
   const [offers, setOffers] = useState({ discounted: false, bundle: false });
+  const [sortingOption, setSortingOption] = useState('popularity:desc');
 
   const handleGenreChange = (genre) => {
     setGenres((prev) =>
@@ -66,11 +88,37 @@ export const FilterComponent = ({ onApplyFilters }) => {
   };
 
   const handleApplyFilters = () => {
-    onApplyFilters({ genres, brands, priceRange, offers });
+    onApplyFilters({ genres, brands, priceRange, offers, sortingOption });
+  };
+
+  const handleSortingChange = (value) => {
+    setSortingOption(value);
   };
 
   return (
-    <div className='bg-secondary-bg p-4 md:p-6 rounded-lg text-primary-text font-sans'>
+    <div className='bg-secondary-bg rounded-lg text-primary-text p-4 md:p-6'>
+      {/* Sorting Dropdown */}
+      <div className='mb-6'>
+        <h3 className='text-sm font-semibold mb-2'>Sort By</h3>
+        <Select
+          value={sortingOption}
+          onValueChange={handleSortingChange}>
+          <SelectTrigger className='w-full'>
+            <SelectValue placeholder='Sort by' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='popularity:desc'>Popularity</SelectItem>
+            <SelectItem value='price:asc'>Price: Low to High</SelectItem>
+            <SelectItem value='price:desc'>Price: High to Low</SelectItem>
+            <SelectItem value='averageRating:desc'>Average Ratings</SelectItem>
+            <SelectItem value='createdAt:desc'>New Arrivals</SelectItem>
+            <SelectItem value='name:asc'>A-Z</SelectItem>
+            <SelectItem value='name:desc'>Z-A</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Filter Sections */}
       <FilterSection title='Genre'>
         {['Action', 'Adventure', 'RPG', 'Strategy', 'Sports'].map((genre) => (
           <div
@@ -83,7 +131,7 @@ export const FilterComponent = ({ onApplyFilters }) => {
             />
             <label
               htmlFor={`genre-${genre}`}
-              className='text-sm md:text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+              className='text-sm font-normal'>
               {genre}
             </label>
           </div>
@@ -103,7 +151,7 @@ export const FilterComponent = ({ onApplyFilters }) => {
               />
               <label
                 htmlFor={`brand-${brand}`}
-                className='text-sm md:text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+                className='text-sm font-normal'>
                 {brand}
               </label>
             </div>
@@ -118,16 +166,16 @@ export const FilterComponent = ({ onApplyFilters }) => {
           step={1}
           value={priceRange}
           onValueChange={handlePriceChange}
-          className='mb-4'
+          className='mb-2'
         />
-        <div className='flex justify-between text-sm md:text-base'>
+        <div className='flex justify-between text-sm'>
           <span>${priceRange[0]}</span>
           <span>${priceRange[1]}</span>
         </div>
       </FilterSection>
 
       <FilterSection title='Offers'>
-        <div className='space-y-4'>
+        <div className='space-y-2'>
           <div className='flex items-center space-x-2'>
             <Switch
               id='discounted'
@@ -136,7 +184,7 @@ export const FilterComponent = ({ onApplyFilters }) => {
             />
             <label
               htmlFor='discounted'
-              className='text-sm md:text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+              className='text-sm font-normal'>
               Discounted Games
             </label>
           </div>
@@ -148,23 +196,24 @@ export const FilterComponent = ({ onApplyFilters }) => {
             />
             <label
               htmlFor='bundle'
-              className='text-sm md:text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+              className='text-sm font-normal'>
               Bundle Deals
             </label>
           </div>
         </div>
       </FilterSection>
 
+      {/* Buttons */}
       <div className='flex flex-col mt-6 space-y-2'>
         <Button
           variant='outline'
           onClick={handleClearFilters}
-          className='w-full md:w-auto bg-primary-bg border-none'>
+          className='w-full bg-primary-bg border-none'>
           Clear Filters
         </Button>
         <Button
-          className='w-full md:w-auto bg-accent-blue hover:bg-hover-blue text-white'
-          onClick={handleApplyFilters}>
+          onClick={handleApplyFilters}
+          className='w-full bg-accent-blue hover:bg-hover-blue text-white'>
           Apply Filters
         </Button>
       </div>

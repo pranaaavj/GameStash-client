@@ -34,36 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/shadcn/components/ui/table';
-
-// Mock data based on the provided structure
-const mockOrders = [
-  {
-    _id: '67359538aed48f55b648ae69',
-    orderItems: [
-      {
-        product: { name: 'Product 1', _id: '673591ae57aea220c7416dfc' },
-        quantity: 2,
-        price: 49.99,
-        totalPrice: 99.98,
-        status: 'Pending',
-      },
-      {
-        product: { name: 'Product 2', _id: '6735911957aea220c7416dfb' },
-        quantity: 1,
-        price: 29.9,
-        totalPrice: 29.9,
-        status: 'Pending',
-      },
-    ],
-    totalAmount: 129.88,
-    finalPrice: 129.88,
-    paymentMethod: 'Credit Card',
-    paymentStatus: 'Pending',
-    orderStatus: 'Processing',
-    placedAt: '2024-11-14T06:14:16.411Z',
-  },
-  // Add more mock orders here if needed
-];
+import { useGetOrdersQuery } from '@/redux/api/user/ordersApi';
 
 const statusColors = {
   Pending: 'bg-yellow-500',
@@ -91,62 +62,65 @@ const StatusIcon = ({ status }) => {
 export const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  const { data: responseOrders } = useGetOrdersQuery({});
+
   return (
-    <Card className='bg-gradient-to-br from-primary-bg to-secondary-bg border-none shadow-lg'>
+    <Card className='bg-gradient-to-br from-primary-bg to-secondary-bg border-none shadow-lg text-primary-text'>
       <CardHeader>
         <CardTitle className='text-3xl font-bold'>Order History</CardTitle>
         <CardDescription>View and manage your recent orders</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-          {mockOrders.map((order) => (
-            <motion.div
-              key={order._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}>
-              <Card className='bg-primary-bg/50 border-none hover:shadow-md transition-shadow duration-300'>
-                <CardHeader>
-                  <CardTitle className='text-lg font-semibold flex items-center justify-between'>
-                    Order #{order._id.slice(-6)}
-                    <StatusIcon status={order.orderStatus} />
-                  </CardTitle>
-                  {/* <CardDescription>{new Date(order.placedAt)}</CardDescription> */}
-                </CardHeader>
-                <CardContent>
-                  <div className='space-y-2'>
-                    <div className='flex justify-between items-center'>
-                      <span className='text-secondary-text'>Status</span>
-                      <Badge
-                        className={`${
-                          statusColors[order.orderStatus]
-                        } text-white`}>
-                        {order.orderStatus}
-                      </Badge>
+        <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3 text-primary-text'>
+          {responseOrders &&
+            responseOrders?.data?.orders.map((order) => (
+              <motion.div
+                key={order._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}>
+                <Card className='bg-primary-bg/50 border-none hover:shadow-md transition-shadow duration-300 text-primary-text'>
+                  <CardHeader>
+                    <CardTitle className='text-lg font-semibold flex items-center justify-between'>
+                      Order #{order._id.slice(-6)}
+                      <StatusIcon status={order.orderStatus} />
+                    </CardTitle>
+                    {/* <CardDescription>{new Date(order.placedAt)}</CardDescription> */}
+                  </CardHeader>
+                  <CardContent>
+                    <div className='space-y-2'>
+                      <div className='flex justify-between items-center'>
+                        <span className='text-secondary-text'>Status</span>
+                        <Badge
+                          className={`${
+                            statusColors[order.orderStatus]
+                          } text-white`}>
+                          {order.orderStatus}
+                        </Badge>
+                      </div>
+                      <div className='flex justify-between items-center'>
+                        <span className='text-secondary-text'>Total</span>
+                        <span className='font-semibold'>
+                          ₹{order.finalPrice.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className='flex justify-between items-center'>
+                        <span className='text-secondary-text'>Items</span>
+                        <span>{order.orderItems.length}</span>
+                      </div>
                     </div>
-                    <div className='flex justify-between items-center'>
-                      <span className='text-secondary-text'>Total</span>
-                      <span className='font-semibold'>
-                        ${order.finalPrice.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className='flex justify-between items-center'>
-                      <span className='text-secondary-text'>Items</span>
-                      <span>{order.orderItems.length}</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    variant='outline'
-                    className='w-full bg-primary-bg/50 hover:bg-secondary-bg border-none'
-                    onClick={() => setSelectedOrder(order)}>
-                    View Details
-                  </Button>
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
+                  </CardContent>
+                  <CardFooter>
+                    <Button
+                      variant='outline'
+                      className='w-full bg-primary-bg/50 hover:bg-secondary-bg border-none'
+                      onClick={() => setSelectedOrder(order)}>
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
         </div>
       </CardContent>
 
@@ -219,10 +193,10 @@ export const Orders = () => {
                           {item.quantity}
                         </TableCell>
                         <TableCell className='text-right'>
-                          ${item.price.toFixed(2)}
+                          ₹{item.price.toFixed(2)}
                         </TableCell>
                         <TableCell className='text-right'>
-                          ${item.totalPrice.toFixed(2)}
+                          ₹{item.totalPrice.toFixed(2)}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -230,7 +204,7 @@ export const Orders = () => {
                 </Table>
                 <div className='flex justify-between items-center text-lg font-semibold'>
                   <span>Total Amount</span>
-                  <span>${selectedOrder.finalPrice.toFixed(2)}</span>
+                  <span>₹{selectedOrder.finalPrice.toFixed(2)}</span>
                 </div>
               </div>
             </DialogContent>

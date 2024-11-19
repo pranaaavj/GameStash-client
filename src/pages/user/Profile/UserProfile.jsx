@@ -34,6 +34,7 @@ export const UserProfile = () => {
             ))}
           </TabsList>
 
+          {/* Profile View */}
           <TabsContent value='profile'>
             <ProfileView />
             <div className='mt-8'>
@@ -41,10 +42,12 @@ export const UserProfile = () => {
             </div>
           </TabsContent>
 
+          {/* Address management */}
           <TabsContent value='address'>
             <Address />
           </TabsContent>
 
+          {/* Orders */}
           <TabsContent value='orders'>
             <Orders />
           </TabsContent>
