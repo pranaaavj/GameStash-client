@@ -1,33 +1,31 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
-import { Button } from '@/shadcn/components/ui/button';
-import { Checkbox } from '@/shadcn/components/ui/checkbox';
-import { Slider } from '@/shadcn/components/ui/slider';
-import { Switch } from '@/shadcn/components/ui/switch';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/shadcn/components/ui/collapsible';
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectTrigger,
+  SelectContent,
 } from '@/shadcn/components/ui/select';
+import { Button } from '@/shadcn/components/ui/button';
+import { Slider } from '@/shadcn/components/ui/slider';
+import { Switch } from '@/shadcn/components/ui/switch';
+import { useEffect, useState } from 'react';
+import { Checkbox } from '@/shadcn/components/ui/checkbox';
+import { ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  useGetAllBrandsQuery,
+  useGetAllGenresQuery,
+} from '@/redux/api/user/productApi';
 
-const FilterSection = ({ title, children }) => {
+const Filters = ({ title, children }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <Collapsible
-      open={isOpen}
-      onOpenChange={setIsOpen}
-      className='mb-4'>
-      <CollapsibleTrigger className='flex items-center justify-between w-full py-2 text-sm font-semibold'>
+    <div className='mb-4'>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className='flex items-center justify-between w-full py-2 text-sm font-semibold'>
         {title}
         <motion.div
           initial={false}
@@ -35,64 +33,53 @@ const FilterSection = ({ title, children }) => {
           transition={{ duration: 0.2 }}>
           <ChevronDown className='h-5 w-5' />
         </motion.div>
-      </CollapsibleTrigger>
-      <CollapsibleContent className='pt-2'>
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}>
-              {children}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </CollapsibleContent>
-    </Collapsible>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{
+              duration: 0.3,
+              ease: 'easeInOut',
+            }}>
+            <div className='pt-2'>{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 
-export const FilterComponent = ({ onApplyFilters }) => {
+export const FilterSection = ({ onApplyFilters }) => {
   const [genres, setGenres] = useState([]);
   const [brands, setBrands] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 100]);
+  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [priceRange, setPriceRange] = useState([0, 3000]);
   const [offers, setOffers] = useState({ discounted: false, bundle: false });
   const [sortingOption, setSortingOption] = useState('popularity:desc');
 
-  const handleGenreChange = (genre) => {
-    setGenres((prev) =>
-      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
-    );
-  };
+  const { data: responseBrands } = useGetAllBrandsQuery({});
+  const { data: responseGenres } = useGetAllGenresQuery({});
 
-  const handleBrandChange = (brand) => {
-    setBrands((prev) =>
-      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
-    );
-  };
-
-  const handlePriceChange = (value) => {
-    setPriceRange(value);
-  };
-
-  const handleOfferChange = (offer) => {
-    setOffers((prev) => ({ ...prev, [offer]: !prev[offer] }));
-  };
-
-  const handleClearFilters = () => {
-    setGenres([]);
-    setBrands([]);
-    setPriceRange([0, 100]);
-    setOffers({ discounted: false, bundle: false });
-  };
+  useEffect(() => {
+    if (responseBrands) setBrands(responseBrands?.data?.brands);
+    if (responseGenres) setGenres(responseGenres?.data?.genres);
+  }, [responseBrands, responseGenres]);
 
   const handleApplyFilters = () => {
-    onApplyFilters({ genres, brands, priceRange, offers, sortingOption });
-  };
-
-  const handleSortingChange = (value) => {
-    setSortingOption(value);
+    onApplyFilters({
+      genres: selectedGenres,
+      brands: selectedBrands,
+      priceRange: priceRange.join('-'),
+      offers: {
+        discounted: offers.discounted.toString(),
+        bundle: offers.bundle.toString(),
+      },
+      sort: sortingOption,
+    });
   };
 
   return (
@@ -102,7 +89,7 @@ export const FilterComponent = ({ onApplyFilters }) => {
         <h3 className='text-sm font-semibold mb-2'>Sort By</h3>
         <Select
           value={sortingOption}
-          onValueChange={handleSortingChange}>
+          onValueChange={(value) => setSortingOption(value)}>
           <SelectTrigger className='w-full'>
             <SelectValue placeholder='Sort by' />
           </SelectTrigger>
@@ -118,69 +105,88 @@ export const FilterComponent = ({ onApplyFilters }) => {
         </Select>
       </div>
 
-      {/* Filter Sections */}
-      <FilterSection title='Genre'>
-        {['Action', 'Adventure', 'RPG', 'Strategy', 'Sports'].map((genre) => (
-          <div
-            key={genre}
-            className='flex items-center space-x-2 mb-2'>
-            <Checkbox
-              id={`genre-${genre}`}
-              checked={genres.includes(genre)}
-              onCheckedChange={() => handleGenreChange(genre)}
-            />
-            <label
-              htmlFor={`genre-${genre}`}
-              className='text-sm font-normal'>
-              {genre}
-            </label>
-          </div>
-        ))}
-      </FilterSection>
-
-      <FilterSection title='Brand'>
-        {['Epic Games', 'Ubisoft', 'EA', 'Activision', 'Bethesda'].map(
-          (brand) => (
+      {/* Genres */}
+      <Filters title='Genre'>
+        {genres?.length > 0 &&
+          genres.map((genre) => (
             <div
-              key={brand}
+              key={genre._id}
               className='flex items-center space-x-2 mb-2'>
               <Checkbox
-                id={`brand-${brand}`}
-                checked={brands.includes(brand)}
-                onCheckedChange={() => handleBrandChange(brand)}
+                id={`genre-${genre._id}`}
+                checked={selectedGenres.includes(genre._id)}
+                className='border-accent-red'
+                onCheckedChange={() =>
+                  setSelectedGenres((prev) =>
+                    prev.includes(genre._id)
+                      ? prev.filter((id) => id !== genre._id)
+                      : [...prev, genre._id]
+                  )
+                }
               />
               <label
-                htmlFor={`brand-${brand}`}
+                htmlFor={`genre-${genre._id}`}
                 className='text-sm font-normal'>
-                {brand}
+                {genre?.name}
               </label>
             </div>
-          )
-        )}
-      </FilterSection>
+          ))}
+      </Filters>
 
-      <FilterSection title='Price'>
+      {/* Brands */}
+      <Filters title='Brand'>
+        {brands?.length > 0 &&
+          brands.map((brand) => (
+            <div
+              key={brand._id}
+              className='flex items-center space-x-2 mb-2'>
+              <Checkbox
+                id={`brand-${brand._id}`}
+                checked={selectedBrands.includes(brand._id)}
+                className='border-accent-red'
+                onCheckedChange={() =>
+                  setSelectedBrands((prev) =>
+                    prev.includes(brand._id)
+                      ? prev.filter((id) => id !== brand._id)
+                      : [...prev, brand._id]
+                  )
+                }
+              />
+              <label
+                htmlFor={`brand-${brand._id}`}
+                className='text-sm font-normal'>
+                {brand?.name}
+              </label>
+            </div>
+          ))}
+      </Filters>
+
+      {/* Price range */}
+      <Filters title='Price'>
         <Slider
           min={0}
-          max={100}
-          step={1}
+          max={3000}
+          step={50}
           value={priceRange}
-          onValueChange={handlePriceChange}
+          onValueChange={(value) => setPriceRange(value)}
           className='mb-2'
         />
         <div className='flex justify-between text-sm'>
           <span>${priceRange[0]}</span>
           <span>${priceRange[1]}</span>
         </div>
-      </FilterSection>
+      </Filters>
 
-      <FilterSection title='Offers'>
+      {/* Offers */}
+      <Filters title='Offers'>
         <div className='space-y-2'>
           <div className='flex items-center space-x-2'>
             <Switch
               id='discounted'
               checked={offers.discounted}
-              onCheckedChange={() => handleOfferChange('discounted')}
+              onCheckedChange={() =>
+                setOffers((prev) => ({ ...prev, discounted: !prev.discounted }))
+              }
             />
             <label
               htmlFor='discounted'
@@ -192,7 +198,9 @@ export const FilterComponent = ({ onApplyFilters }) => {
             <Switch
               id='bundle'
               checked={offers.bundle}
-              onCheckedChange={() => handleOfferChange('bundle')}
+              onCheckedChange={() =>
+                setOffers((prev) => ({ ...prev, bundle: !prev.bundle }))
+              }
             />
             <label
               htmlFor='bundle'
@@ -201,20 +209,33 @@ export const FilterComponent = ({ onApplyFilters }) => {
             </label>
           </div>
         </div>
-      </FilterSection>
+      </Filters>
 
-      {/* Buttons */}
+      {/* Clear and apply filters */}
       <div className='flex flex-col mt-6 space-y-2'>
         <Button
-          variant='outline'
-          onClick={handleClearFilters}
-          className='w-full bg-primary-bg border-none'>
-          Clear Filters
+          onClick={handleApplyFilters}
+          className='w-full bg-accent-blue border-none hover:bg-hover-blue text-white'>
+          Apply Filters
         </Button>
         <Button
-          onClick={handleApplyFilters}
-          className='w-full bg-accent-blue hover:bg-hover-blue text-white'>
-          Apply Filters
+          variant='outline'
+          onClick={() => {
+            setSelectedGenres([]);
+            setSelectedBrands([]);
+            setPriceRange([0, 3000]);
+            setOffers({ discounted: false, bundle: false });
+            setSortingOption('popularity:desc');
+            onApplyFilters({
+              genres: [],
+              brands: [],
+              priceRange: '0-3000',
+              offers: { discounted: 'false', bundle: 'false' },
+              sort: 'popularity:desc',
+            });
+          }}
+          className='w-full bg-primary-bg border-none'>
+          Clear Filters
         </Button>
       </div>
     </div>

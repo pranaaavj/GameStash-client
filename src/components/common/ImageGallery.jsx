@@ -21,7 +21,6 @@ export function ImageGallery({ images = [], alt = 'Product image' }) {
                 ? 'border-accent-red shadow-lg'
                 : 'border-transparent hover:border-accent-red/50'
             )}
-            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}>
             <img
               src={image}

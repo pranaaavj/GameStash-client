@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { UserPagination } from '@/components/user';
 
@@ -13,11 +12,6 @@ export const GenreCard = ({ genre, onClick }) => {
       </h3>
     </div>
   );
-};
-
-GenreCard.propTypes = {
-  genre: PropTypes.object.isRequired,
-  onClick: PropTypes.func.isRequired,
 };
 
 export const GenreListing = ({
@@ -56,9 +50,4 @@ export const GenreListing = ({
       </div>
     </div>
   );
-};
-
-GenreListing.propTypes = {
-  title: PropTypes.string,
-  genres: PropTypes.array,
 };

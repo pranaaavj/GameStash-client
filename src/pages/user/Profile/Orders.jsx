@@ -34,7 +34,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/shadcn/components/ui/table';
-import { useGetOrdersQuery } from '@/redux/api/user/ordersApi';
+import {
+  useGetOrdersQuery,
+  useCancelOrdersMutation,
+} from '@/redux/api/user/ordersApi';
+import { toast } from 'sonner';
 
 const statusColors = {
   Pending: 'bg-yellow-500',
@@ -61,11 +65,22 @@ const StatusIcon = ({ status }) => {
 
 export const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
-
   const { data: responseOrders } = useGetOrdersQuery({});
+  const [cancelOrder, { isLoading: isCancelling }] = useCancelOrdersMutation();
+
+  const handleCancelOrder = async (orderId) => {
+    try {
+      await cancelOrder({ orderId }).unwrap();
+      toast.success('Order cancelled successfully');
+      setSelectedOrder(null);
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to cancel order. Please try again.');
+    }
+  };
 
   return (
-    <Card className='bg-gradient-to-br from-primary-bg to-secondary-bg border-none shadow-lg text-primary-text'>
+    <Card className='bg-secondary-bg border-none shadow-lg text-primary-text'>
       <CardHeader>
         <CardTitle className='text-3xl font-bold'>Order History</CardTitle>
         <CardDescription>View and manage your recent orders</CardDescription>
@@ -85,7 +100,6 @@ export const Orders = () => {
                       Order #{order._id.slice(-6)}
                       <StatusIcon status={order.orderStatus} />
                     </CardTitle>
-                    {/* <CardDescription>{new Date(order.placedAt)}</CardDescription> */}
                   </CardHeader>
                   <CardContent>
                     <div className='space-y-2'>
@@ -129,7 +143,9 @@ export const Orders = () => {
           <Dialog
             open={!!selectedOrder}
             onOpenChange={() => setSelectedOrder(null)}>
-            <DialogContent className='sm:max-w-[600px] bg-primary-bg text-primary-text'>
+            <DialogContent
+              hideClose
+              className='sm:max-w-[600px] [&>button]:hidden bg-secondary-bg text-primary-text border-none'>
               <DialogHeader>
                 <DialogTitle className='text-2xl font-bold flex items-center justify-between'>
                   Order Details
@@ -143,7 +159,7 @@ export const Orders = () => {
                 </DialogTitle>
                 <DialogDescription>
                   Order #{selectedOrder._id.slice(-6)} - Placed on{' '}
-                  {/* {new Date(selectedOrder.placedAt)} */}
+                  {new Date(selectedOrder.placedAt).toLocaleDateString()}
                 </DialogDescription>
               </DialogHeader>
               <div className='mt-4 space-y-4'>
@@ -185,18 +201,18 @@ export const Orders = () => {
                   </TableHeader>
                   <TableBody>
                     {selectedOrder.orderItems.map((item) => (
-                      <TableRow key={item.product._id}>
+                      <TableRow key={item?.product?._id}>
                         <TableCell className='font-medium'>
-                          {item.product.name}
+                          {item?.product?.name}
                         </TableCell>
                         <TableCell className='text-right'>
-                          {item.quantity}
+                          {item?.quantity}
                         </TableCell>
                         <TableCell className='text-right'>
-                          ₹{item.price.toFixed(2)}
+                          ₹{item?.price?.toFixed(2)}
                         </TableCell>
                         <TableCell className='text-right'>
-                          ₹{item.totalPrice.toFixed(2)}
+                          ₹{item?.totalPrice?.toFixed(2)}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -204,8 +220,18 @@ export const Orders = () => {
                 </Table>
                 <div className='flex justify-between items-center text-lg font-semibold'>
                   <span>Total Amount</span>
-                  <span>₹{selectedOrder.finalPrice.toFixed(2)}</span>
+                  <span>₹{selectedOrder?.finalPrice.toFixed(2)}</span>
                 </div>
+                {selectedOrder?.orderStatus !== 'Cancelled' &&
+                  selectedOrder?.orderStatus !== 'Delivered' && (
+                    <Button
+                      variant='destructive'
+                      className='w-full'
+                      onClick={() => handleCancelOrder(selectedOrder?._id)}
+                      disabled={isCancelling}>
+                      {isCancelling ? 'Cancelling...' : 'Cancel Order'}
+                    </Button>
+                  )}
               </div>
             </DialogContent>
           </Dialog>

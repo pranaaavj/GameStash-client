@@ -14,4 +14,6 @@ export { GenreList } from './Genres/GenreList';
 export { AddGenre } from './Genres/AddGenre';
 export { EditGenre } from './Genres/EditGenre';
 
+export { OrderList } from './Orders/OrderList';
+
 export { UsersList } from './UsersList';

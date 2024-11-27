@@ -3,21 +3,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ShoppingBag, Gift } from 'lucide-react';
 import { Button } from '@/shadcn/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useClearCartMutation } from '@/redux/api/user/cartApi';
 
 export default function OrderConfirmation() {
   const [showViewOrders, setShowViewOrders] = useState(false);
+  const [clearCart] = useClearCartMutation();
 
   useEffect(() => {
     const timer = setTimeout(() => setShowViewOrders(true), 3000);
     return () => {
       clearTimeout(timer);
+      clearCart();
     };
   }, []);
 
   return (
-    <div
-      className='flex flex-col items-center justify-center min-h-[calc(100vh-200px)] bg-primary-bg text-primary-text relative overflow-hidden'
->
+    <div className='flex flex-col items-center justify-center min-h-[calc(100vh-200px)] bg-primary-bg text-primary-text relative overflow-hidden'>
       <AnimatePresence>
         {!showViewOrders && (
           <motion.div

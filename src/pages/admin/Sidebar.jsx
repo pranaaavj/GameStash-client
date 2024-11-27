@@ -1,17 +1,19 @@
+import {
+  Home,
+  Users,
+  LogOut,
+  Settings,
+  PanelLeftOpen,
+  PanelRightOpen,
+  Package,
+  Tags,
+  Factory,
+  ShoppingCart,
+  Ticket,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import {
-  Home,
-  PackagePlus,
-  Settings,
-  Users,
-  PanelLeftOpen,
-  PanelRightOpen,
-  Tag,
-  Gift,
-  LogOut,
-} from 'lucide-react';
 import Logo from '../../assets/images/logo.svg';
 import { Button } from '@/shadcn/components/ui/button';
 import { useDispatch } from 'react-redux';
@@ -21,10 +23,11 @@ import { logoutAdmin } from '@/redux/slices/adminSlice';
 const menuItems = [
   { name: 'Dashboard', icon: Home, to: '/admin/dashboard' },
   { name: 'Users', icon: Users, to: '/admin/users' },
-  { name: 'Products', icon: PackagePlus, to: '/admin/products' },
-  { name: 'Genres', icon: Tag, to: '/admin/genres' }, // Tag icon for genres
-  { name: 'Brands', icon: PackagePlus, to: '/admin/brands' },
-  { name: 'Coupons', icon: Gift, to: '/admin/coupons' }, // Gift icon for coupons
+  { name: 'Products', icon: Package, to: '/admin/products' },
+  { name: 'Genres', icon: Tags, to: '/admin/genres' },
+  { name: 'Brands', icon: Factory, to: '/admin/brands' },
+  { name: 'Orders', icon: ShoppingCart, to: '/admin/orders' },
+  { name: 'Coupons', icon: Ticket, to: '/admin/coupons' },
   { name: 'Settings', icon: Settings, to: '/admin/settings' },
 ];
 

@@ -5,7 +5,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 export const UnauthorizedRoute = () => {
   const user = useUsers();
 
-  if (user && user?.token) return <Navigate to='/' />;
+  if (user && (user?.token || user?.userInfo)) return <Navigate to='/' />;
 
   return <Outlet />;
 };

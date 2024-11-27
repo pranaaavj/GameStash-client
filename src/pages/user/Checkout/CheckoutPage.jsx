@@ -111,7 +111,6 @@ export function CheckoutPage() {
         3000
       );
     } else {
-      console.log(cartItems);
       const orderItems = cartItems.map((item) => {
         return {
           product: item?.product._id,
@@ -120,6 +119,7 @@ export function CheckoutPage() {
           totalPrice: item?.product?.price * item?.quantity,
         };
       });
+
       try {
         const response = await placeOrder({
           orderItems,

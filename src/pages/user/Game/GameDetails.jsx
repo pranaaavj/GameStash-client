@@ -8,7 +8,6 @@ import { Button } from '@/shadcn/components/ui/button';
 import { Reviews } from '../Reviews';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-// import { ImageZoomPreview } from '@/components/user/ImageZoom';
 import { RelatedGamesFallback } from '@/components/error/RelatedFallback';
 import { ShoppingCart, Heart, Minus, Plus } from 'lucide-react';
 import { GameListing, StarRating, SystemRequirements } from '..';
@@ -32,13 +31,10 @@ export function GameDetails() {
   });
 
   const [quantity, setQuantity] = useState(1);
+  const [isOutOfStock, setIsOutOfStock] = useState(false);
   const [pageState, setPageState] = useState({
     relatedGames: 1,
   });
-
-  useEffect(() => {
-    setQuantity(1);
-  }, [productId]);
 
   const {
     data: responseProducts,
@@ -56,6 +52,11 @@ export function GameDetails() {
       },
       { skip: !responseProducts?.data?.genre?.name }
     );
+
+  useEffect(() => {
+    setQuantity(1);
+    setIsOutOfStock(false);
+  }, [productId]);
 
   const {
     data: responseReviews,
@@ -84,10 +85,20 @@ export function GameDetails() {
       return;
     }
 
+    if (responseProducts?.data?.stock <= item?.quantity) {
+      setIsOutOfStock(true);
+      return;
+    }
+
     try {
       const response = await addItemToCart({ productId, quantity }).unwrap();
       if (response.success) {
         toast.success('Added to cart successfully !');
+
+        const updatedStock = responseProducts?.data?.stock - quantity;
+        if (updatedStock <= 0) {
+          setIsOutOfStock(true);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -193,6 +204,7 @@ export function GameDetails() {
                   </Button>
                 </div>
               </div>
+
               {/* Additional space for message to avoid layout shift */}
               <span className='text-red-500 text-sm mt-2 min-h-[1.5rem] block'>
                 {quantity >= responseProducts?.data?.stock
@@ -205,8 +217,8 @@ export function GameDetails() {
               <div className='space-y-3'>
                 <Button
                   className='w-full bg-[#0074E4] hover:bg-[#0063C1] text-white font-semibold py-3'
-                  disabled={responseProducts?.data?.stock < 1}>
-                  {responseProducts?.data?.stock > 1
+                  disabled={isOutOfStock || responseProducts?.data?.stock < 1}>
+                  {responseProducts?.data?.stock >= 1 && !isOutOfStock
                     ? 'Buy Now'
                     : 'No Stocks Left'}
                 </Button>
@@ -214,10 +226,10 @@ export function GameDetails() {
                 <Button
                   variant='secondary'
                   className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white'
-                  disabled={responseProducts?.data?.stock < 1}
+                  disabled={isOutOfStock || responseProducts?.data?.stock < 1}
                   onClick={handleAddToCart}>
                   <ShoppingCart className='w-4 h-4 mr-2' />
-                  {responseProducts?.data?.stock > 1
+                  {responseProducts?.data?.stock >= 1 && !isOutOfStock
                     ? 'Add To Cart'
                     : 'No Stocks Left'}
                 </Button>

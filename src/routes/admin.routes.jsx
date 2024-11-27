@@ -11,6 +11,7 @@ import {
   AddGenre,
   EditGenre,
   UsersList,
+  OrderList,
 } from '@/pages/admin';
 import { AdminError } from '@/components/error';
 import { AdminLayout } from '@/components/admin';
@@ -84,6 +85,23 @@ export const adminRoutes = [
                 path: 'edit/:genreId',
                 element: <EditGenre />,
               },
+            ],
+          },
+          {
+            path: 'orders',
+            children: [
+              {
+                index: true,
+                element: <OrderList />,
+              },
+              // {
+              //   path: 'add',
+              //   element: <AddBrand />,
+              // },
+              // {
+              //   path: 'edit/:brandId',
+              //   element: <EditBrand />,
+              // },
             ],
           },
           {

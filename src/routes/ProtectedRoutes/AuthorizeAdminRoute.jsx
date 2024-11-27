@@ -4,7 +4,7 @@ import { Outlet, Navigate } from 'react-router-dom';
 
 export const AuthorizeAdminRoute = () => {
   const admin = useAdmins();
-  console.log(admin);
+
   if (!admin) return <Loading />;
 
   if (!admin?.token)

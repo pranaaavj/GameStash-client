@@ -10,6 +10,14 @@ const productApi = userBaseApi.injectEndpoints({
       }),
     }),
 
+    // Search products
+    searchProducts: builder.query({
+      query: ({ page = 1, limit = 5, queryOptions = null }) => ({
+        url: '/user/products/search',
+        params: { page, limit, ...queryOptions },
+      }),
+    }),
+
     // Getting products by genre
     getProductsByGenre: builder.query({
       query: ({ page = 1, limit = 5, genre }) => ({
@@ -35,12 +43,23 @@ const productApi = userBaseApi.injectEndpoints({
     // Get all genres
     getAllGenres: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
-        url: `/admin/genres?page=${page}&limit=${limit}`,
+        url: `/user/genres?page=${page}&limit=${limit}`,
       }),
       providesTags: (result) =>
         result
           ? [{ type: 'Genre', id: 'LIST' }]
           : [{ type: 'Genre', id: 'LIST' }],
+    }),
+
+    // Get all brands
+    getAllBrands: builder.query({
+      query: ({ page = 1, limit = 10 }) => ({
+        url: `/user/brands?page=${page}&limit=${limit}`,
+      }),
+      providesTags: (result) =>
+        result
+          ? [{ type: 'Brand', id: 'LIST' }]
+          : [{ type: 'Brand', id: 'LIST' }],
     }),
   }),
 });
@@ -52,4 +71,7 @@ export const {
   useGetProductsByGenreQuery,
   useGetReviewByProductQuery,
   useGetAllGenresQuery,
+  useGetAllBrandsQuery,
+  useSearchProductsQuery,
+  useLazySearchProductsQuery,
 } = productApi;
