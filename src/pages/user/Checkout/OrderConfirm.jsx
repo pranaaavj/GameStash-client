@@ -3,17 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ShoppingBag, Gift } from 'lucide-react';
 import { Button } from '@/shadcn/components/ui/button';
 import { Link } from 'react-router-dom';
-import { useClearCartMutation } from '@/redux/api/user/cartApi';
 
 export default function OrderConfirmation() {
   const [showViewOrders, setShowViewOrders] = useState(false);
-  const [clearCart] = useClearCartMutation();
 
   useEffect(() => {
     const timer = setTimeout(() => setShowViewOrders(true), 3000);
     return () => {
       clearTimeout(timer);
-      clearCart();
     };
   }, []);
 

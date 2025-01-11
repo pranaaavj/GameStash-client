@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { GameCard } from './GameCard';
 import { UserPagination } from '@/components/user';
-import { FilterSection } from '../FilterSection';
+import { FilterSection } from '../../../components/user/FilterSection';
 import { GenreListing } from '../GenreListing';
 import {
   useGetAllGenresQuery,

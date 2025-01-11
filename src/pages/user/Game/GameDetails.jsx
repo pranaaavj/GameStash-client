@@ -5,12 +5,13 @@ import {
   useGetProductsByGenreQuery,
 } from '@/redux/api/user/productApi';
 import { Button } from '@/shadcn/components/ui/button';
-import { Reviews } from '../Reviews';
+import { Reviews } from '../../../components/user/Reviews';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { RelatedGamesFallback } from '@/components/error/RelatedFallback';
 import { ShoppingCart, Heart, Minus, Plus } from 'lucide-react';
-import { GameListing, StarRating, SystemRequirements } from '..';
+import { GameListing } from '..';
+import { SystemRequirements, StarRating } from '@/components/user';
 import {
   useAddItemToCartMutation,
   useGetCartQuery,

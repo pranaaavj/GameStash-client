@@ -65,6 +65,7 @@ const StatusIcon = ({ status }) => {
 
 export const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
+
   const { data: responseOrders } = useGetOrdersQuery({});
   const [cancelOrder, { isLoading: isCancelling }] = useCancelOrdersMutation();
 

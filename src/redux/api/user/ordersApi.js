@@ -11,6 +11,7 @@ const ordersApi = userBaseApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
+
     // Get all orders
     getOrders: builder.query({
       query: ({ page = 1, limit = 5, queryOptions = null }) => ({
@@ -19,6 +20,7 @@ const ordersApi = userBaseApi.injectEndpoints({
       }),
       providesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
+
     // Cancel order
     cancelOrders: builder.mutation({
       query: ({ orderId }) => ({
