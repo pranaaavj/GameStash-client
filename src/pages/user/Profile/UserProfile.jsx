@@ -9,7 +9,7 @@ import { User, MapPin, ShoppingBag } from 'lucide-react';
 import ProfileView from './ProfileView';
 import { ChangePassword } from './ChangePassword';
 import { Address } from './Address';
-import { Orders } from './Orders';
+import { Orders } from '../Orders';
 
 export const UserProfile = () => {
   return (

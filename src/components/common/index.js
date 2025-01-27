@@ -9,3 +9,4 @@ export { SelectField } from './SelectField';
 export { ConfirmationModal } from './ConfirmationModal';
 
 export { ScrollToTop } from './ScrollToTop';
+export { StatusBadge } from './StatusBadge';

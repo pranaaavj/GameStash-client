@@ -1,7 +1,14 @@
 import { NotFound } from '@/components/error';
 import { UserLayout } from '@/components/user';
 import { AuthorizedRoute, ProtectCheckout } from './ProtectedRoutes';
-import { GameDetails, GameBrowse, UserProfile, Home } from '@/pages/user';
+import {
+  GameDetails,
+  GameBrowse,
+  UserProfile,
+  Home,
+  Orders,
+  OrderDetails,
+} from '@/pages/user';
 
 export const userRoutes = [
   {
@@ -21,23 +28,26 @@ export const userRoutes = [
             element: <UserProfile />,
           },
           {
+            path: 'orders',
+            element: <Orders />,
+          },
+          {
+            path: 'orders/:orderId',
+            element: <OrderDetails />,
+          },
+          {
             path: 'checkout',
             element: <ProtectCheckout />,
           },
         ],
       },
       {
-        path: 'game',
-        children: [
-          {
-            path: ':productId',
-            element: <GameDetails />,
-          },
-        ],
-      },
-      {
         path: 'games',
         element: <GameBrowse />,
+      },
+      {
+        path: 'games/:productId',
+        element: <GameDetails />,
       },
     ],
   },

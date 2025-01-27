@@ -129,7 +129,7 @@ export const OrderList = () => {
       </div>
 
       {/* Table */}
-      <div className='w-full overflow-x-auto'>
+      <div className='w-full overflow-x-auto no-scrollbar'>
         {filteredOrders.length ? (
           <Table className='w-full table-fixed border-collapse min-w-full'>
             <TableHeader>
@@ -192,7 +192,7 @@ export const OrderList = () => {
                           variant='outline'
                           size='sm'
                           onClick={() => handleChangeOrderStatus(order)}
-                          className='bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition'>
+                          className='bg-accent-blue border-none text-primary-text hover:bg-accent-blue/90 transition'>
                           Change Status
                         </Button>
                       </DialogTrigger>

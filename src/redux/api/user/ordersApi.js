@@ -21,11 +21,20 @@ const ordersApi = userBaseApi.injectEndpoints({
       providesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
 
-    // Cancel order
-    cancelOrders: builder.mutation({
+    // Get single order
+    getOrder: builder.query({
       query: ({ orderId }) => ({
         url: `/user/order/${orderId}`,
-        method: 'PATCH',
+      }),
+      providesTags: [{ type: 'Orders', id: 'LIST' }],
+    }),
+
+    // Cancel order
+    cancelOrder: builder.mutation({
+      query: ({ orderId, productId }) => ({
+        url: `/user/order/${orderId}`,
+        method: 'PUT',
+        body: { productId },
       }),
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
@@ -36,5 +45,6 @@ export const {
   // Orders
   usePlaceOrderMutation,
   useGetOrdersQuery,
-  useCancelOrdersMutation,
+  useGetOrderQuery,
+  useCancelOrderMutation,
 } = ordersApi;

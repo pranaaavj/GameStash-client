@@ -76,7 +76,7 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
   }, [searchTerm, triggerSearchProducts]);
 
   const handleResultClick = (id) => {
-    navigate(`/game/${id}`);
+    navigate(`/games/${id}`);
     setIsDropdownVisible(false);
     setTimeout(() => {
       setSearchTerm('');

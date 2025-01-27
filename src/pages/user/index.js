@@ -7,3 +7,6 @@ export { GameCarousal } from './Game/GameCarousal';
 export { GameBrowse } from './Game/GameBrowse';
 
 export { UserProfile } from './Profile/UserProfile';
+
+export { Orders } from './Orders';
+export { OrderDetails } from './OrderDetails';

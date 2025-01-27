@@ -44,30 +44,28 @@ export const Breadcrumbs = () => {
       )}
 
       {pathSegments.map((segment, index) => {
-        if (index === gameIndex + 1) return null; // Skip gameId segment
+        // if (index === gameIndex + 1) return null; // Skip gameId segment
 
         const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
         const isLast = index === pathSegments.length - 1;
-        const isGameSegment = segment === 'game';
+        // const isGameSegment = segment === 'game';
 
         return (
           <div
             key={path}
             className='flex items-center space-x-2'>
-            {!isLast && !isGameSegment ? (
+            {!isLast ? (
               <Link
                 to={path}
-                className='hover:text-accent-blue capitalize text-primary-text'>
-                {formatSegment(segment, isGameSegment)}
+                className='hover:text-accent-blue capitalize text-accent-red'>
+                {formatSegment(segment)}
               </Link>
             ) : (
               <span className='capitalize font-semibold text-accent-red'>
-                {formatSegment(segment, isGameSegment)}
+                {formatSegment(segment)}
               </span>
             )}
-            {!isLast && (
-              <ChevronRight className='h-4 w-4 text-secondary-text' />
-            )}
+            {!isLast && <ChevronRight className='h-4 w-4 text-accent-red' />}
           </div>
         );
       })}

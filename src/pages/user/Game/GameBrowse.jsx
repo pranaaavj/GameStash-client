@@ -97,7 +97,7 @@ export const GameBrowse = () => {
               ) : (
                 responseGames?.data?.products.map((game) => (
                   <GameCard
-                    onClick={() => navigate(`/game/${game._id}`)}
+                    onClick={() => navigate(`/games/${game._id}`)}
                     key={game._id}
                     game={game}
                   />
