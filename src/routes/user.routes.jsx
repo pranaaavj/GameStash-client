@@ -9,6 +9,7 @@ import {
   Orders,
   OrderDetails,
 } from '@/pages/user';
+import CartPage from '@/pages/user/CartPage';
 
 export const userRoutes = [
   {
@@ -48,6 +49,10 @@ export const userRoutes = [
       {
         path: 'games/:productId',
         element: <GameDetails />,
+      },
+      {
+        path: 'cart',
+        element: <CartPage />,
       },
     ],
   },

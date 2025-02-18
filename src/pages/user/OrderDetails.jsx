@@ -14,7 +14,7 @@ export const OrderDetails = () => {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(selectedProduct);
+
   const {
     data: responseOrder,
     isLoading,
@@ -58,7 +58,7 @@ export const OrderDetails = () => {
     );
 
   return (
-    <div className='p-6 bg-primary-bg min-h-screen'>
+    <div className='p-6 bg-primary-bg min-h-screen rounded-lg shadow-md'>
       <button
         onClick={() => navigate('/orders')}
         className='mb-6 text-primary-text'>
@@ -67,7 +67,7 @@ export const OrderDetails = () => {
       <div className='bg-secondary-bg text-primary-text p-6 rounded-lg shadow-sm'>
         <div className='flex justify-between items-start mb-6'>
           <div>
-            <h1 className='text-2xl font-bold'>
+            <h1 className='text-3xl font-bold'>
               Order #{responseOrder?.data?._id.slice(-6)}
             </h1>
             <p className='text-gray-500'>
@@ -85,7 +85,7 @@ export const OrderDetails = () => {
             <p className='text-2xl font-bold'>
               ₹{responseOrder?.data?.finalPrice.toFixed(2)}
             </p>
-            <p className='text-lg py-2'>
+            <p className='text-lg py-2 font-semibold'>
               <StatusBadge status={responseOrder?.data?.orderStatus} />
             </p>
             <p className='text-gray-500'>
@@ -98,7 +98,7 @@ export const OrderDetails = () => {
         </div>
 
         <div className='mb-6'>
-          <h2 className='text-xl font-semibold mb-2'>Order Items</h2>
+          <h2 className='text-2xl font-semibold mb-4'>Order Items</h2>
           <div className='space-y-4'>
             {responseOrder?.data?.orderItems.map((item) => (
               <div
@@ -113,11 +113,11 @@ export const OrderDetails = () => {
                   <div>
                     <p className='font-medium'>{item.product.name}</p>
                     <p className='text-gray-500'>Quantity: {item.quantity}</p>
-                    <p className='text-gray-500'>
+                    <p>
                       Status:{' '}
-                      <StatusBadge
-                        status={item.status || responseOrder?.data?.orderStatus}
-                      />
+                      <span className='font-bold'>
+                        {responseOrder?.data?.orderStatus}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -134,7 +134,7 @@ export const OrderDetails = () => {
                           setSelectedProduct(item.product._id);
                         }}
                         disabled={isCancelling}
-                        className='px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors disabled:opacity-50'>
+                        className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50'>
                         {isCancelling ? 'Cancelling...' : 'Cancel Item'}
                       </button>
                     ) : null}
@@ -143,7 +143,7 @@ export const OrderDetails = () => {
                     {item?.status === 'Delivered' ? (
                       <button
                         onClick={handleReturnOrder}
-                        className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'>
+                        className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'>
                         Return Item
                       </button>
                     ) : null}
@@ -155,7 +155,7 @@ export const OrderDetails = () => {
         </div>
 
         <div className='mb-6'>
-          <h2 className='text-xl font-semibold mb-2'>Order Summary</h2>
+          <h2 className='text-2xl font-semibold mb-4 '>Order Summary</h2>
           <div className='space-y-2'>
             <div className='flex justify-between'>
               <p>Subtotal</p>
@@ -185,7 +185,7 @@ export const OrderDetails = () => {
         </div>
 
         <div className='mb-6'>
-          <h2 className='text-xl font-semibold mb-2'>Shipping Address</h2>
+          <h2 className='text-2xl font-semibold mb-4 '>Shipping Address</h2>
           <p>{responseOrder?.data?.shippingAddress?.addressName}</p>
           <p>{responseOrder?.data?.shippingAddress?.addressLine}</p>
           <p>
@@ -197,19 +197,17 @@ export const OrderDetails = () => {
         </div>
       </div>
 
-      {
-        // Cancel Order Modal
-        <ConfirmationModal
-          isOpen={isModalOpen}
-          title='Cancel Order'
-          description='Are you sure you want to cancel this order?'
-          onConfirm={handleCancelOrder}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedProduct(null);
-          }}
-        />
-      }
+      {/* Cancel Order Modal */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        title='Cancel Order'
+        description='Are you sure you want to cancel this order?'
+        onConfirm={handleCancelOrder}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedProduct(null);
+        }}
+      />
     </div>
   );
 };

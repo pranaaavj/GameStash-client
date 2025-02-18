@@ -138,7 +138,7 @@ export function Address({ onAddressSelect }) {
   };
 
   return (
-    <Card className='bg-gradient-to-br from-primary-bg to-secondary-bg border-none shadow-lg text-primary-text overflow-hidden'>
+    <Card className='bg-secondary-bg border-none shadow-lg text-primary-text overflow-hidden'>
       <CardHeader className='bg-secondary-bg'>
         <CardTitle className='text-3xl font-bold flex items-center'>
           <MapPin className='w-8 h-8 mr-2 text-primary-text' />

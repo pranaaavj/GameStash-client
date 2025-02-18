@@ -15,7 +15,10 @@ const cartApi = userBaseApi.injectEndpoints({
         method: 'POST',
         body: { productId, quantity },
       }),
-      invalidatesTags: ['Cart'],
+      invalidatesTags: (result, error, productId) => [
+        'Cart',
+        { type: 'Product', id: productId },
+      ],
     }),
 
     // Update the quantity of a specific item
@@ -25,7 +28,10 @@ const cartApi = userBaseApi.injectEndpoints({
         method: 'PATCH',
         body: { productId, quantity },
       }),
-      invalidatesTags: ['Cart'],
+      invalidatesTags: (result, error, productId) => [
+        'Cart',
+        { type: 'Product', id: productId },
+      ],
     }),
 
     // Remove a specific item from the cart
@@ -34,7 +40,10 @@ const cartApi = userBaseApi.injectEndpoints({
         url: `/user/cart/${productId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Cart'],
+      invalidatesTags: (result, error, productId) => [
+        'Cart',
+        { type: 'Product', id: productId },
+      ],
     }),
 
     // Clear the entire cart

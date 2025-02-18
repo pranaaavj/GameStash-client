@@ -94,7 +94,7 @@ export default function ProfileView() {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-primary-bg to-secondary-bg text-primary-text p-4 sm:p-6 md:p-8'>
+    <div className='min-h-screen bg-gradient-to-br from-primary-bg to-secondary-bg rounded-xl text-primary-text p-4 sm:p-6 md:p-8'>
       <Card className='bg-secondary-bg/50 border-none shadow-xl overflow-hidden backdrop-blur-sm'>
         <CardContent className='p-0'>
           <div className='relative'>

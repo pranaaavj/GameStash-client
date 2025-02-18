@@ -12,7 +12,7 @@ import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, InputField } from '@/components/common';
-import { validateGenre } from '@/utils';
+// import { validateGenre } from '@/utils';
 
 const initialGenreState = {
   name: '',
@@ -36,11 +36,11 @@ export const AddGenre = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const genreValidation = validateGenre(genreInput);
-    if (Object.keys(genreValidation).length > 0) {
-      setGenreValidation(genreValidation);
-      return;
-    }
+    // const genreValidation = validateGenre(genreInput);
+    // if (Object.keys(genreValidation).length > 0) {
+    //   setGenreValidation(genreValidation);
+    //   return;
+    // }
 
     try {
       const response = await addGenre(genreInput).unwrap();

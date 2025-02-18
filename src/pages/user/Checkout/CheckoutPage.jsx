@@ -4,9 +4,9 @@ import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import {
   Tooltip,
-  TooltipProvider,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
 } from '@/shadcn/components/ui/tooltip';
 import { MapPin, CreditCard, Gift, Package, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +17,10 @@ import ReviewOrder from './ReviewOrder';
 import { useGetCartQuery } from '@/redux/api/user/cartApi';
 import { useUsers } from '@/hooks';
 import { toast } from 'sonner';
-import { usePlaceOrderMutation } from '@/redux/api/user/ordersApi';
+import {
+  usePlaceOrderMutation,
+  useVerifyRazorpayMutation,
+} from '@/redux/api/user/ordersApi';
 import OrderConfirmation from './OrderConfirm';
 
 export function CheckoutPage() {
@@ -28,6 +31,7 @@ export function CheckoutPage() {
     skip: !user?.userInfo?.id,
   });
   const [placeOrder, { isError: isPlaceOrderError }] = usePlaceOrderMutation();
+  const [verifyRazorpay] = useVerifyRazorpayMutation();
 
   const [cartItems, setCartItems] = useState([]);
   const [isOrderComplete, setIsOrderComplete] = useState(false);
@@ -110,32 +114,66 @@ export function CheckoutPage() {
           }),
         3000
       );
-    } else {
-      const orderItems = cartItems.map((item) => {
-        return {
-          product: item?.product._id,
-          quantity: item?.quantity,
-          price: item?.product?.price,
-          totalPrice: item?.product?.price * item?.quantity,
-        };
-      });
 
-      try {
-        const response = await placeOrder({
-          orderItems,
-          shippingAddress: selectedAddress.id,
-          paymentMethod: selectedPayment,
-        }).unwrap();
-        if (response?.success) {
-          setIsOrderComplete(true);
-        }
-      } catch (error) {
-        console.log(error);
+      return;
+    }
+
+    const orderItems = cartItems.map((item) => {
+      return {
+        product: item?.product._id,
+        quantity: item?.quantity,
+        price: item?.product?.price,
+        totalPrice: item?.product?.price * item?.quantity,
+      };
+    });
+
+    const orderData = {
+      orderItems,
+      shippingAddress: selectedAddress.id,
+      paymentMethod: selectedPayment,
+      // deliveryMethod: selectedDelivery,
+      // offers: selectedOffers,
+    };
+
+    try {
+      const response = await placeOrder(orderData).unwrap();
+
+      if (selectedPayment === 'Razorpay') {
+        // For Razorpay payment gateway
+        const options = {
+          key: import.meta.env.VITE_RZP_KEY_ID,
+          amount: response.data.amount,
+          currency: response.data.currency,
+          name: 'GameStash',
+          description: 'GameStash Payment',
+          order_id: response?.data?.razorpayOrderId, //* Might be unnecessary
+          handler: async function (razorpayResponse) {
+            const paymentData = {
+              razorpayOrderId: razorpayResponse?.razorpay_order_id,
+              paymentId: razorpayResponse?.razorpay_payment_id,
+              signature: razorpayResponse?.razorpay_signature,
+              ...orderData,
+            };
+
+            const paymentResponse = await verifyRazorpay(paymentData).unwrap();
+
+            if (paymentResponse?.success) {
+              setIsOrderComplete(true);
+            }
+          },
+          theme: { color: '#3399cc' },
+        };
+
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      } else if (response?.success) {
+        setIsOrderComplete(true);
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  console.log(selectedAddress);
   const isSectionDisabled = (sectionId) => {
     switch (sectionId) {
       case 'payment':
@@ -175,11 +213,11 @@ export function CheckoutPage() {
         {selectedValue && (
           <span className='ml-2 text-sm text-secondary-text'>
             {selectedValue}
-            <button
+            <span
               className='ml-2 text-accent-red text-sm'
               onClick={() => setActiveSection(section.id)}>
               Change
-            </button>
+            </span>
           </span>
         )}
       </>
@@ -224,12 +262,12 @@ export function CheckoutPage() {
                   className='bg-secondary-bg rounded-lg overflow-hidden'>
                   <Tooltip open={showTooltip[section.id]}>
                     <TooltipTrigger>
-                      <button
+                      <span
                         onClick={() => {
                           if (!isSectionDisabled(section.id))
                             setActiveSection(section.id);
                         }}
-                        type='button'
+                        // type='button'
                         className={`w-full p-4 flex items-center justify-between transition-colors ${
                           isSectionDisabled(section.id)
                             ? 'opacity-50 cursor-not-allowed'
@@ -260,7 +298,7 @@ export function CheckoutPage() {
                             />
                           </div>
                         </div>
-                      </button>
+                      </span>
                     </TooltipTrigger>
                   </Tooltip>
 

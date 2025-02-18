@@ -8,6 +8,8 @@ export default function OrderConfirmation() {
   const [showViewOrders, setShowViewOrders] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     const timer = setTimeout(() => setShowViewOrders(true), 3000);
     return () => {
       clearTimeout(timer);

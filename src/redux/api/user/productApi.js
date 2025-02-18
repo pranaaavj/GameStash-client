@@ -8,6 +8,10 @@ const productApi = userBaseApi.injectEndpoints({
         url: '/user/products',
         params: { page, limit, queryOptions },
       }),
+      providesTags: (result) =>
+        result
+          ? result.data.products.map(({ id }) => ({ type: 'Product', id }))
+          : [{ type: 'Product', id: 'LIST' }],
     }),
 
     // Search products
@@ -31,6 +35,7 @@ const productApi = userBaseApi.injectEndpoints({
       query: (productId) => ({
         url: `/user/product/${productId}`,
       }),
+      providesTags: (result, error, id) => [{ type: 'Product', id }],
     }),
 
     // Get all the reviews of a product

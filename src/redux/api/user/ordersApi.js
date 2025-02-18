@@ -38,6 +38,16 @@ const ordersApi = userBaseApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
+
+    // Verify Razorpay payment
+    verifyRazorpay: builder.mutation({
+      query: (paymentData) => ({
+        url: `/user/order/razorpay`,
+        method: 'POST',
+        body: paymentData,
+      }),
+      invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -47,4 +57,5 @@ export const {
   useGetOrdersQuery,
   useGetOrderQuery,
   useCancelOrderMutation,
+  useVerifyRazorpayMutation,
 } = ordersApi;

@@ -50,7 +50,7 @@ export const GameCard = ({ game, onClick }) => {
             </span>
           )} */}
           <span className='text-primary-text font-bold text-base'>
-            ${game.price.toFixed(2)}
+            ₹{game.price.toFixed(2)}
           </span>
         </div>
       </div>

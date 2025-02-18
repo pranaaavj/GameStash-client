@@ -56,8 +56,17 @@ export function GameDetails() {
 
   useEffect(() => {
     setQuantity(1);
-    setIsOutOfStock(false);
   }, [productId]);
+
+  useEffect(() => {
+    if (cartData?.data?.items) {
+      const item = cartData.data.items.find(
+        (item) => item.product._id === productId
+      );
+      const stockLeft = responseProducts?.data?.stock - (item?.quantity || 0);
+      setIsOutOfStock(stockLeft <= 0);
+    }
+  }, [cartData, responseProducts]);
 
   const {
     data: responseReviews,
@@ -97,6 +106,7 @@ export function GameDetails() {
         toast.success('Added to cart successfully !');
 
         const updatedStock = responseProducts?.data?.stock - quantity;
+
         if (updatedStock <= 0) {
           setIsOutOfStock(true);
         }
@@ -120,7 +130,7 @@ export function GameDetails() {
 
   return (
     isProductsSuccess && (
-      <div className='min-h-screen bg-primary-bg text-primary-text font-sans px-4 sm:px-8 lg:px-16'>
+      <div className='min-h-screen bg-primary-bg text-primary-text font-sans px-4 sm:px-8 lg:px-16 select-none'>
         <div className='container mx-auto py-8'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
             {/* Left Column - Carousel */}

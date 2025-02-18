@@ -210,6 +210,28 @@ export default function PaymentSection({ onPaymentSelect }) {
           </Label>
         </div>
 
+        {/* Razorpay */}
+        <div className='relative'>
+          <RadioGroupItem
+            value='Razorpay'
+            id='Razorpay'
+            className='peer sr-only'
+          />
+          <Label
+            htmlFor='Razorpay'
+            className='flex items-center justify-between p-4 bg-secondary-bg/50 rounded-lg cursor-pointer border border-transparent peer-data-[state=checked]:border-accent-red'>
+            <div className='flex items-center space-x-3'>
+              <Smartphone className='w-5 h-5' />
+              <div>
+                <p className='font-medium'>Razorpay</p>
+                <p className='text-sm text-secondary-text'>
+                  Pay using Razorpay
+                </p>
+              </div>
+            </div>
+          </Label>
+        </div>
+
         {/* Cash on Delivery */}
         <div className='relative'>
           <RadioGroupItem
