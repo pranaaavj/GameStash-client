@@ -10,6 +10,7 @@ import {
   Factory,
   ShoppingCart,
   Ticket,
+  BadgePercent,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -27,6 +28,7 @@ const menuItems = [
   { name: 'Genres', icon: Tags, to: '/admin/genres' },
   { name: 'Brands', icon: Factory, to: '/admin/brands' },
   { name: 'Orders', icon: ShoppingCart, to: '/admin/orders' },
+  { name: 'Offers', icon: BadgePercent, to: '/admin/offers' },
   { name: 'Coupons', icon: Ticket, to: '/admin/coupons' },
   { name: 'Settings', icon: Settings, to: '/admin/settings' },
 ];

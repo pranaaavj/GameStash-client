@@ -12,6 +12,7 @@ import {
   EditGenre,
   UsersList,
   OrderList,
+  OfferList,
 } from '@/pages/admin';
 import { AdminError } from '@/components/error';
 import { AdminLayout } from '@/components/admin';
@@ -93,6 +94,23 @@ export const adminRoutes = [
               {
                 index: true,
                 element: <OrderList />,
+              },
+              // {
+              //   path: 'add',
+              //   element: <AddBrand />,
+              // },
+              // {
+              //   path: 'edit/:brandId',
+              //   element: <EditBrand />,
+              // },
+            ],
+          },
+          {
+            path: 'offers',
+            children: [
+              {
+                index: true,
+                element: <OfferList />,
               },
               // {
               //   path: 'add',

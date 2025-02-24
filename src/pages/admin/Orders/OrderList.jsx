@@ -108,7 +108,7 @@ export const OrderList = () => {
   }
 
   return (
-    <div className='w-full h-full flex flex-col overflow-auto bg-primary-bg rounded-lg p-6'>
+    <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-6'>
       <div className='mb-6 text-center'>
         <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
           Orders
