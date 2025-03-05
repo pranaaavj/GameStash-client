@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
-import { CircleX, Plus, Search } from 'lucide-react';
+import { CircleX, Plus, Search, Check, X } from 'lucide-react';
 
 export const BrandList = () => {
   const navigate = useNavigate();
@@ -50,7 +50,9 @@ export const BrandList = () => {
     ({ id: brandId, isActive }) => (
       <ToggleList
         onClick={() => handleListingModal(brandId)}
-        title={isActive ? 'Unlist' : 'List'}
+        title={
+          isActive ? <X className='h-6 w-6' /> : <Check className='h-6 w-6' />
+        }
       />
     ),
   ];
@@ -144,6 +146,7 @@ export const BrandList = () => {
         title='Confirm Action'
         description='Are you sure you want to proceed with this action?'
       />
+
       {isBrandListError && (
         <Alert
           Icon={CircleX}

@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
-import { CircleX, Plus, Search } from 'lucide-react';
+import { Check, CircleX, Plus, Search, X } from 'lucide-react';
 
 export const GenreList = () => {
   const navigate = useNavigate();
@@ -50,7 +50,9 @@ export const GenreList = () => {
     ({ id: genreId, isActive }) => (
       <ToggleList
         onClick={() => handleListingModal(genreId)}
-        title={isActive ? 'Unlist' : 'List'}
+        title={
+          isActive ? <X className='h-6 w-6' /> : <Check className='h-6 w-6' />
+        }
       />
     ),
   ];

@@ -59,9 +59,9 @@ export function GameDetails() {
   }, [productId]);
 
   useEffect(() => {
-    if (cartData?.data?.items) {
+    if (cartData?.data?.items.length > 0) {
       const item = cartData.data.items.find(
-        (item) => item.product._id === productId
+        (item) => item?.product?._id === productId
       );
       const stockLeft = responseProducts?.data?.stock - (item?.quantity || 0);
       setIsOutOfStock(stockLeft <= 0);

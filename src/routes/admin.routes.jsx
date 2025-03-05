@@ -13,6 +13,7 @@ import {
   UsersList,
   OrderList,
   OfferList,
+  AddOffer,
 } from '@/pages/admin';
 import { AdminError } from '@/components/error';
 import { AdminLayout } from '@/components/admin';
@@ -112,10 +113,10 @@ export const adminRoutes = [
                 index: true,
                 element: <OfferList />,
               },
-              // {
-              //   path: 'add',
-              //   element: <AddBrand />,
-              // },
+              {
+                path: 'add',
+                element: <AddOffer />,
+              },
               // {
               //   path: 'edit/:brandId',
               //   element: <EditBrand />,

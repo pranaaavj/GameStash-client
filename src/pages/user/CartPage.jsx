@@ -13,7 +13,6 @@ import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-
 export default function Cart() {
   const user = useUsers();
   const navigate = useNavigate();

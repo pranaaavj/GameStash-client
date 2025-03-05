@@ -14,7 +14,7 @@ import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { Link, useNavigate } from 'react-router-dom';
-import { CircleX, Plus, Search } from 'lucide-react';
+import { Check, CircleX, Plus, Search, X } from 'lucide-react';
 import { Alert, ConfirmationModal } from '@/components/common';
 
 export const ProductList = () => {
@@ -60,7 +60,9 @@ export const ProductList = () => {
     ({ id: productId, isActive }) => (
       <ToggleList
         onClick={() => handleListingModal(productId)}
-        title={isActive ? 'Unlist' : 'List'}
+        title={
+          isActive ? <X className='h-6 w-6' /> : <Check className='h-6 w-6' />
+        }
       />
     ),
   ];

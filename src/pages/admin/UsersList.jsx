@@ -52,12 +52,15 @@ export const UsersList = () => {
   };
 
   const handleConfirmBlockUnblock = async () => {
+    console.log(selectedUser);
+
     try {
       const responseToggleBlock = await toggleBlockUser(selectedUser);
 
       if (responseToggleBlock.success) {
         toast.success(responseToggleBlock.message, { duration: 1500 });
       }
+
       setIsModalOpen(false);
     } catch (error) {
       console.log(error);
@@ -109,6 +112,17 @@ export const UsersList = () => {
         )}
       </div>
 
+      {isToggleBlockError && (
+        <Alert
+          Icon={CircleX}
+          variant='destructive'
+          description={
+            toggleBlockError?.data?.message ||
+            'Something went wrong! Please try again.'
+          }
+        />
+      )}
+
       {/* Pagination */}
       <div className='sticky bottom-0 mt-4'>
         <AdminPagination
@@ -126,16 +140,6 @@ export const UsersList = () => {
         title='Confirm Action'
         description='Are you sure you want to proceed with this action?'
       />
-      {isToggleBlockError && (
-        <Alert
-          Icon={CircleX}
-          variant='destructive'
-          description={
-            toggleBlockError?.data?.message ||
-            'Something went wrong! Please try again.'
-          }
-        />
-      )}
     </div>
   );
 };

@@ -20,6 +20,8 @@ export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
   let response = await userBaseQuery(args, api, extraOptions);
   console.log('Response', response);
 
+  //Todo: check if the status code is the reason for auth problem.
+
   if (response?.error?.status === 403 || response?.error?.status === 401) {
     const refreshResponse = await userBaseQuery(
       '/auth/refresh-token',
@@ -43,6 +45,7 @@ export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
       ) {
         api.dispatch(setStatus({ status: 'blocked' }));
         toast.error('Your account has been blocked.');
+        api.dispatch(logout());
 
         return response;
       }

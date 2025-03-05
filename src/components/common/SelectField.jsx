@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
 import {
   Select,
@@ -6,7 +7,6 @@ import {
   SelectTrigger,
   SelectContent,
 } from '@/shadcn/components/ui/select';
-import PropTypes from 'prop-types';
 
 export const SelectField = ({
   name,
@@ -25,24 +25,23 @@ export const SelectField = ({
         fontSize={15}>
         {label}
       </FormLabel>
+
       <Select
         onValueChange={(newValue) =>
           onChange({ target: { name, value: newValue } })
         }
-        value={value} // Ensure the selected value is displayed
-      >
-        <SelectTrigger className='w-full bg-[#262626] ring-0 hover:border text-secondary-text rounded-md'>
+        value={value}>
+        <SelectTrigger className='w-full bg-[#262626] text-secondary-text rounded-md border-0 ring-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none hover:bg-[#303030] transition-all'>
           <SelectValue placeholder={placeholder}>
-            {value
-              ? options.find((option) => option.value === value)?.label
-              : ''}
+            {options.find((option) => option.value === value)?.label || ''}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
             <SelectItem
               key={option.value}
-              value={option.value}>
+              value={option.value}
+              className='hover:bg-[#2a2a2a] transition-all focus:ring-0 focus:outline-none'>
               {option.label}
             </SelectItem>
           ))}
@@ -53,20 +52,4 @@ export const SelectField = ({
       )}
     </FormControl>
   );
-};
-
-SelectField.propTypes = {
-  name: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  value: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  isInvalid: PropTypes.bool,
-  errorMessage: PropTypes.string,
-  placeholder: PropTypes.string,
 };

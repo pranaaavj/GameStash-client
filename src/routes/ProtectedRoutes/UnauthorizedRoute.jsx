@@ -8,7 +8,7 @@ export const UnauthorizedRoute = () => {
   if (user && (user?.token || user?.userInfo)) return <Navigate to='/' />;
 
   return <Outlet />;
-};
+}; 
 
 UnauthorizedRoute.propTypes = {
   children: PropTypes.any,

@@ -9,7 +9,7 @@ export const validateRegister = (userInput) => {
   if (userInput.name == '') validation.name = 'Name cannot be empty.';
 
   if (userInput.phoneNumber == '') {
-    validation.email = 'Email cannot be empty.';
+    validation.phoneNumber = 'Phone number cannot be empty.';
   } else if (userInput.phoneNumber.length !== 10) {
     validation.phoneNumber =
       'Invalid phone number. Please enter exactly 10 digits, and ensure it contains only numbers.';

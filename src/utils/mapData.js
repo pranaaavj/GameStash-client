@@ -22,6 +22,6 @@ export const mapOptionsData = (data) => {
   // Mapping according the options
   return data.map((item) => ({
     label: item?.name,
-    value: item?.name,
+    value: item?._id,
   }));
 };

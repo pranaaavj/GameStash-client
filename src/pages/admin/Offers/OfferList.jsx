@@ -1,11 +1,11 @@
-'use client';
-
 import { useState } from 'react';
 import { Input } from '@/shadcn/components/ui/input';
+import { Button } from '@/shadcn/components/ui/button';
 import { AdminPagination } from '@/components/admin';
-import { Search, Edit, Trash2 } from 'lucide-react';
-// import { Alert } from '@/components/common';
-import { motion } from 'framer-motion';
+import { Search, Edit, Trash2, Plus, CircleX } from 'lucide-react';
+import { Alert, ConfirmationModal } from '@/components/common';
+import { Link } from 'react-router-dom';
+import { Badge } from '@/shadcn/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -28,47 +28,83 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shadcn/components/ui/select';
-import { Button } from '@/shadcn/components/ui/button';
-import { Badge } from '@/shadcn/components/ui/badge';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export const OfferList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [newStatus, setNewStatus] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [offerToDelete, setOfferToDelete] = useState(null);
 
-  // Mock data for offers
-  const mockOffers = [
-    {
-      id: '1',
-      name: 'Summer Sale',
-      type: 'category',
-      discountType: 'percentage',
-      discountValue: 20,
-      expirationDate: '2023-08-31',
-      status: 'Active',
-      usageCount: 150,
+  // Mock data for offers - replace with actual API call
+  const {
+    data: responseGetOffers,
+    isError,
+    error,
+    refetch,
+  } = {
+    data: {
+      data: {
+        offers: [
+          {
+            id: '1',
+            name: 'Summer Sale',
+            type: 'category',
+            discountType: 'percentage',
+            discountValue: 20,
+            expirationDate: '2023-08-31',
+            status: 'Active',
+            usageCount: 150,
+          },
+          {
+            id: '2',
+            name: 'New User Discount',
+            type: 'product',
+            discountType: 'fixed',
+            discountValue: 500,
+            expirationDate: '2023-12-31',
+            status: 'Active',
+            usageCount: 50,
+          },
+          {
+            id: '3',
+            name: 'Holiday Special',
+            type: 'category',
+            discountType: 'percentage',
+            discountValue: 15,
+            expirationDate: '2023-12-25',
+            status: 'Scheduled',
+            usageCount: 0,
+          },
+        ],
+        totalPages: 1,
+      },
     },
-    {
-      id: '2',
-      name: 'New User Discount',
-      type: 'product',
-      discountType: 'fixed',
-      discountValue: 500,
-      expirationDate: '2023-12-31',
-      status: 'Active',
-      usageCount: 50,
+    isSuccess: true,
+    isError: false,
+    error: null,
+    refetch: () => console.log('Refetching offers'),
+  };
+
+  // Mock mutation for toggling offer status
+  const [toggleOfferStatus, { isError: isToggleError, error: toggleError }] = [
+    async (id) => {
+      console.log('Toggling offer status:', id);
+      return { success: true, message: 'Offer status updated successfully' };
     },
-    {
-      id: '3',
-      name: 'Holiday Special',
-      type: 'category',
-      discountType: 'percentage',
-      discountValue: 15,
-      expirationDate: '2023-12-25',
-      status: 'Scheduled',
-      usageCount: 0,
+    { isError: false, error: null },
+  ];
+
+  // Mock mutation for deleting offer
+  const [deleteOffer, { isError: isDeleteError, error: deleteError }] = [
+    async (id) => {
+      console.log('Deleting offer:', id);
+      return { success: true, message: 'Offer deleted successfully' };
     },
+    { isError: false, error: null },
   ];
 
   const tableHeaders = [
@@ -87,7 +123,7 @@ export const OfferList = () => {
     setCurrentPage(1);
   };
 
-  const filteredOffers = mockOffers.filter(
+  const filteredOffers = responseGetOffers?.data?.offers.filter(
     (offer) =>
       offer.id.includes(searchTerm) ||
       offer.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -101,32 +137,60 @@ export const OfferList = () => {
   const handleUpdateStatus = async () => {
     if (!selectedOffer || !newStatus) return;
 
-    console.log('Updating offer status:', {
-      offerId: selectedOffer.id,
-      newStatus: newStatus,
-    });
+    try {
+      const response = await toggleOfferStatus({
+        offerId: selectedOffer.id,
+        status: newStatus,
+      });
 
-    // Mock API call
-    setTimeout(() => {
-      console.log('Offer status updated successfully');
-      setSelectedOffer(null);
-      setNewStatus('');
-    }, 1000);
+      if (response.success) {
+        toast.success(response.message, {
+          duration: 1500,
+        });
+        setSelectedOffer(null);
+        refetch();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const handleDeleteOffer = (offerId) => {
-    console.log('Deleting offer:', offerId);
-    // Implement delete logic here
+  const handleDeleteModal = (offerId) => {
+    setOfferToDelete(offerId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const response = await deleteOffer(offerToDelete);
+
+      if (response.success) {
+        toast.success(response.message, {
+          duration: 1500,
+        });
+        setIsDeleteModalOpen(false);
+        setOfferToDelete(null);
+        refetch();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setOfferToDelete(null);
+    setIsDeleteModalOpen(false);
   };
 
   return (
-    <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-6'>
+    <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-4'>
       <div className='mb-6 text-center'>
         <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
           Offers
         </h1>
       </div>
-      <div className='flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0'>
+      <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
+        {/* Search Input */}
         <div className='relative w-full sm:w-64'>
           <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text h-4 w-4' />
           <Input
@@ -137,10 +201,18 @@ export const OfferList = () => {
             className='pl-10 pr-4 py-2 rounded-full bg-secondary-bg text-primary-text border-accent-blue focus:border-accent-blue focus:ring focus:ring-accent-blue focus:ring-opacity-50 w-full'
           />
         </div>
+
+        {/* Add Offer Button */}
+        <Link to='/admin/offers/add'>
+          <Button className='w-full sm:w-auto bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>
+            <Plus className='mr-2 h-4 w-4' /> Add Offer
+          </Button>
+        </Link>
       </div>
 
-      <div className='w-full overflow-x-auto no-scrollbar'>
-        {filteredOffers.length ? (
+      {/* Table */}
+      <div className='w-full overflow-x-auto flex-grow no-scrollbar'>
+        {filteredOffers && filteredOffers.length ? (
           <Table className='w-full table-fixed border-collapse min-w-full'>
             <TableHeader>
               <TableRow className='bg-secondary-bg/10 border-b-2 border-accent-blue'>
@@ -170,7 +242,7 @@ export const OfferList = () => {
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {offer.discountType === 'percentage'
                       ? `${offer.discountValue}%`
-                      : `$${offer.discountValue}`}
+                      : `₹${offer.discountValue}`}
                   </TableCell>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {new Date(offer.expirationDate).toLocaleDateString()}
@@ -178,7 +250,11 @@ export const OfferList = () => {
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     <Badge
                       variant={
-                        offer.status === 'Active' ? 'success' : 'default'
+                        offer.status === 'Active'
+                          ? 'success'
+                          : offer.status === 'Scheduled'
+                          ? 'warning'
+                          : 'destructive'
                       }>
                       {offer.status}
                     </Badge>
@@ -194,8 +270,8 @@ export const OfferList = () => {
                             variant='outline'
                             size='sm'
                             onClick={() => handleChangeOfferStatus(offer)}
-                            className='bg-accent-blue border-none text-primary-text hover:bg-accent-blue/90 transition'>
-                            <Edit className='h-4 w-4' />
+                            className='bg-accent-blue border-none px-3 py-5 text-primary-text hover:bg-accent-blue/90 transition'>
+                            <Edit className='h-6 w-6' />
                           </Button>
                         </DialogTrigger>
                         {selectedOffer && (
@@ -218,29 +294,34 @@ export const OfferList = () => {
                                       Offer ID
                                     </p>
                                     <p className='font-medium break-all'>
-                                      {offer.id}
+                                      {selectedOffer.id}
                                     </p>
                                   </div>
                                   <div>
                                     <p className='text-sm text-secondary-text'>
                                       Name
                                     </p>
-                                    <p className='font-medium'>{offer.name}</p>
+                                    <p className='font-medium'>
+                                      {selectedOffer.name}
+                                    </p>
                                   </div>
                                   <div>
                                     <p className='text-sm text-secondary-text'>
                                       Type
                                     </p>
-                                    <p className='font-medium'>{offer.type}</p>
+                                    <p className='font-medium'>
+                                      {selectedOffer.type}
+                                    </p>
                                   </div>
                                   <div>
                                     <p className='text-sm text-secondary-text'>
                                       Discount
                                     </p>
                                     <p className='font-medium'>
-                                      {offer.discountType === 'percentage'
-                                        ? `${offer.discountValue}%`
-                                        : `$${offer.discountValue}`}
+                                      {selectedOffer.discountType ===
+                                      'percentage'
+                                        ? `${selectedOffer.discountValue}%`
+                                        : `₹${selectedOffer.discountValue}`}
                                     </p>
                                   </div>
                                 </div>
@@ -254,7 +335,7 @@ export const OfferList = () => {
                                     onValueChange={(value) =>
                                       setNewStatus(value)
                                     }
-                                    defaultValue={offer.status}>
+                                    defaultValue={selectedOffer.status}>
                                     <SelectTrigger className='w-full bg-primary-bg border-accent-blue/30 focus:ring-accent-blue'>
                                       <SelectValue placeholder='Select status' />
                                     </SelectTrigger>
@@ -286,9 +367,9 @@ export const OfferList = () => {
                       <Button
                         variant='outline'
                         size='sm'
-                        onClick={() => handleDeleteOffer(offer.id)}
-                        className='bg-red-500 border-none text-white hover:bg-red-600 transition'>
-                        <Trash2 className='h-4 w-4' />
+                        onClick={() => handleDeleteModal(offer.id)}
+                        className='bg-red-500 border-none px-3 py-5 text-white hover:bg-red-600 transition'>
+                        <Trash2 className='h-6 w-6' />
                       </Button>
                     </div>
                   </TableCell>
@@ -297,26 +378,43 @@ export const OfferList = () => {
             </TableBody>
           </Table>
         ) : (
-          <p className='text-sm text-center'>No offers to display</p>
+          <p className='text-center text-primary-text py-4'>
+            No offers to display
+          </p>
         )}
       </div>
 
+      {/* Pagination */}
       <div className='sticky bottom-0 mt-4'>
         <AdminPagination
           currentPage={currentPage}
-          totalPages={5} // Mock total pages
+          totalPages={responseGetOffers?.data?.totalPages || 0}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
 
-      {/* Error message placeholder */}
-      {/* {false && (
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title='Delete Offer'
+        description='Are you sure you want to delete this offer? This action cannot be undone.'
+      />
+
+      {/* Error message */}
+      {(isError || isToggleError || isDeleteError) && (
         <Alert
-          Icon={Search}
+          Icon={CircleX}
           variant='destructive'
-          description='Something went wrong! Please try again.'
+          description={
+            error?.data?.message ||
+            toggleError?.data?.message ||
+            deleteError?.data?.message ||
+            'Something went wrong! Please try again.'
+          }
         />
-      )} */}
+      )}
     </div>
   );
 };

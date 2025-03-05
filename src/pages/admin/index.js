@@ -17,5 +17,6 @@ export { EditGenre } from './Genres/EditGenre';
 export { OrderList } from './Orders/OrderList';
 
 export { OfferList } from './Offers/OfferList';
+export { AddOffer } from './Offers/AddOffer';
 
 export { UsersList } from './UsersList';

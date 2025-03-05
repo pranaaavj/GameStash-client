@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, InputField, SelectField } from '@/components/common';
 import { validateProduct, mapOptionsData } from '@/utils';
+import { Loading } from '@/components/error';
 
 const initialProductState = {
   name: '',
@@ -46,11 +47,15 @@ export const EditProduct = () => {
     data: responseProduct,
     isError,
     error,
+    isLoading: isProductLoading,
   } = useGetOneProductQuery(productId);
+
   const { data: responseBrands, isSuccess: brandQuerySuccess } =
     useGetAllBrandsQuery({});
+
   const { data: responseGenres, isSuccess: genreQuerySuccess } =
     useGetAllGenresQuery({});
+
   const [
     editProduct,
     { isError: isEditProductError, error: editProductError },
@@ -63,13 +68,14 @@ export const EditProduct = () => {
     useState(initialProductState);
 
   useEffect(() => {
-    if (responseProduct) {
-      setProductInput({
+    if (responseProduct && brandQuerySuccess && genreQuerySuccess) {
+      setProductInput((prevInput) => ({
+        ...prevInput,
         name: responseProduct.data.name,
         price: responseProduct.data.price,
-        genre: responseProduct.data.genre.name,
+        genre: responseProduct.data.genre._id,
         platform: responseProduct.data.platform,
-        brand: responseProduct.data.brand.name,
+        brand: responseProduct.data.brand._id,
         stock: responseProduct.data.stock,
         description: responseProduct.data.description,
         systemRequirements: responseProduct.data.systemRequirements || {
@@ -78,10 +84,11 @@ export const EditProduct = () => {
           ram: '',
           storage: '',
         },
-      });
+      }));
+
       setImages(responseProduct.data.images);
     }
-  }, [responseProduct]);
+  }, [responseProduct, brandQuerySuccess, genreQuerySuccess]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -135,10 +142,14 @@ export const EditProduct = () => {
     }
   };
 
+  if (!responseProduct || isProductLoading) {
+    return <Loading />;
+  }
+
   return (
-    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-lg text-primary-text'>
-      <CardHeader className='bg-primary-bg/10'>
-        <CardTitle className='text-2xl font-bold text-center text-primary-text'>
+    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-none text-primary-text border-0'>
+      <CardHeader className='bg-primary-bg/20 rounded-xl'>
+        <CardTitle className='text-2xl shadow-none font-bold text-center text-primary-text'>
           Edit Product
         </CardTitle>
       </CardHeader>
@@ -222,7 +233,7 @@ export const EditProduct = () => {
               value={productInput.description}
               onChange={handleChange}
               placeholder='Enter product description'
-              className='w-full bg-[#262626] ring-0 focus:ring-2 text-primary-text rounded-md'
+              className='w-full bg-[#262626] hover:border border-transparent text-primary-text rounded-md'
               rows={4}
             />
           </div>

@@ -204,7 +204,10 @@ export default function Cart({ isOpen, onClose }) {
                               </Button>
                             </div>
                             <p className='font-medium text-primary-text'>
-                              ₹{(item.product.price * item.quantity).toFixed(2)}{' '}
+                              ₹
+                              {(item?.product?.price * item?.quantity).toFixed(
+                                2
+                              )}{' '}
                               INR
                             </p>
                           </div>
