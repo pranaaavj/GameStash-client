@@ -25,7 +25,6 @@ export const SelectField = ({
         fontSize={15}>
         {label}
       </FormLabel>
-
       <Select
         onValueChange={(newValue) =>
           onChange({ target: { name, value: newValue } })

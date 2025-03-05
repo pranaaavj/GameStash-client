@@ -4,16 +4,25 @@ import {
   CardHeader,
   CardContent,
 } from '@/shadcn/components/ui/card';
-import { useAddOfferMutation } from '@/redux/api/admin/offersApi';
+import {
+  useGetOneOfferQuery,
+  useEditOfferMutation,
+} from '@/redux/api/admin/offersApi';
 import { useGetAllProductsQuery } from '@/redux/api/admin/productsApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Alert, InputField, SelectField } from '@/components/common';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  Alert,
+  ConfirmationModal,
+  InputField,
+  SelectField,
+} from '@/components/common';
 import { validateOffer, mapOptionsData } from '@/utils';
+import { Loading } from '@/components/error';
 
 const initialOfferState = {
   name: '',
@@ -24,28 +33,59 @@ const initialOfferState = {
   expirationDate: '',
 };
 
-export const AddOffer = () => {
+export const EditOffer = () => {
   const navigate = useNavigate();
+  const { offerId } = useParams();
+
+  // Fetching the specific offer details
+  const {
+    data: responseOffer,
+    isError,
+    error,
+    isLoading: isOfferLoading,
+  } = useGetOneOfferQuery(offerId);
 
   // Fetching products and brands
   const { data: responseProducts, isSuccess: productsSuccess } =
     useGetAllProductsQuery({});
+
   const { data: responseBrands, isSuccess: brandsSuccess } =
     useGetAllBrandsQuery({});
 
-  const [addOffer, { isError, error }] = useAddOfferMutation();
+  const [editOffer, { isError: isEditOfferError, error: editOfferError }] =
+    useEditOfferMutation();
 
   // Offer state
   const [offerInput, setOfferInput] = useState(initialOfferState);
   const [offerValidation, setOfferValidation] = useState(initialOfferState);
+  const [showTypeChangeModal, setShowTypeChangeModal] = useState(false);
+  const [newType, setNewType] = useState('');
 
   useEffect(() => {
-    setOfferValidation(initialOfferState);
-  }, [offerInput]);
+    if (responseOffer && productsSuccess && brandsSuccess) {
+      setOfferInput((prevInput) => ({
+        ...prevInput,
+        name: responseOffer.data.name,
+        type: responseOffer.data.type,
+        targetId: responseOffer.data.targetId._id,
+        discountType: responseOffer.data.discountType,
+        discountValue: responseOffer.data.discountValue,
+        expirationDate: responseOffer.data.expirationDate.split('T')[0],
+      }));
+    }
+  }, [responseOffer, productsSuccess, brandsSuccess]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === 'type' && value !== offerInput.type) {
+      setShowTypeChangeModal(true);
+      setNewType(value); // Store new type temporarily
+      return;
+    }
+
     setOfferInput((prev) => ({ ...prev, [name]: value }));
+    setOfferValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
   // Mapping options for products and brands
@@ -75,31 +115,35 @@ export const AddOffer = () => {
     e.preventDefault();
 
     const validationErrors = validateOffer(offerInput);
-    console.log(validationErrors);
     if (Object.keys(validationErrors).length > 0) {
       setOfferValidation(validationErrors);
       return;
     }
 
     try {
-      const response = await addOffer(offerInput).unwrap();
+      const response = await editOffer({
+        offerId,
+        ...offerInput,
+      }).unwrap();
 
-      console.log(response);
-
-      if (response.success) {
+      if (response?.success) {
         toast.success(response.message, { duration: 1500 });
-        navigate('/admin/offers');
+        setTimeout(() => navigate('/admin/offers'), 1500);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  if (!responseOffer || isOfferLoading) {
+    return <Loading />;
+  }
+
   return (
     <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-none border-0 text-primary-text'>
       <CardHeader className='bg-primary-bg/10'>
         <CardTitle className='text-2xl font-bold text-center text-primary-text'>
-          Add New Offer
+          Edit Offer
         </CardTitle>
       </CardHeader>
       <CardContent className='pt-6'>
@@ -126,6 +170,7 @@ export const AddOffer = () => {
             placeholder='Select Offer Type'
             isInvalid={!!offerValidation.type}
             errorMessage={offerValidation.type}
+            isDisabled // Offer type cannot be changed while editing
           />
 
           {offerInput.type === 'Product' && (
@@ -191,11 +236,11 @@ export const AddOffer = () => {
           <Button
             type='submit'
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
-            Add Offer
+            Confirm Edit
           </Button>
         </form>
 
-        {isError && (
+        {isError ? (
           <Alert
             Icon={CircleX}
             variant='destructive'
@@ -203,8 +248,35 @@ export const AddOffer = () => {
               error?.data?.message || 'Something went wrong! Please try again.'
             }
           />
-        )}
+        ) : isEditOfferError ? (
+          <Alert
+            Icon={CircleX}
+            variant='destructive'
+            description={
+              editOfferError?.data?.message ||
+              'Something went wrong! Please try again.'
+            }
+          />
+        ) : null}
       </CardContent>
+
+      {showTypeChangeModal && (
+        <ConfirmationModal
+          isOpen={showTypeChangeModal}
+          onClose={() => setShowTypeChangeModal(false)}
+          onConfirm={() => {
+            setOfferInput((prev) => ({
+              ...prev,
+              type: newType,
+              targetId: '',
+              discountType: newType === 'Brand' ? 'percentage' : '', 
+            }));
+            setShowTypeChangeModal(false);
+          }}
+          title='Change Offer Type?'
+          description='Changing the offer type will reset the selected Product/Brand and may affect existing discounts. Are you sure?'
+        />
+      )}
     </Card>
   );
 };

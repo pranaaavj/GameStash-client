@@ -260,7 +260,7 @@ export const EditProduct = () => {
                 onChange={handleChange}
                 label='GPU'
                 name='gpu'
-                placeHolder='E.g., GTX 1060, Radeon RX 580'
+                placeHolder='E.g., GTX 1060, Radon RX 580'
                 isInvalid={!!productValidation.systemRequirements?.gpu}
                 errorMessage={productValidation.systemRequirements?.gpu}
               />

@@ -24,6 +24,8 @@ export const AdminBaseQueryWithReAuth = async (args, api, extraOptions) => {
       extraOptions
     );
 
+    console.log('Refresh response', refreshResponse);
+
     if (refreshResponse?.data?.success) {
       api.dispatch(
         setTokenAdmin({ token: refreshResponse?.data?.data?.accessToken })

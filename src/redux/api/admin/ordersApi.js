@@ -8,7 +8,7 @@ const ordersApi = adminBaseApi.injectEndpoints({
         url: 'admin/order',
         params: { page, limit },
       }),
-      providesTags: [{ type: 'Orders', id: 'LIST' }],
+      providesTags: [{ type: 'Order', id: 'LIST' }],
     }),
 
     // Update order status
@@ -18,7 +18,7 @@ const ordersApi = adminBaseApi.injectEndpoints({
         method: 'PATCH',
         body: { status },
       }),
-      invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
+      invalidatesTags: [{ type: 'Order', id: 'LIST' }],
     }),
   }),
 });

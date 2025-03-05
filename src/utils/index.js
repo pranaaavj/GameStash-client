@@ -9,6 +9,7 @@ export { validateProduct } from './validation/validateProduct';
 export { validateProfile } from './validation/validateProfile';
 export { validateRegister } from './validation/validateRegister';
 export { validateChangePassword } from './validation/validateChangePassword';
+export { validateOffer } from './validation/validateOffer';
 
 export { uploadToCloudinary } from './uploadToCloudinary';
 export { loadState, saveState } from './localStorage';

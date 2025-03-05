@@ -64,7 +64,7 @@ export const GenreList = () => {
 
   const handleConfirmListing = async () => {
     try {
-      const responseGenreList = await toggleGenreList(selectedGenre);
+      const responseGenreList = await toggleGenreList(selectedGenre).unwrap();
 
       if (responseGenreList.success) {
         toast.success(responseGenreList.message, {
@@ -85,7 +85,7 @@ export const GenreList = () => {
   const tableData = isSuccess
     ? mapTableData(responseGetGenres?.data?.genres, tableHeaders)
     : [];
-  console.log(tableData);
+
   if (isError) {
     console.log(error);
   }

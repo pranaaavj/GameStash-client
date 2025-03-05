@@ -4,7 +4,7 @@ import { AdminBaseQueryWithReAuth } from './adminBaseQuery';
 export const adminBaseApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: AdminBaseQueryWithReAuth,
-  tagTypes: ['Product', 'Brand', 'Genre', 'User', 'Address'],
+  tagTypes: ['Product', 'Brand', 'Genre', 'User', 'Address', 'Offer'],
   endpoints: (builder) => ({
     loginAdmin: builder.mutation({
       query: (adminInfo) => ({

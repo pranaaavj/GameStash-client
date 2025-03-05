@@ -2,7 +2,6 @@ import { adminBaseApi } from './adminBaseApi';
 
 const genresEndpoints = adminBaseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Getting all genres
     getAllGenres: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/admin/genres?page=${page}&limit=${limit}`,

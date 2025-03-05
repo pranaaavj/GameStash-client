@@ -64,7 +64,7 @@ export const BrandList = () => {
 
   const handleConfirmListing = async () => {
     try {
-      const responseBrandList = await toggleBrandList(selectedBrand);
+      const responseBrandList = await toggleBrandList(selectedBrand).unwrap();
 
       if (responseBrandList.success) {
         toast.success(responseBrandList.message, {

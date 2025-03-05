@@ -18,5 +18,6 @@ export { OrderList } from './Orders/OrderList';
 
 export { OfferList } from './Offers/OfferList';
 export { AddOffer } from './Offers/AddOffer';
+export { EditOffer } from './Offers/EditOffer';
 
 export { UsersList } from './UsersList';

@@ -74,13 +74,16 @@ export const ProductList = () => {
 
   const handleConfirmListing = async () => {
     try {
-      const responseProductList = await toggleProductList(selectedProduct);
+      const responseProductList = await toggleProductList(
+        selectedProduct
+      ).unwrap();
 
-      if (responseProductList.success) {
-        toast.success(responseProductList.message, {
+      console.log(responseProductList);
+
+      if (responseProductList?.success) {
+        toast.success(responseProductList?.message, {
           duration: 1500,
         });
-        setTimeout(() => navigate('/admin/products'), 1500);
       }
     } catch (error) {
       console.log(error);
