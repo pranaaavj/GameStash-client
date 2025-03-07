@@ -18,6 +18,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   Alert,
   ConfirmationModal,
+  DatePicker,
   InputField,
   SelectField,
 } from '@/components/common';
@@ -30,7 +31,8 @@ const initialOfferState = {
   targetId: '',
   discountType: '',
   discountValue: '',
-  expirationDate: '',
+  startDate: undefined,
+  endDate: undefined,
 };
 
 export const EditOffer = () => {
@@ -70,7 +72,8 @@ export const EditOffer = () => {
         targetId: responseOffer.data.targetId._id,
         discountType: responseOffer.data.discountType,
         discountValue: responseOffer.data.discountValue,
-        expirationDate: responseOffer.data.expirationDate.split('T')[0],
+        startDate: new Date(responseOffer.data.startDate),
+        endDate: new Date(responseOffer.data.endDate),
       }));
     }
   }, [responseOffer, productsSuccess, brandsSuccess]);
@@ -223,15 +226,29 @@ export const EditOffer = () => {
             />
           </div>
 
-          <InputField
-            type='date'
-            value={offerInput.expirationDate}
-            onChange={handleChange}
-            label='Expiration Date'
-            name='expirationDate'
-            isInvalid={!!offerValidation.expirationDate}
-            errorMessage={offerValidation.expirationDate}
-          />
+          <div className='flex space-x-4'>
+            <DatePicker
+              value={offerInput.startDate}
+              onChange={handleChange}
+              label='Start Date'
+              name='startDate'
+              placeHolder='Select start date'
+              isInvalid={!!offerValidation.startDate}
+              errorMessage={offerValidation.startDate}
+              helperText='Select when this discount should start'
+            />
+
+            <DatePicker
+              value={offerInput.endDate}
+              onChange={handleChange}
+              label='End Date'
+              name='endDate'
+              placeHolder='Select end date'
+              isInvalid={!!offerValidation.endDate}
+              errorMessage={offerValidation.endDate}
+              helperText='Select when this discount expires'
+            />
+          </div>
 
           <Button
             type='submit'
@@ -269,7 +286,7 @@ export const EditOffer = () => {
               ...prev,
               type: newType,
               targetId: '',
-              discountType: newType === 'Brand' ? 'percentage' : '', 
+              discountType: newType === 'Brand' ? 'percentage' : '',
             }));
             setShowTypeChangeModal(false);
           }}

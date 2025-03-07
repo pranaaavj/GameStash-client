@@ -8,12 +8,12 @@ import {
   useToggleBlockUserMutation,
 } from '@/redux/api/admin/usersApi';
 import { toast } from 'sonner';
-import { Alert } from '@/components/common';
+import { Alert, EmptyState } from '@/components/common';
 import { Input } from '@/shadcn/components/ui/input';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
-import { CircleX, Search } from 'lucide-react';
+import { CircleX, Search, Users } from 'lucide-react';
 
 export const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -108,7 +108,11 @@ export const UsersList = () => {
             actions={actions}
           />
         ) : (
-          'No Data to show'
+          <EmptyState
+            icon={Users}
+            title='No Users Found'
+            description='There are no users available at the moment.'
+          />
         )}
       </div>
 
@@ -125,11 +129,13 @@ export const UsersList = () => {
 
       {/* Pagination */}
       <div className='sticky bottom-0 mt-4'>
-        <AdminPagination
-          currentPage={currentPage}
-          totalPages={responseGetUsers?.data?.totalPages || 0}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+        {responseGetUsers?.data?.users?.length > 0 && (
+          <AdminPagination
+            currentPage={currentPage}
+            totalPages={responseGetUsers?.data?.totalPages || 0}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
       </div>
 
       {/* Confirmation Modal */}

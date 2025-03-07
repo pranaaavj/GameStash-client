@@ -9,7 +9,7 @@ import {
   useToggleGenreListMutation,
 } from '@/redux/api/admin/genresApi';
 import { toast } from 'sonner';
-import { Alert } from '@/components/common';
+import { Alert, EmptyState } from '@/components/common';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
@@ -125,17 +125,23 @@ export const GenreList = () => {
             actions={actions}
           />
         ) : (
-          'No Data to show'
+          <EmptyState
+            Icon={CircleX}
+            title='No Genres Found'
+            description='No genres found. Please add genres to list here.'
+          />
         )}
       </div>
 
       {/* Pagination */}
       <div className='sticky bottom-0'>
-        <AdminPagination
-          currentPage={currentPage}
-          totalPages={responseGetGenres?.data?.totalPages || 0}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+        {responseGetGenres?.data?.totalPages > 1 && (
+          <AdminPagination
+            currentPage={currentPage}
+            totalPages={responseGetGenres?.data?.totalPages || 0}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
       </div>
 
       {/* Confirmation Modal */}

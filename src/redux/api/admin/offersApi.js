@@ -31,7 +31,10 @@ const offersEndpoints = adminBaseApi.injectEndpoints({
         method: 'POST',
         body: newOfferDetails,
       }),
-      invalidatesTags: [{ type: 'Offer', id: 'LIST' }],
+      invalidatesTags: [
+        { type: 'Offer', id: 'LIST' },
+        { type: 'Product', id: 'LIST' },
+      ],
     }),
 
     editOffer: builder.mutation({
@@ -43,6 +46,7 @@ const offersEndpoints = adminBaseApi.injectEndpoints({
       invalidatesTags: (result, error, { offerId }) => [
         { type: 'Offer', id: offerId },
         { type: 'Offer', id: 'LIST' },
+        { type: 'Product', id: 'LIST' },
       ],
     }),
 
@@ -54,6 +58,7 @@ const offersEndpoints = adminBaseApi.injectEndpoints({
       invalidatesTags: (result, error, offerId) => [
         { type: 'Offer', id: offerId },
         { type: 'Offer', id: 'LIST' },
+        { type: 'Product', id: 'LIST' },
       ],
     }),
   }),

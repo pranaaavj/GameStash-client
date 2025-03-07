@@ -9,14 +9,14 @@ import {
   useToggleBrandListMutation,
 } from '@/redux/api/admin/brandsApi';
 import { toast } from 'sonner';
-import { Alert } from '@/components/common';
+import { Alert, EmptyState } from '@/components/common';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
-import { CircleX, Plus, Search, Check, X } from 'lucide-react';
+import { CircleX, Plus, Search, Check, X, Tags } from 'lucide-react';
 
 export const BrandList = () => {
   const navigate = useNavigate();
@@ -125,17 +125,23 @@ export const BrandList = () => {
             actions={actions}
           />
         ) : (
-          'No Data to show'
+          <EmptyState
+            icon={Tags}
+            title='No Brands Found'
+            description='No brands found. Please add a brand to list it here.'
+          />
         )}
       </div>
 
       {/* Pagination */}
       <div className='sticky bottom-0'>
-        <AdminPagination
-          currentPage={currentPage}
-          totalPages={responseGetBrands?.data?.totalPages || 0}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+        {responseGetBrands?.data?.totalPages > 1 && (
+          <AdminPagination
+            currentPage={currentPage}
+            totalPages={responseGetBrands?.data?.totalPages || 0}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
       </div>
 
       {/* Confirmation Modal */}

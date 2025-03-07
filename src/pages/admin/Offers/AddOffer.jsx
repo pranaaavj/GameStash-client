@@ -12,7 +12,12 @@ import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, InputField, SelectField } from '@/components/common';
+import {
+  Alert,
+  InputField,
+  SelectField,
+  DatePicker,
+} from '@/components/common';
 import { validateOffer, mapOptionsData } from '@/utils';
 
 const initialOfferState = {
@@ -20,8 +25,9 @@ const initialOfferState = {
   type: '',
   targetId: '',
   discountType: '',
-  discountValue: '',
-  expirationDate: '',
+  discountValue: null,
+  startDate: undefined,
+  endDate: undefined,
 };
 
 export const AddOffer = () => {
@@ -30,6 +36,7 @@ export const AddOffer = () => {
   // Fetching products and brands
   const { data: responseProducts, isSuccess: productsSuccess } =
     useGetAllProductsQuery({});
+
   const { data: responseBrands, isSuccess: brandsSuccess } =
     useGetAllBrandsQuery({});
 
@@ -38,6 +45,8 @@ export const AddOffer = () => {
   // Offer state
   const [offerInput, setOfferInput] = useState(initialOfferState);
   const [offerValidation, setOfferValidation] = useState(initialOfferState);
+
+  console.log(offerInput);
 
   useEffect(() => {
     setOfferValidation(initialOfferState);
@@ -75,7 +84,6 @@ export const AddOffer = () => {
     e.preventDefault();
 
     const validationErrors = validateOffer(offerInput);
-    console.log(validationErrors);
     if (Object.keys(validationErrors).length > 0) {
       setOfferValidation(validationErrors);
       return;
@@ -178,15 +186,29 @@ export const AddOffer = () => {
             />
           </div>
 
-          <InputField
-            type='date'
-            value={offerInput.expirationDate}
-            onChange={handleChange}
-            label='Expiration Date'
-            name='expirationDate'
-            isInvalid={!!offerValidation.expirationDate}
-            errorMessage={offerValidation.expirationDate}
-          />
+          <div className='flex space-x-4'>
+            <DatePicker
+              value={offerInput.startDate}
+              onChange={handleChange}
+              label='Start Date'
+              name='startDate'
+              placeHolder='Select start date'
+              isInvalid={!!offerValidation.startDate}
+              errorMessage={offerValidation.startDate}
+              helperText='Select when this discount should start'
+            />
+
+            <DatePicker
+              value={offerInput.endDate}
+              onChange={handleChange}
+              label='End Date'
+              name='endDate'
+              placeHolder='Select end date'
+              isInvalid={!!offerValidation.endDate}
+              errorMessage={offerValidation.endDate}
+              helperText='Select when this discount expires'
+            />
+          </div>
 
           <Button
             type='submit'

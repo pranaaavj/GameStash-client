@@ -2,64 +2,115 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Box,
+} from '@chakra-ui/react';
+import { Calendar } from '@/shadcn/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/shadcn/components/ui/popover';
 
-export default function DatePicker({ className, onDateChange }) {
-  const [date, setDate] = useState();
+export const DatePicker = ({
+  name,
+  label,
+  value,
+  onChange,
+  isInvalid,
+  helperText,
+  errorMessage,
+  placeHolder,
+  ...props
+}) => {
   const [open, setOpen] = useState(false);
 
-  const handleSelect = (selectedDate) => {
-    setDate(selectedDate);
-    // Note: We're not closing the popover here anymore
-    if (onDateChange) {
-      onDateChange(selectedDate);
+  const handleSelect = (date) => {
+    if (!date) return;
+
+    const adjustedDate = new Date(date);
+    if (name === 'startDate') {
+      adjustedDate.setHours(0, 0, 0, 0); // Set start date to midnight
+    } else if (name === 'endDate') {
+      adjustedDate.setHours(23, 59, 59, 999); // Set end date to end of the day
     }
+
+    const syntheticEvent = {
+      target: {
+        name,
+        value: adjustedDate.toISOString(),
+      },
+    };
+    onChange(syntheticEvent);
   };
 
   return (
-    <div className={cn('grid gap-2', className)}>
+    <FormControl isInvalid={isInvalid}>
+      <FormLabel
+        fontWeight={'medium'}
+        fontSize={15}>
+        {label}
+      </FormLabel>
+
       <Popover
         open={open}
         onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            id='date'
-            variant={'outline'}
-            className={cn(
-              'w-full justify-start text-left font-normal',
-              !date && 'text-muted-foreground'
-            )}>
+          <Box
+            as='button'
+            type='button'
+            display='flex'
+            alignItems='center'
+            width='100%'
+            px={3}
+            py={2}
+            fontSize={13}
+            textAlign='left'
+            bgColor='#262626'
+            border='1px solid transparent'
+            borderRadius='md'
+            color={value ? 'white' : 'gray.400'}
+            _hover={{ border: '1px', borderColor: '#c0c0c0' }}
+            _focus={{ border: '1px', borderColor: '#f2f2f2' }}
+            {...props}>
             <CalendarIcon className='mr-2 h-4 w-4' />
-            {date ? format(date, 'PPP') : <span>Pick a date</span>}
-          </Button>
+            {value ? (
+              format(value, 'PPP')
+            ) : (
+              <span>{placeHolder || 'Pick a date'}</span>
+            )}
+          </Box>
         </PopoverTrigger>
         <PopoverContent
-          className='w-auto p-0'
-          align='start'>
-          <Calendar
-            mode='single'
-            selected={date}
-            onSelect={handleSelect}
-            initialFocus
-          />
-          <div className='p-3 border-t border-border'>
-            <Button
-              variant='default'
-              className='w-full'
-              onClick={() => setOpen(false)}>
-              Done
-            </Button>
+          className='w-auto p-0 border-none'
+          align='start'
+          sideOffset={5}
+          style={{
+            zIndex: 1000,
+            position: 'absolute',
+          }}>
+          <div className='bg-[#262626] text-white'>
+            <Calendar
+              mode='single'
+              selected={value ? new Date(value) : undefined}
+              onSelect={handleSelect}
+              initialFocus
+              className='border-none bg-[#262626] text-white'
+            />
           </div>
         </PopoverContent>
       </Popover>
-    </div>
+
+      {errorMessage && (
+        <FormErrorMessage fontSize={13}>{errorMessage}</FormErrorMessage>
+      )}
+      {helperText && (
+        <FormHelperText fontSize={13}>{helperText}</FormHelperText>
+      )}
+    </FormControl>
   );
-}
+};

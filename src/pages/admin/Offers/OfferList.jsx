@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { AdminPagination } from '@/components/admin';
-import { Search, Edit, Plus, CircleX, X, Check } from 'lucide-react';
-import { Alert, ConfirmationModal } from '@/components/common';
+import { Search, Edit, Plus, CircleX, X, Check, Tag } from 'lucide-react';
+import { Alert, ConfirmationModal, EmptyState } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from '@/shadcn/components/ui/badge';
+import { format } from 'date-fns';
 import {
   Table,
   TableBody,
@@ -43,7 +44,8 @@ export const OfferList = () => {
     'Name',
     'Type',
     'Discount',
-    'Expiration Date',
+    'Start Date',
+    'End Date',
     'Status',
     'Actions',
   ];
@@ -146,7 +148,10 @@ export const OfferList = () => {
                       : `₹${offer.discountValue}`}
                   </TableCell>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
-                    {new Date(offer.expirationDate).toLocaleDateString()}
+                    {format(new Date(offer.startDate), 'dd/MM/yyyy')}
+                  </TableCell>
+                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                    {format(new Date(offer.endDate), 'dd/MM/yyyy')}
                   </TableCell>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     <Badge variant={offer.isActive ? 'success' : 'destructive'}>
@@ -160,6 +165,10 @@ export const OfferList = () => {
                         <Button
                           variant='outline'
                           size='sm'
+                          disabled={
+                            new Date(offer.endDate).getTime() <
+                            new Date().getTime()
+                          }
                           onClick={() =>
                             navigate(`/admin/offers/edit/${offer._id}`)
                           }
@@ -187,19 +196,25 @@ export const OfferList = () => {
             </TableBody>
           </Table>
         ) : (
-          <p className='text-center text-primary-text py-4'>
-            No offers to display
-          </p>
+          <div className='w-full flex items-center justify-center'>
+            <EmptyState
+              icon={Tag}
+              title='No offers available'
+              description='There are no offers to display at the moment. Create a new offer to get started.'
+            />
+          </div>
         )}
       </div>
 
       {/* Pagination */}
       <div className='sticky bottom-0 mt-4'>
-        <AdminPagination
-          currentPage={currentPage}
-          totalPages={responseGetOffers?.data?.totalPages || 0}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+        {responseGetOffers?.data?.totalPages > 1 && (
+          <AdminPagination
+            currentPage={currentPage}
+            totalPages={responseGetOffers?.data?.totalPages || 0}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
       </div>
 
       {/* Confirmation Modal */}

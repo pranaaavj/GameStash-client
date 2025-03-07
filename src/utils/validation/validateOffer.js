@@ -24,13 +24,33 @@ export const validateOffer = (offer) => {
     errors.discountValue = 'Percentage discount must be between 1 and 100';
   }
 
-  if (!offer.expirationDate) {
-    errors.expirationDate = 'Expiration date is required';
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+  if (!offer.startDate) {
+    errors.startDate = 'Offer start date is required';
   } else {
-    const currentDate = new Date();
-    const expirationDate = new Date(offer.expirationDate);
-    if (expirationDate < currentDate) {
-      errors.expirationDate = 'Expiration date must be in the future';
+    const startDate = new Date(offer.startDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    if (startDate < currentDate) {
+      errors.startDate = 'Offer start date must be in the future';
+    }
+  }
+
+  if (!offer.endDate) {
+    errors.endDate = 'Offer end date is required';
+  } else {
+    const endDate = new Date(offer.endDate);
+    // endDate.setHours(0, 0, 0, 0);
+
+    const startDate = new Date(offer.startDate);
+    // startDate.setHours(23, 59, 59, 999);
+
+    if (endDate < currentDate) {
+      errors.endDate = 'Offer end date must be in the future';
+    } else if (startDate && endDate < startDate) {
+      errors.endDate = 'Offer end date must be after the start date';
     }
   }
 

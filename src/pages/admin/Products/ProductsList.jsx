@@ -51,6 +51,8 @@ export const ProductList = () => {
     'stock',
   ];
 
+  console.log(responseGetProducts);
+
   const actions = [
     ({ id: productId }) => (
       <EditButton
@@ -77,8 +79,6 @@ export const ProductList = () => {
       const responseProductList = await toggleProductList(
         selectedProduct
       ).unwrap();
-
-      console.log(responseProductList);
 
       if (responseProductList?.success) {
         toast.success(responseProductList?.message, {

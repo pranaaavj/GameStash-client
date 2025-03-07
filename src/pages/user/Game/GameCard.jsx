@@ -13,12 +13,13 @@ export const GameCard = ({ game, onClick }) => {
           alt={game.name}
           className='w-full h-[16rem] object-cover rounded-lg'
         />
+
         {/* For discount section  */}
-        {/* {game.discount && (
+        {game.bestOffer?.discountValue && (
           <span className='absolute top-2 left-2 bg-accent-blue text-primary-text text-xs font-bold px-2 py-1 rounded-full'>
-            -{game.discount}%
+            -{game.bestOffer?.discountValue}%
           </span>
-        )} */}
+        )}
       </div>
       <div className='p-4 text-left'>
         {<p className='text-secondary-text text-xs mb-1'>Base Game</p>}
@@ -34,24 +35,23 @@ export const GameCard = ({ game, onClick }) => {
 
         <div className='flex justify-start items-center'>
           {/* For discount section */}
-
-          {/* {game.discountedPrice ? (
+          {game.discountedPrice ? (
             <>
               <span className='text-primary-text text-left font-semibold mr-2 line-through text-xs'>
-                ${game.price.toFixed(2)}
+                ₹{game.price.toFixed(2)}
               </span>
               <span className='text-accent-blue font-bold text-base'>
-                ${game.discountedPrice.toFixed(2)}
+                ₹{game.discountedPrice.toFixed(2)}
               </span>
             </>
           ) : (
             <span className='text-primary-text text-left font-bold text-base'>
-              ${game.price.toFixed(2)}
+              ₹{game.price.toFixed(2)}
             </span>
-          )} */}
-          <span className='text-primary-text font-bold text-base'>
+          )}
+          {/* <span className='text-primary-text font-bold text-base'>
             ₹{game.price.toFixed(2)}
-          </span>
+          </span> */}
         </div>
       </div>
     </motion.div>
