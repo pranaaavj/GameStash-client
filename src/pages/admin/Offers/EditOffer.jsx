@@ -30,7 +30,7 @@ const initialOfferState = {
   type: '',
   targetId: '',
   discountType: '',
-  discountValue: '',
+  discountValue: null,
   startDate: undefined,
   endDate: undefined,
 };

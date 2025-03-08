@@ -1,6 +1,6 @@
 import {
-  EditButton,
   ToggleList,
+  EditButton,
   ReuseableTable,
   AdminPagination,
 } from '../../../components/admin';
@@ -14,8 +14,8 @@ import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { Link, useNavigate } from 'react-router-dom';
-import { Check, CircleX, Plus, Search, X } from 'lucide-react';
 import { Alert, ConfirmationModal } from '@/components/common';
+import { Check, CircleX, Plus, Search, X } from 'lucide-react';
 
 export const ProductList = () => {
   const navigate = useNavigate();

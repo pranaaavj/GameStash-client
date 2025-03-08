@@ -20,4 +20,7 @@ export { OfferList } from './Offers/OfferList';
 export { AddOffer } from './Offers/AddOffer';
 export { EditOffer } from './Offers/EditOffer';
 
+export { CouponList } from './Coupons/CouponList';
+export { EditCoupon } from './Coupons/EditCoupon';
+
 export { UsersList } from './UsersList';
