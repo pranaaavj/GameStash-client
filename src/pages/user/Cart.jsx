@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import {
   useGetCartQuery,
@@ -20,7 +22,9 @@ export default function Cart() {
 
   const { data: responseCart, isError: isCartError } = useGetCartQuery(
     user?.userInfo?.id,
-    { skip: !user?.userInfo?.id }
+    {
+      skip: !user?.userInfo?.id,
+    }
   );
 
   const [updateCartItem] = useUpdateCartItemMutation();
@@ -99,15 +103,10 @@ export default function Cart() {
   }
 
   return (
-    <div className='container mx-auto px-4 py-8 max-w-6xl'>
-      {/* <Button
-        variant='ghost'
-        className='mb-6 text-secondary-text hover:text-primary-text'
-        onClick={() => navigate(-1)}>
-        <ArrowLeft className='mr-2 h-4 w-4' />
-        Continue Shopping
-      </Button> */}
-      <h1 className='text-4xl font-bold mb-8 text-primary-text'>Your Cart</h1>
+    <div className='container mx-auto px-4 py-10 max-w-6xl'>
+      <h1 className='text-3xl md:text-4xl font-bold mb-10 text-primary-text'>
+        Your Cart
+      </h1>
       {user?.userInfo ? (
         <motion.div
           initial={{ opacity: 0 }}
@@ -115,161 +114,170 @@ export default function Cart() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-          <div className='lg:col-span-2'>
-            <ScrollArea className='h-[calc(100vh-250px)] pr-4'>
-              <AnimatePresence initial={false}>
-                {cartItems?.length > 0 ? (
-                  <motion.div className='space-y-6'>
-                    {cartItems.map((item) => (
-                      <motion.div
-                        key={item._id}
-                        className='flex gap-6 bg-secondary-bg p-6 rounded-lg shadow-md'
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}>
-                        <div className='h-32 w-32 rounded-lg bg-primary-bg/50 p-2 flex-shrink-0'>
-                          <img
-                            src={
-                              item.product?.images?.[0] || '/placeholder.svg'
-                            }
-                            alt={item.product?.name}
-                            className='h-full w-full object-cover rounded-md'
-                          />
-                        </div>
-                        <div className='flex flex-1 flex-col justify-between'>
-                          <div>
-                            <h3 className='text-xl font-semibold text-primary-text mb-2'>
-                              {item.product?.name}
-                            </h3>
-                            <p className='text-sm text-secondary-text mb-4'>
-                              {item.product?.platform}
-                            </p>
+          {cartItems?.length > 0 ? (
+            <>
+              <div className='lg:col-span-2'>
+                <ScrollArea className='h-[calc(100vh-250px)] pr-4'>
+                  <AnimatePresence initial={false}>
+                    <motion.div className='space-y-6'>
+                      {cartItems.map((item) => (
+                        <motion.div
+                          key={item._id}
+                          className='flex gap-6 bg-secondary-bg p-5 md:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:bg-secondary-bg/80'
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}>
+                          <div className='h-28 w-28 md:h-32 md:w-32 rounded-lg bg-primary-bg/50 p-2 flex-shrink-0 overflow-hidden'>
+                            <img
+                              src={
+                                item.product?.images?.[0] || '/placeholder.svg'
+                              }
+                              alt={item.product?.name}
+                              className='h-full w-full object-cover rounded-md transition-transform duration-300 hover:scale-105'
+                            />
                           </div>
-                          <div className='flex items-center justify-between'>
-                            <div className='flex items-center gap-3 '>
-                              <Button
-                                variant='outline'
-                                size='icon'
-                                className='h-8 w-8 rounded-full border-none'
-                                onClick={() =>
-                                  handleUpdateQuantity(
-                                    item.product._id,
-                                    item.quantity - 1
-                                  )
-                                }
-                                disabled={item.quantity <= 1}>
-                                <Minus className='h-4 w-4' />
-                              </Button>
-                              <span className='w-8 text-center text-white text-lg font-medium'>
-                                {item.quantity}
-                              </span>
-                              <Button
-                                variant='outline'
-                                size='icon'
-                                className='h-8 w-8 rounded-full border-none'
-                                onClick={() =>
-                                  handleUpdateQuantity(
-                                    item.product._id,
-                                    item.quantity + 1
-                                  )
-                                }
-                                disabled={item.quantity >= 5}>
-                                <Plus className='h-4 w-4' />
-                              </Button>
+                          <div className='flex flex-1 flex-col justify-between'>
+                            <div>
+                              <h3 className='text-lg md:text-xl font-semibold text-primary-text mb-1'>
+                                {item.product?.name}
+                              </h3>
+                              <p className='text-sm text-secondary-text mb-4'>
+                                {item.product?.platform}
+                              </p>
+                              {item.product.stock < 10 && (
+                                <span className='text-xs px-2 py-0.5 bg-amber-500/20 text-amber-500 rounded-full ml-2'>
+                                  Only {item.product.stock} left
+                                </span>
+                              )}
                             </div>
-                            <p className='text-xl font-bold text-primary-text'>
-                              ₹{(item.product.price * item.quantity).toFixed(2)}
-                            </p>
+                            <div className='flex items-center justify-between'>
+                              <div className='flex items-center gap-2 md:gap-3'>
+                                <Button
+                                  variant='outline'
+                                  size='icon'
+                                  className='h-8 w-8 rounded-full border hover:bg-accent-red hover:border-accent-red transition-colors'
+                                  onClick={() =>
+                                    handleUpdateQuantity(
+                                      item.product._id,
+                                      item.quantity - 1
+                                    )
+                                  }
+                                  disabled={item.quantity <= 1}>
+                                  <Minus className='h-3 w-3 md:h-4 md:w-4' />
+                                </Button>
+                                <span className='w-8 text-center text-white text-lg font-medium'>
+                                  {item.quantity}
+                                </span>
+                                <Button
+                                  variant='outline'
+                                  size='icon'
+                                  className='h-8 w-8 rounded-full border hover:bg-accent-red hover:border-accent-red transition-colors'
+                                  onClick={() =>
+                                    handleUpdateQuantity(
+                                      item.product._id,
+                                      item.quantity + 1
+                                    )
+                                  }
+                                  disabled={item.quantity >= 5}>
+                                  <Plus className='h-3 w-3 md:h-4 md:w-4' />
+                                </Button>
+                              </div>
+                              <p className='text-xl font-bold text-primary-text'>
+                                ₹
+                                {(item.product.price * item.quantity).toFixed(
+                                  2
+                                )}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <Button
-                          variant='ghost'
-                          size='icon'
-                          className='text-red-500 hover:bg-red-500/20 self-start'
-                          onClick={() => handleRemoveItem(item.product._id)}>
-                          <X className='h-5 w-5' />
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    className='flex flex-col items-center justify-center h-[50vh] text-secondary-text'
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}>
-                    <ShoppingCart className='h-16 w-16 mb-6 text-accent-blue' />
-                    <p className='text-xl mb-4'>Your cart is empty</p>
-                    <Button
-                      variant='outline'
-                      onClick={() => navigate('/')}
-                      className='text-accent-blue border-accent-blue hover:bg-accent-blue hover:text-white'>
-                      Start Shopping
-                    </Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </ScrollArea>
-          </div>
-
-          {cartItems?.length > 0 && (
-            <motion.div
-              className='lg:col-span-1'
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}>
-              <div className='bg-secondary-bg p-6 rounded-lg shadow-md'>
-                <h2 className='text-2xl font-bold mb-4 text-primary-text'>
-                  Order Summary
-                </h2>
-                <Separator className='bg-primary-bg/20 mb-4' />
-                <div className='space-y-2 mb-4'>
-                  <div className='flex justify-between text-sm'>
-                    <span className='text-secondary-text'>Subtotal</span>
-                    <span className='text-primary-text font-medium'>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            className='text-red-500/70 hover:text-red-500 hover:bg-red-500/10 self-start -mt-1 -mr-2 transition-colors'
+                            onClick={() => handleRemoveItem(item.product._id)}>
+                            <X className='h-5 w-5' />
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </AnimatePresence>
+                </ScrollArea>
+              </div>
+              <motion.div
+                className='lg:col-span-1'
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}>
+                <div className='bg-secondary-bg p-6 md:p-8 rounded-xl shadow-sm sticky top-6'>
+                  <h2 className='text-xl md:text-2xl font-bold mb-5 text-primary-text'>
+                    Order Summary
+                  </h2>
+                  <Separator className='bg-primary-bg/20 mb-5' />
+                  <div className='space-y-4 mb-5'>
+                    <div className='flex justify-between text-sm md:text-base'>
+                      <span className='text-secondary-text'>Subtotal</span>
+                      <span className='text-primary-text font-medium'>
+                        ₹{total.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className='flex justify-between text-sm md:text-base'>
+                      <span className='text-secondary-text'>Shipping</span>
+                      <span className='text-primary-text font-medium'>
+                        Calculated at checkout
+                      </span>
+                    </div>
+                  </div>
+                  <Separator className='bg-primary-bg/20 mb-5' />
+                  <div className='flex justify-between items-center mb-8'>
+                    <span className='text-lg font-semibold text-primary-text'>
+                      Total
+                    </span>
+                    <span className='text-2xl font-bold text-primary-text'>
                       ₹{total.toFixed(2)}
                     </span>
                   </div>
-                  <div className='flex justify-between text-sm'>
-                    <span className='text-secondary-text'>Shipping</span>
-                    <span className='text-primary-text font-medium'>
-                      Calculated at checkout
-                    </span>
-                  </div>
+                  <Button
+                    className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md'
+                    onClick={handleCheckout}>
+                    Proceed to Checkout
+                  </Button>
                 </div>
-                <Separator className='bg-primary-bg/20 mb-4' />
-                <div className='flex justify-between items-center mb-6'>
-                  <span className='text-lg font-semibold text-primary-text'>
-                    Total
-                  </span>
-                  <span className='text-2xl font-bold text-primary-text'>
-                    ₹{total.toFixed(2)}
-                  </span>
-                </div>
+              </motion.div>
+            </>
+          ) : (
+            <div className='lg:col-span-3 flex justify-center'>
+              <motion.div
+                className='flex flex-col items-center justify-center h-[50vh] text-secondary-text max-w-md w-full'
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}>
+                <ShoppingCart className='h-16 w-16 mb-6 text-accent-blue opacity-80' />
+                <p className='text-xl mb-6 font-medium'>Your cart is empty</p>
                 <Button
-                  className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6 rounded-lg text-lg font-medium'
-                  onClick={handleCheckout}>
-                  Proceed to Checkout
+                  variant='outline'
+                  onClick={() => navigate('/')}
+                  className='text-accent-blue border-accent-blue hover:bg-accent-blue hover:text-white px-6 py-5 font-medium transition-all duration-300'>
+                  Start Shopping
                 </Button>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           )}
         </motion.div>
       ) : (
         <motion.div
-          className='flex flex-col items-center justify-center h-[calc(100vh-200px)] text-primary-text rounded-lg shadow-md p-8'
+          className='flex flex-col items-center justify-center h-[calc(100vh-200px)] text-primary-text rounded-xl shadow-sm p-8 bg-secondary-bg/50'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}>
           <motion.div
-            className='relative w-24 h-24 mb-8'
+            className='relative w-20 h-20 md:w-24 md:h-24 mb-8'
             animate={{
               rotate: [0, 10, -10, 0],
             }}
             transition={{
               duration: 4,
-              repeat: Infinity,
+              repeat: Number.POSITIVE_INFINITY,
               ease: 'easeInOut',
             }}>
             <motion.div
@@ -279,28 +287,28 @@ export default function Cart() {
               }}
               transition={{
                 duration: 2,
-                repeat: Infinity,
+                repeat: Number.POSITIVE_INFINITY,
                 ease: 'easeInOut',
               }}
             />
             <Lock className='w-full h-full text-accent-blue' />
           </motion.div>
           <motion.h2
-            className='text-3xl font-bold mb-4 text-center'
+            className='text-2xl md:text-3xl font-bold mb-4 text-center'
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}>
             Your Cart is Locked
           </motion.h2>
           <motion.p
-            className='text-secondary-text mb-8 text-center text-lg'
+            className='text-secondary-text mb-8 text-center text-base md:text-lg max-w-md'
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}>
             Log in to view your cart and start shopping
           </motion.p>
           <motion.button
-            className='px-8 py-4 bg-accent-blue text-white rounded-lg font-medium text-lg hover:bg-hover-blue transition duration-300'
+            className='px-8 py-4 bg-accent-blue text-white rounded-lg font-medium text-lg hover:bg-hover-blue transition duration-300 shadow-sm hover:shadow-md'
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}>
             Log In
