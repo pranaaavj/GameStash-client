@@ -1,4 +1,4 @@
-export const validateOffer = (offer) => {
+export const validateOffer = (offer, isEditing = false) => {
   const errors = {};
 
   if (!offer.name.trim()) {
@@ -27,30 +27,34 @@ export const validateOffer = (offer) => {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
-  if (!offer.startDate) {
-    errors.startDate = 'Offer start date is required';
-  } else {
-    const startDate = new Date(offer.startDate);
-    startDate.setHours(0, 0, 0, 0);
+  if (!isEditing) {
+    if (!offer.startDate) {
+      errors.startDate = 'Offer start date is required';
+    } else {
+      const startDate = new Date(offer.startDate);
+      startDate.setHours(0, 0, 0, 0);
 
-    if (startDate < currentDate) {
-      errors.startDate = 'Offer start date must be in the future';
+      if (startDate < currentDate) {
+        errors.startDate = 'Offer start date must be in the future';
+      }
     }
   }
 
-  if (!offer.endDate) {
-    errors.endDate = 'Offer end date is required';
-  } else {
-    const endDate = new Date(offer.endDate);
-    // endDate.setHours(0, 0, 0, 0);
+  if (!isEditing) {
+    if (!offer.endDate) {
+      errors.endDate = 'Offer end date is required';
+    } else {
+      const endDate = new Date(offer.endDate);
+      endDate.setHours(0, 0, 0, 0);
 
-    const startDate = new Date(offer.startDate);
-    // startDate.setHours(23, 59, 59, 999);
+      const startDate = new Date(offer.startDate);
+      startDate.setHours(23, 59, 59, 999);
 
-    if (endDate < currentDate) {
-      errors.endDate = 'Offer end date must be in the future';
-    } else if (startDate && endDate < startDate) {
-      errors.endDate = 'Offer end date must be after the start date';
+      if (endDate < currentDate) {
+        errors.endDate = 'Offer end date must be in the future';
+      } else if (startDate && endDate < startDate) {
+        errors.endDate = 'Offer end date must be after the start date';
+      }
     }
   }
 

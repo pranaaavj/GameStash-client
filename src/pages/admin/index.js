@@ -22,5 +22,6 @@ export { EditOffer } from './Offers/EditOffer';
 
 export { CouponList } from './Coupons/CouponList';
 export { EditCoupon } from './Coupons/EditCoupon';
+export { AddCoupon } from './Coupons/AddCoupon';
 
 export { UsersList } from './UsersList';

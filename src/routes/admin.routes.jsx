@@ -17,6 +17,7 @@ import {
   EditOffer,
   CouponList,
   EditCoupon,
+  AddCoupon,
 } from '@/pages/admin';
 import { AdminError } from '@/components/error';
 import { AdminLayout } from '@/components/admin';
@@ -133,10 +134,10 @@ export const adminRoutes = [
                 index: true,
                 element: <CouponList />,
               },
-              // {
-              //   path: 'add',
-              //   element: <AddOffer />,
-              // },
+              {
+                path: 'add',
+                element: <AddCoupon />,
+              },
               {
                 path: 'edit/:couponId',
                 element: <EditCoupon />,

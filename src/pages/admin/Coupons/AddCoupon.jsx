@@ -4,77 +4,47 @@ import {
   CardHeader,
   CardContent,
 } from '@/shadcn/components/ui/card';
-import {
-  useGetOneCouponQuery,
-  useEditCouponMutation,
-} from '@/redux/api/admin/couponsApi';
+import { useAddCouponMutation } from '@/redux/api/admin/couponsApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Alert,
-  DatePicker,
   InputField,
   SelectField,
+  DatePicker,
 } from '@/components/common';
 import { validateCoupon } from '@/utils';
-import { Loading } from '@/components/error';
 
 const initialCouponState = {
   code: '',
   discountType: '',
-  discountValue: null,
-  minOrderAmount: null,
-  maxDiscountAmount: null,
-  usageLimit: null,
-  perUserLimit: null,
-  startDate: undefined,
-  endDate: undefined,
+  discountValue: '',
+  minOrderAmount: '',
+  maxDiscountAmount: '',
+  usageLimit: '',
+  perUserLimit: '',
+  startDate: '',
+  endDate: '',
 };
 
-export const EditCoupon = () => {
+export const AddCoupon = () => {
   const navigate = useNavigate();
-  const { couponId } = useParams();
-
-  // Fetching the specific coupon details
-  const {
-    data: responseCoupon,
-    isError,
-    error,
-    isLoading: isCouponLoading,
-  } = useGetOneCouponQuery(couponId);
-
-  const [editCoupon, { isError: isEditCouponError, error: editCouponError }] =
-    useEditCouponMutation();
+  const [addCoupon, { isError, error }] = useAddCouponMutation();
 
   // Coupon state
   const [couponInput, setCouponInput] = useState(initialCouponState);
   const [couponValidation, setCouponValidation] = useState(initialCouponState);
-
-  useEffect(() => {
-    if (responseCoupon) {
-      setCouponInput((prevInput) => ({
-        ...prevInput,
-        code: responseCoupon.data.code,
-        discountType: responseCoupon.data.discountType,
-        discountValue: responseCoupon.data.discountValue,
-        minOrderAmount: responseCoupon.data.minOrderAmount,
-        maxDiscountAmount: responseCoupon.data.maxDiscountAmount,
-        usageLimit: responseCoupon.data.usageLimit, // ✅ Added missing field
-        perUserLimit: responseCoupon.data.perUserLimit, // ✅ Added missing field
-        startDate: new Date(responseCoupon.data.startDate),
-        endDate: new Date(responseCoupon.data.endDate),
-      }));
-    }
-  }, [responseCoupon]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCouponInput((prev) => ({ ...prev, [name]: value }));
     setCouponValidation((prev) => ({ ...prev, [name]: '' }));
   };
+
+  console.log(couponInput);
 
   const discountTypeOptions = [
     { label: 'Percentage (%)', value: 'percentage' },
@@ -84,36 +54,29 @@ export const EditCoupon = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const validationErrors = validateCoupon(couponInput, true);
+    const validationErrors = validateCoupon(couponInput);
     if (Object.keys(validationErrors).length > 0) {
       setCouponValidation(validationErrors);
       return;
     }
 
     try {
-      const response = await editCoupon({
-        couponId,
-        ...couponInput,
-      }).unwrap();
+      const response = await addCoupon(couponInput).unwrap();
 
-      if (response?.success) {
+      if (response.success) {
         toast.success(response.message, { duration: 1500 });
-        setTimeout(() => navigate('/admin/coupons'), 1500);
+        navigate('/admin/coupons');
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  if (!responseCoupon || isCouponLoading) {
-    return <Loading />;
-  }
-
   return (
     <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-none border-0 text-primary-text'>
       <CardHeader className='bg-primary-bg/10'>
         <CardTitle className='text-2xl font-bold text-center text-primary-text'>
-          Edit Coupon
+          Add New Coupon
         </CardTitle>
       </CardHeader>
       <CardContent className='pt-6'>
@@ -258,11 +221,11 @@ export const EditCoupon = () => {
           <Button
             type='submit'
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
-            Update Coupon
+            Add Coupon
           </Button>
         </form>
 
-        {isError ? (
+        {isError && (
           <Alert
             Icon={CircleX}
             variant='destructive'
@@ -270,16 +233,7 @@ export const EditCoupon = () => {
               error?.data?.message || 'Something went wrong! Please try again.'
             }
           />
-        ) : isEditCouponError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              editCouponError?.data?.message ||
-              'Something went wrong! Please try again.'
-            }
-          />
-        ) : null}
+        )}
       </CardContent>
     </Card>
   );

@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shadcn/components/ui/dropdown-menu';
 import logo from '@/assets/images/logo.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SearchBar } from './SearchBar';
 import { logout } from '@/redux/slices/userSlice';
 import { Button } from '@/shadcn/components/ui/button';
@@ -24,6 +24,8 @@ import { useLogoutUserMutation } from '@/redux/api/user/authApi';
 import { Menu, Search, ShoppingCart, User, X } from 'lucide-react';
 
 export const Navbar = ({ onCartClick }) => {
+  const navigate = useNavigate();
+
   const user = useUsers();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -63,7 +65,7 @@ export const Navbar = ({ onCartClick }) => {
               Games
             </Link>
             <Link
-              to='/user/support'
+              to='/support'
               className='text-primary-text hover:text-accent-red px-3 py-2 text-sm font-medium transition-colors'>
               Support
             </Link>
@@ -85,10 +87,11 @@ export const Navbar = ({ onCartClick }) => {
               <Button
                 variant='ghost'
                 size='icon'
-                onClick={onCartClick}
+                onClick={() => navigate('/cart')}
                 className='text-primary-text hover:text-accent-red hover:bg-primary-bg/10'>
                 <ShoppingCart className='h-6 w-6' />
               </Button>
+
               {/* <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -118,7 +121,6 @@ export const Navbar = ({ onCartClick }) => {
                 </DropdownMenuContent>
               </DropdownMenu> */}
             </div>
-
             {/* User Avatar / Sign-In */}
             <div className='w-[6.25rem] flex justify-end'>
               {user?.userInfo ? (

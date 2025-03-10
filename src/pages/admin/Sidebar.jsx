@@ -2,7 +2,6 @@ import {
   Home,
   Users,
   LogOut,
-  Settings,
   PanelLeftOpen,
   PanelRightOpen,
   Package,
@@ -30,7 +29,6 @@ const menuItems = [
   { name: 'Orders', icon: ShoppingCart, to: '/admin/orders' },
   { name: 'Offers', icon: BadgePercent, to: '/admin/offers' },
   { name: 'Coupons', icon: Ticket, to: '/admin/coupons' },
-  { name: 'Settings', icon: Settings, to: '/admin/settings' },
 ];
 
 export const Sidebar = () => {

@@ -69,7 +69,6 @@ export const AddProduct = () => {
       setProductInput((prev) => ({ ...prev, [name]: value }));
     }
   };
-  console.log(images);
   // Mapping options from brands and genres
   const brandOptions = brandQuerySuccess
     ? mapOptionsData(responseBrands?.data?.brands)
@@ -78,13 +77,13 @@ export const AddProduct = () => {
     ? mapOptionsData(responseGenres?.data?.genres)
     : [];
 
-  const platformOptions = mapOptionsData([
-    { name: 'PC' },
-    { name: 'PlayStation' },
-    { name: 'Xbox' },
-    { name: 'Nintendo' },
-    { name: 'Other' },
-  ]);
+  const platformOptions = [
+    { label: 'PC', value: 'PC' },
+    { label: 'PlayStation', value: 'PlayStation' },
+    { label: 'Xbox', value: 'Xbox' },
+    { label: 'Nintendo', value: 'Nintendo' },
+    { label: 'Other', value: 'Other' },
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,7 +96,7 @@ export const AddProduct = () => {
       setImageValidation(imageValidation);
       return;
     }
-
+    console.log(productInput);
     try {
       const response = await addProduct({ ...productInput, images }).unwrap();
 

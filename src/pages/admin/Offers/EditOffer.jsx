@@ -117,7 +117,7 @@ export const EditOffer = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const validationErrors = validateOffer(offerInput);
+    const validationErrors = validateOffer(offerInput, true);
     if (Object.keys(validationErrors).length > 0) {
       setOfferValidation(validationErrors);
       return;

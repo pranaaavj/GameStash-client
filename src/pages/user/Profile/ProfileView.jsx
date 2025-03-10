@@ -94,7 +94,7 @@ export default function ProfileView() {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-primary-bg to-secondary-bg rounded-xl text-primary-text p-4 sm:p-6 md:p-8'>
+    <div className=' bg-gradient-to-br from-primary-bg to-secondary-bg rounded-xl text-primary-text p-4 sm:p-6 md:p-8'>
       <Card className='bg-secondary-bg/50 border-none shadow-xl overflow-hidden backdrop-blur-sm'>
         <CardContent className='p-0'>
           <div className='relative'>
@@ -266,25 +266,6 @@ export default function ProfileView() {
                           )
                         )}
                       </div>
-                    </div>
-                    <div className='bg-primary-bg/30 rounded-lg p-4'>
-                      <h3 className='text-lg font-semibold mb-2 text-accent-blue'>
-                        Upcoming Releases You Might Like
-                      </h3>
-                      <ul className='space-y-2'>
-                        <li className='flex justify-between items-center'>
-                          <span className='text-sm'>Elden Ring 2</span>
-                          <span className='text-xs text-secondary-text'>
-                            Coming in 2 months
-                          </span>
-                        </li>
-                        <li className='flex justify-between items-center'>
-                          <span className='text-sm'>Half-Life 3</span>
-                          <span className='text-xs text-secondary-text'>
-                            Coming in 6 months
-                          </span>
-                        </li>
-                      </ul>
                     </div>
                   </motion.div>
                 )}

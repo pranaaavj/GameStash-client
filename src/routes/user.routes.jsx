@@ -9,7 +9,7 @@ import {
   Orders,
   OrderDetails,
 } from '@/pages/user';
-import CartPage from '@/pages/user/CartPage';
+import CartPage from '@/pages/user/Cart';
 
 export const userRoutes = [
   {
