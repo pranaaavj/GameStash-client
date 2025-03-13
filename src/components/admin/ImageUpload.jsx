@@ -2,7 +2,7 @@
 import { UploadWidget } from './UploadWidget';
 import { Button } from '@/shadcn/components/ui/button';
 import { X } from 'lucide-react';
-
+console.log('hi');
 export const ImageUploader = ({ images, setImages }) => {
   // Update handleSetImageUrls to handle an array of URLs for multiple images
   const handleSetImageUrls = (urls) => {
