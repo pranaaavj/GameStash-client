@@ -43,6 +43,15 @@ const ordersApi = userBaseApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
+
+    requestReturnOrder: builder.mutation({
+      query: ({ orderId, productId, reason }) => ({
+        url: `/user/order/${orderId}`,
+        method: 'PATCH',
+        body: { productId, reason },
+      }),
+      invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -52,4 +61,5 @@ export const {
   useGetOrderQuery,
   useCancelOrderMutation,
   useVerifyRazorpayMutation,
+  useRequestReturnOrderMutation,
 } = ordersApi;

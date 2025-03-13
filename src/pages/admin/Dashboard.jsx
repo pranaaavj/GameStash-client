@@ -117,7 +117,7 @@ export const Dashboard = () => {
         <Tabs
           value={period}
           onValueChange={handlePeriodChange}>
-          <TabsList>
+          <TabsList className='bg-accent-blue text-primary-text'>
             <TabsTrigger value='day'>Day</TabsTrigger>
             <TabsTrigger value='week'>Week</TabsTrigger>
             <TabsTrigger value='month'>Month</TabsTrigger>
@@ -148,8 +148,8 @@ export const Dashboard = () => {
         </Popover>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-        <Card>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-primary-text'>
+        <Card className='bg-accent-red/80 border-transparent text-primary-text'>
           <CardHeader>
             <CardTitle>Total Revenue</CardTitle>
           </CardHeader>
@@ -157,7 +157,7 @@ export const Dashboard = () => {
             ₹{reportData?.data?.totalRevenue?.toLocaleString() || 0}
           </CardContent>
         </Card>
-        <Card>
+        <Card className='bg-accent-red/80 border-transparent text-primary-text'>
           <CardHeader>
             <CardTitle>Total Orders</CardTitle>
           </CardHeader>
@@ -165,7 +165,7 @@ export const Dashboard = () => {
             {reportData?.data?.ordersCount?.toLocaleString() || 0}
           </CardContent>
         </Card>
-        <Card>
+        <Card className='bg-accent-red/80 border-transparent text-primary-text'>
           <CardHeader>
             <CardTitle>Total Customers</CardTitle>
           </CardHeader>
@@ -173,7 +173,7 @@ export const Dashboard = () => {
             {reportData?.data?.customers?.toLocaleString() || 0}
           </CardContent>
         </Card>
-        <Card>
+        <Card className='bg-accent-red/80 border-transparent text-primary-text'>
           <CardHeader>
             <CardTitle>Total Discounts</CardTitle>
           </CardHeader>
@@ -185,7 +185,7 @@ export const Dashboard = () => {
         </Card>
       </div>
 
-      <Card>
+      <Card className='bg-accent-red/80 border-transparent text-primary-text'>
         <CardHeader>
           <CardTitle>Revenue Overview</CardTitle>
         </CardHeader>
@@ -213,7 +213,7 @@ export const Dashboard = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className='bg-accent-red/80 border-transparent text-primary-text'>
         <CardHeader>
           <CardTitle>Best Selling Products</CardTitle>
         </CardHeader>
@@ -241,7 +241,7 @@ export const Dashboard = () => {
           </ResponsiveContainer>
         </CardContent>
       </Card>
-      <Card>
+      <Card className='bg-accent-red/80 border-transparent text-primary-text'>
         <CardHeader>
           <CardTitle>Best Selling Categories</CardTitle>
         </CardHeader>

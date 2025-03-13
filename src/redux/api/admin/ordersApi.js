@@ -29,4 +29,8 @@ const ordersApi = adminBaseApi.injectEndpoints({
   }),
 });
 
-export const { useGetAllOrdersQuery, useUpdateOrderStatusMutation } = ordersApi;
+export const {
+  useGetAllOrdersQuery,
+  useUpdateOrderStatusMutation,
+  useRequestReturnAdminMutation,
+} = ordersApi;

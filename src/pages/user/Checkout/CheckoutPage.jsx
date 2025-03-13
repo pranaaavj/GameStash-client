@@ -146,7 +146,7 @@ export function CheckoutPage() {
       orderItems,
       shippingAddress: selectedAddress.id,
       paymentMethod: selectedPayment,
-      couponCode: selectedCoupon.code || null,
+      couponCode: selectedCoupon?.code || null,
       // deliveryMethod: selectedDelivery,
     };
 

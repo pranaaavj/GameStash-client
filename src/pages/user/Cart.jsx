@@ -227,7 +227,7 @@ export default function Cart() {
   }
 
   return (
-    <div className='container mx-auto px-4 py-4 max-w-6xl'>
+    <div className='container mx-auto px-4 py-4 max-w-6xl no-scrollbar'>
       <h1 className='text-3xl md:text-4xl font-bold mb-10 text-primary-text'>
         Your Cart
       </h1>
@@ -262,9 +262,9 @@ export default function Cart() {
                     </Alert>
                   )}
                 </div>
-                <ScrollArea className='h-[calc(100vh-250px)] pr-4'>
+                <ScrollArea className='h-[calc(100vh-250px)] pr-4 no-scrollbar'>
                   <AnimatePresence initial={false}>
-                    <motion.div className='space-y-6'>
+                    <motion.div className='space-y-6 no-scrollbar'>
                       {cartItems.map((item) => (
                         <motion.div
                           key={item._id}

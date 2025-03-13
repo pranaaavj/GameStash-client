@@ -838,3 +838,59 @@
 //   )
 // }
 
+
+// {item.status === "Return Requested" && (
+//                                                   <div className="flex flex-col gap-2 mt-1">
+//                                                     {item.returnRequest?.reason && (
+//                                                       <p className="text-xs text-secondary-text">
+//                                                         Reason: {item.returnRequest.reason}
+//                                                       </p>
+//                                                     )}
+//                                                     <div className="flex gap-2">
+//                                                       <Button
+//                                                         variant="outline"
+//                                                         size="sm"
+//                                                         className="bg-green-500 hover:bg-green-600 text-white border-none"
+//                                                         onClick={() =>
+//                                                           handleReturnRequest(order._id, item.product._id, "approve")
+//                                                         }
+//                                                         disabled={isProcessingReturn}
+//                                                       >
+//                                                         Approve
+//                                                       </Button>
+//                                                       <Button
+//                                                         variant="outline"
+//                                                         size="sm"
+//                                                         className="bg-red-500 hover:bg-red-600 text-white border-none"
+//                                                         onClick={() =>
+//                                                           handleReturnRequest(order._id, item.product._id, "reject")
+//                                                         }
+//                                                         disabled={isProcessingReturn}
+//                                                       >
+//                                                         Reject
+//                                                       </Button>
+//                                                     </div>
+//                                                   </div>
+//                                                 )}
+
+  // const handleReturnRequest = async (orderId, productId, action) => {
+  //   try {
+  //     await requestReturnAdmin({
+  //       orderId,
+  //       productId,
+  //       action,
+  //     }).unwrap();
+
+  //     toast.success(
+  //       `Return request ${
+  //         action === 'approve' ? 'approved' : 'rejected'
+  //       } successfully`,
+  //       { duration: 1500 }
+  //     );
+  //   } catch (error) {
+  //     console.error('Error processing return request:', error);
+  //     toast.error(
+  //       error?.data?.message || 'Failed to process the return request'
+  //     );
+  //   }
+  // };

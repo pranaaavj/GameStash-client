@@ -4,6 +4,7 @@ import { Button } from '@/shadcn/components/ui/button';
 import { AdminPagination } from '@/components/admin';
 import {
   useGetAllOrdersQuery,
+  useRequestReturnAdminMutation,
   useUpdateOrderStatusMutation,
 } from '@/redux/api/admin/ordersApi';
 import { toast } from 'sonner';
@@ -58,6 +59,9 @@ export const OrderList = () => {
     limit: 10,
   });
 
+  const [requestReturnAdmin, { isLoading: isProcessingReturn }] =
+    useRequestReturnAdminMutation();
+
   const [updateOrderStatus, { isLoading: isUpdating }] =
     useUpdateOrderStatusMutation();
 
@@ -106,6 +110,28 @@ export const OrderList = () => {
       console.error('Error updating order status:', error);
       toast.error(
         error?.data?.message || 'Failed to change the status of the order'
+      );
+    }
+  };
+
+  const handleReturnRequest = async (orderId, productId, action) => {
+    try {
+      await requestReturnAdmin({
+        orderId,
+        productId,
+        action,
+      }).unwrap();
+
+      toast.success(
+        `Return request ${
+          action === 'approve' ? 'approved' : 'rejected'
+        } successfully`,
+        { duration: 1500 }
+      );
+    } catch (error) {
+      console.error('Error processing return request:', error);
+      toast.error(
+        error?.data?.message || 'Failed to process the return request'
       );
     }
   };
@@ -205,7 +231,7 @@ export const OrderList = () => {
                           </Button>
                         </DialogTrigger>
                         {selectedOrder && (
-                          <DialogContent className='sm:max-w-[800px] p-0 bg-secondary-bg border-none text-primary-text overflow-hidden'>
+                          <DialogContent className='sm:max-w-[800px] p-0 bg-secondary-bg border-none text-primary-text overflow-hidden max-h-[90vh] overflow-y-auto no-scrollbar'>
                             <motion.div
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
@@ -240,7 +266,7 @@ export const OrderList = () => {
                                 </DialogHeader>
                               </div>
 
-                              <div className='p-6'>
+                              <div className='p-6 overflow-y-auto'>
                                 {/* Order Summary Section */}
                                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-6'>
                                   <div className='flex items-start space-x-3'>
@@ -386,6 +412,56 @@ export const OrderList = () => {
                                                 }>
                                                 {item.status}
                                               </Badge>
+
+                                              {item.status ===
+                                                'Return Requested' && (
+                                                <div className='flex flex-col gap-2 mt-1'>
+                                                  {item.returnRequest
+                                                    ?.reason && (
+                                                    <p className='text-xs text-secondary-text'>
+                                                      Reason:{' '}
+                                                      {
+                                                        item.returnRequest
+                                                          .reason
+                                                      }
+                                                    </p>
+                                                  )}
+                                                  <div className='flex gap-2'>
+                                                    <Button
+                                                      variant='outline'
+                                                      size='sm'
+                                                      className='bg-green-500 hover:bg-green-600 text-white border-none'
+                                                      onClick={() =>
+                                                        handleReturnRequest(
+                                                          order._id,
+                                                          item.product._id,
+                                                          'approve'
+                                                        )
+                                                      }
+                                                      disabled={
+                                                        isProcessingReturn
+                                                      }>
+                                                      Approve
+                                                    </Button>
+                                                    <Button
+                                                      variant='outline'
+                                                      size='sm'
+                                                      className='bg-red-500 hover:bg-red-600 text-white border-none'
+                                                      onClick={() =>
+                                                        handleReturnRequest(
+                                                          order._id,
+                                                          item.product._id,
+                                                          'reject'
+                                                        )
+                                                      }
+                                                      disabled={
+                                                        isProcessingReturn
+                                                      }>
+                                                      Reject
+                                                    </Button>
+                                                  </div>
+                                                </div>
+                                              )}
                                             </TableCell>
                                           </TableRow>
                                         ))}

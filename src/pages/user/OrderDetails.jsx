@@ -1,6 +1,7 @@
 import {
   useGetOrderQuery,
   useCancelOrderMutation,
+  useRequestReturnOrderMutation,
 } from '@/redux/api/user/ordersApi';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -56,6 +57,8 @@ export const OrderDetails = () => {
     { isLoading: isCancelling, isError: isCancelError, error: cancelError },
   ] = useCancelOrderMutation();
 
+  const [requestReturnOrder] = useRequestReturnOrderMutation();
+
   const handleCancelItem = async () => {
     setIsModalOpen(false);
 
@@ -97,9 +100,23 @@ export const OrderDetails = () => {
     }
   };
 
-  const handleReturnItem = () => {
+  const handleReturnItem = async () => {
     setIsModalOpen(false);
-    toast.success('Return request submitted successfully');
+    try {
+      const response = await requestReturnOrder({
+        orderId,
+        productId: selectedProduct,
+      }).unwrap();
+
+      if (response?.success) {
+        toast.success(response?.message, {
+          duration: 1500,
+        });
+      }
+    } catch (error) {
+      toast.error('Failed to return order');
+      console.log(error);
+    }
     setSelectedProduct(null);
   };
 
@@ -163,8 +180,7 @@ export const OrderDetails = () => {
   }
 
   const order = responseOrder?.data;
-  const canCancelOrder =
-    order?.orderStatus === 'Processing' || order?.orderStatus === 'Shipped';
+  const canCancelOrder = false;
 
   const getModalTitle = () => {
     if (modalType === 'cancel-item') return 'Cancel Item';

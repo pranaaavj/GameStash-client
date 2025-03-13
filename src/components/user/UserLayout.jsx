@@ -14,7 +14,7 @@ export const UserLayout = () => {
         <Breadcrumbs />
       </div>
       {navigation.state === 'loading' && <Loading />}
-      <main className='flex-grow mx-20'>
+      <main className='flex-grow mx-20 min-h-[calc(100vh-var(--navbar-height)-var(--breadcrumb-height))]'>
         <Outlet />
       </main>
       <Footer />

@@ -74,3 +74,8 @@ body::-webkit-scrollbar {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+:root {
+  --navbar-height: 4rem; /* 64px - equivalent to pt-16 */
+  --breadcrumb-height: 2rem; /* Adjust based on your breadcrumb height */
+}

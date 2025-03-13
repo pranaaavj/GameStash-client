@@ -31,6 +31,7 @@ export const InputField = ({
         type={type}
         value={value}
         onChange={onChange}
+        onWheel={(e) => e.target.blur()}
         {...props}
         _hover={{
           border: '1px',

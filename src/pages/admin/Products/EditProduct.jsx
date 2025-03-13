@@ -106,7 +106,6 @@ export const EditProduct = () => {
     setProductValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
-  // Mapping options from brands and genres
   const brandOptions = brandQuerySuccess
     ? mapOptionsData(responseBrands?.data?.brands)
     : [];
@@ -118,7 +117,6 @@ export const EditProduct = () => {
     e.preventDefault();
 
     const productValidation = validateProduct(productInput);
-    // Setting validation errors
     if (Object.keys(productValidation).length > 0) {
       setProductValidation(productValidation);
       return;
@@ -168,7 +166,7 @@ export const EditProduct = () => {
             errorMessage={productValidation.name}
           />
           <InputField
-            type='number'
+            type='text'
             value={productInput.price}
             onChange={handleChange}
             label='Price'
