@@ -15,7 +15,9 @@ const productsEndpoints = adminBaseApi.injectEndpoints({
 
     getOneProduct: builder.query({
       query: (productId) => ({ url: `/admin/products/${productId}` }),
-      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+      providesTags: (result, error, productId) => [
+        { type: 'Product', id: productId },
+      ],
     }),
 
     addProduct: builder.mutation({
@@ -33,9 +35,9 @@ const productsEndpoints = adminBaseApi.injectEndpoints({
         method: 'PUT',
         body: updatedProduct,
       }),
-      invalidatesTags: [
+      invalidatesTags: (result, error, { _id }) => [
+        { type: 'Product', id: _id },
         { type: 'Product', id: 'LIST' },
-        { type: 'Cart', id: 'List' },
       ],
     }),
 
@@ -44,6 +46,23 @@ const productsEndpoints = adminBaseApi.injectEndpoints({
         url: '/admin/products',
         method: 'PATCH',
         body: { productId },
+      }),
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+    }),
+
+    uploadProductImage: builder.mutation({
+      query: (formData) => ({
+        url: '/admin/images/upload',
+        method: 'POST',
+        body: formData,
+      }),
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+    }),
+
+    deleteProductImage: builder.mutation({
+      query: (publicId) => ({
+        url: `/admin/images/${publicId}`,
+        method: 'DELETE',
       }),
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
@@ -56,4 +75,6 @@ export const {
   useAddProductMutation,
   useEditProductMutation,
   useToggleProductListMutation,
+  useUploadProductImageMutation,
+  useDeleteProductImageMutation,
 } = productsEndpoints;

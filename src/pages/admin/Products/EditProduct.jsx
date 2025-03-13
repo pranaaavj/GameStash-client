@@ -7,6 +7,8 @@ import {
 import {
   useGetOneProductQuery,
   useEditProductMutation,
+  useUploadProductImageMutation,
+  useDeleteProductImageMutation,
 } from '@/redux/api/admin/productsApi';
 import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
@@ -14,7 +16,7 @@ import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
-import { ImageUploader } from '@/components/admin/ImageUpload';
+import ImageUploader from '@/components/admin/ImageUploader';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, InputField, SelectField } from '@/components/common';
@@ -60,6 +62,9 @@ export const EditProduct = () => {
     editProduct,
     { isError: isEditProductError, error: editProductError },
   ] = useEditProductMutation();
+
+  const [uploadProductImage] = useUploadProductImageMutation();
+  const [deleteProductImage] = useDeleteProductImageMutation();
 
   // Product state
   const [images, setImages] = useState([]);
@@ -143,6 +148,10 @@ export const EditProduct = () => {
   if (!responseProduct || isProductLoading) {
     return <Loading />;
   }
+
+  const handleImagesChange = (images) => {
+    setImages(images);
+  };
 
   return (
     <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-none text-primary-text border-0'>
@@ -285,9 +294,16 @@ export const EditProduct = () => {
             </div>
           </div>
 
-          <ImageUploader
+          {/* <ImageUploader
             images={images}
             setImages={setImages}
+          /> */}
+
+          <ImageUploader
+            onImagesChange={handleImagesChange}
+            uploadProductImage={uploadProductImage}
+            deleteProductImage={deleteProductImage}
+            initialImages={images}
           />
 
           <Button

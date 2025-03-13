@@ -13,9 +13,13 @@ import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ImageUploader } from '@/components/admin';
+import ImageUploader from '@/components/admin/ImageUploader';
 import { Alert, InputField, SelectField } from '@/components/common';
 import { validateProduct, mapOptionsData, validateImages } from '@/utils';
+import {
+  useUploadProductImageMutation,
+  useDeleteProductImageMutation,
+} from '@/redux/api/admin/productsApi';
 
 const initialProductState = {
   name: '',
@@ -42,6 +46,9 @@ export const AddProduct = () => {
   const { data: responseGenres, isSuccess: genreQuerySuccess } =
     useGetAllGenresQuery({});
   const [addProduct, { isError, error }] = useAddProductMutation();
+  const [uploadProductImage] = useUploadProductImageMutation();
+  const [deleteProductImage] = useDeleteProductImageMutation();
+
   // Product state
   const [images, setImages] = useState([]);
   const [imageValidation, setImageValidation] = useState('');
@@ -107,6 +114,11 @@ export const AddProduct = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleImagesChange = (images) => {
+    setImages(images);
+    console.log('Updated images:', images);
   };
 
   return (
@@ -266,10 +278,17 @@ export const AddProduct = () => {
           </div>
 
           {/* Image Uploader */}
-          <ImageUploader
+          {/* <ImageUploader
             images={images}
             setImages={setImages}
+          /> */}
+          <ImageUploader
+            onImagesChange={handleImagesChange}
+            uploadProductImage={uploadProductImage}
+            deleteProductImage={deleteProductImage}
+            initialImages={images}
           />
+
           {imageValidation && (
             <span className='text-red-500 text-sm mt-0'>{imageValidation}</span>
           )}
