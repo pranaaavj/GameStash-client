@@ -2,7 +2,6 @@ import { userBaseApi } from './userBaseApi';
 
 const ordersApi = userBaseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Place an order
     placeOrder: builder.mutation({
       query: (orderDetails) => ({
         url: '/user/order',
@@ -12,7 +11,6 @@ const ordersApi = userBaseApi.injectEndpoints({
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
 
-    // Get all orders
     getOrders: builder.query({
       query: ({ page = 1, limit = 5, queryOptions = null }) => ({
         url: '/user/order',
@@ -21,7 +19,6 @@ const ordersApi = userBaseApi.injectEndpoints({
       providesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
 
-    // Get single order
     getOrder: builder.query({
       query: ({ orderId }) => ({
         url: `/user/order/${orderId}`,
@@ -29,7 +26,6 @@ const ordersApi = userBaseApi.injectEndpoints({
       providesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
 
-    // Cancel order
     cancelOrder: builder.mutation({
       query: ({ orderId, productId }) => ({
         url: `/user/order/${orderId}`,
@@ -39,7 +35,6 @@ const ordersApi = userBaseApi.injectEndpoints({
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
 
-    // Verify Razorpay payment
     verifyRazorpay: builder.mutation({
       query: (paymentData) => ({
         url: `/user/order/razorpay`,
@@ -52,7 +47,6 @@ const ordersApi = userBaseApi.injectEndpoints({
 });
 
 export const {
-  // Orders
   usePlaceOrderMutation,
   useGetOrdersQuery,
   useGetOrderQuery,

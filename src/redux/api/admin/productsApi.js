@@ -33,7 +33,10 @@ const productsEndpoints = adminBaseApi.injectEndpoints({
         method: 'PUT',
         body: updatedProduct,
       }),
-      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+      invalidatesTags: [
+        { type: 'Product', id: 'LIST' },
+        { type: 'Cart', id: 'List' },
+      ],
     }),
 
     toggleProductList: builder.mutation({

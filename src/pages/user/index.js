@@ -10,3 +10,5 @@ export { UserProfile } from './Profile/UserProfile';
 
 export { Orders } from './Orders';
 export { OrderDetails } from './OrderDetails';
+
+export { Wishlist } from './Wishlist';

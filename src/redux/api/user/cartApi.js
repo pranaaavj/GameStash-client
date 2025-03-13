@@ -4,6 +4,7 @@ const cartApi = userBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCart: builder.query({
       query: () => '/user/cart',
+      keepUnusedDataFor: 1,
       providesTags: ['Cart'],
     }),
 

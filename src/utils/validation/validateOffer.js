@@ -19,9 +19,9 @@ export const validateOffer = (offer, isEditing = false) => {
     errors.discountValue = 'Discount value must be a positive number';
   } else if (
     offer.discountType === 'percentage' &&
-    (Number(offer.discountValue) < 1 || Number(offer.discountValue) > 100)
+    (Number(offer.discountValue) < 1 || Number(offer.discountValue) > 80)
   ) {
-    errors.discountValue = 'Percentage discount must be between 1 and 100';
+    errors.discountValue = 'Percentage discount must be between 1 and 80';
   }
 
   const currentDate = new Date();

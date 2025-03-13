@@ -12,7 +12,7 @@ import { MapPin, CreditCard, Gift, Package, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Address } from '../Profile/Address';
 import PaymentSection from './Payment';
-import OffersSection from './Offers';
+import CouponSection from './Coupons';
 import ReviewOrder from './ReviewOrder';
 import { useGetCartQuery } from '@/redux/api/user/cartApi';
 import { useUsers } from '@/hooks';
@@ -33,13 +33,14 @@ export function CheckoutPage() {
   const [placeOrder, { isError: isPlaceOrderError }] = usePlaceOrderMutation();
   const [verifyRazorpay] = useVerifyRazorpayMutation();
 
+  const [discount, setDiscount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [isOrderComplete, setIsOrderComplete] = useState(false);
 
   useEffect(() => {
     if (responseCart) {
       setCartItems(responseCart.data.items);
-      if (responseCart?.data?.items?.length == 0) {
+      if (responseCart?.data?.items?.length === 0) {
         navigate('/games');
         toast(
           `Your cart is empty, Please add something and proceed to checkout.`
@@ -50,20 +51,21 @@ export function CheckoutPage() {
 
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [selectedOffers, setSelectedOffers] = useState(null);
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
 
   const [activeSection, setActiveSection] = useState('address');
   const [completedSections, setCompletedSections] = useState({
     address: false,
     payment: false,
-    offers: false,
+    coupons: false,
     review: false,
   });
+
   const [showTooltip, setShowTooltip] = useState({
     address: false,
     payment: false,
-    offers: false,
+    coupons: false,
     review: false,
   });
 
@@ -74,14 +76,28 @@ export function CheckoutPage() {
   };
 
   const handlePaymentSelect = (payment) => {
+    console.log(payment);
     setSelectedPayment(payment);
     setCompletedSections((prev) => ({ ...prev, payment: true }));
-    setActiveSection('offers');
+    setActiveSection('coupons');
   };
 
-  const handleOfferSelect = (offers) => {
-    setSelectedOffers(offers);
-    setCompletedSections((prev) => ({ ...prev, offers: true }));
+  const handleCouponSelect = (coupon) => {
+    let discountAmount = 0;
+    if (coupon) {
+      if (coupon.discountType === 'percentage') {
+        discountAmount = (subtotal * coupon.discountValue) / 100;
+        if (coupon.maxDiscountAmount) {
+          discountAmount = Math.min(discountAmount, coupon.maxDiscountAmount);
+        }
+      } else {
+        discountAmount = coupon.discountValue;
+      }
+    }
+
+    setSelectedCoupon(coupon);
+    setDiscount(discountAmount);
+    setCompletedSections((prev) => ({ ...prev, coupons: true }));
     setActiveSection('review');
   };
 
@@ -91,7 +107,6 @@ export function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
-    // For showing required field if any fields were not selected
     const incompleteSections = Object.keys(completedSections).filter(
       (key) => !completedSections[key]
     );
@@ -109,7 +124,7 @@ export function CheckoutPage() {
           setShowTooltip({
             address: false,
             payment: false,
-            offers: false,
+            coupons: false,
             review: false,
           }),
         3000
@@ -131,15 +146,14 @@ export function CheckoutPage() {
       orderItems,
       shippingAddress: selectedAddress.id,
       paymentMethod: selectedPayment,
+      couponCode: selectedCoupon.code || null,
       // deliveryMethod: selectedDelivery,
-      // offers: selectedOffers,
     };
 
     try {
       const response = await placeOrder(orderData).unwrap();
 
       if (selectedPayment === 'Razorpay') {
-        // For Razorpay payment gateway
         const options = {
           key: import.meta.env.VITE_RZP_KEY_ID,
           amount: response.data.amount,
@@ -155,10 +169,18 @@ export function CheckoutPage() {
               ...orderData,
             };
 
-            const paymentResponse = await verifyRazorpay(paymentData).unwrap();
+            try {
+              const paymentResponse = await verifyRazorpay(
+                paymentData
+              ).unwrap();
 
-            if (paymentResponse?.success) {
-              setIsOrderComplete(true);
+              if (paymentResponse?.success) {
+                setIsOrderComplete(true);
+              }
+            } catch (error) {
+              toast.error(error?.message || 'Something went wrong.', {
+                duration: 1500,
+              });
             }
           },
           theme: { color: '#3399cc' },
@@ -178,10 +200,10 @@ export function CheckoutPage() {
     switch (sectionId) {
       case 'payment':
         return !completedSections.address;
-      case 'offers':
+      case 'coupons':
         return !completedSections.payment;
       case 'review':
-        return !completedSections.offers;
+        return !completedSections.coupons;
       default:
         return false;
     }
@@ -198,8 +220,8 @@ export function CheckoutPage() {
       case 'payment':
         selectedValue = selectedPayment ? `${selectedPayment} ` : '';
         break;
-      case 'offers':
-        selectedValue = selectedOffers ? `${selectedOffers} ` : '';
+      case 'coupons':
+        selectedValue = selectedCoupon ? `${selectedCoupon.code} ` : '';
         break;
       case 'review':
         selectedValue = selectedDelivery ? `${selectedDelivery.label} ` : '';
@@ -227,7 +249,7 @@ export function CheckoutPage() {
   const sections = [
     { id: 'address', title: 'Delivery Address', icon: MapPin },
     { id: 'payment', title: 'Payment Method', icon: CreditCard },
-    { id: 'offers', title: 'Offers & Promotions', icon: Gift },
+    { id: 'coupons', title: 'Coupons', icon: Gift },
     { id: 'review', title: 'Review & Delivery', icon: Package },
   ];
 
@@ -236,8 +258,7 @@ export function CheckoutPage() {
     0
   );
 
-  const shipping = 9.99; // Example shipping fee
-  const discount = 15.0;
+  const shipping = 0.0;
   const total = subtotal + shipping - discount;
 
   if (isPlaceOrderError) {
@@ -318,8 +339,10 @@ export function CheckoutPage() {
                               onPaymentSelect={handlePaymentSelect}
                             />
                           )}
-                          {section.id === 'offers' && (
-                            <OffersSection onOfferSelect={handleOfferSelect} />
+                          {section.id === 'coupons' && (
+                            <CouponSection
+                              onCouponSelect={handleCouponSelect}
+                            />
                           )}
                           {section.id === 'review' && (
                             <ReviewOrder
@@ -379,10 +402,12 @@ export function CheckoutPage() {
                       <span className='text-secondary-text'>Shipping</span>
                       <span>₹{shipping.toFixed(2)}</span>
                     </div>
-                    <div className='flex justify-between text-sm text-accent-red'>
-                      <span>Discount</span>
-                      <span>-₹{discount.toFixed(2)}</span>
-                    </div>
+                    {selectedCoupon && (
+                      <div className='flex justify-between text-sm text-accent-red'>
+                        <span>Discount ({selectedCoupon.code})</span>
+                        <span>-₹{discount.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className='flex justify-between items-center pt-3 border-t border-primary-bg/20'>
                       <span className='text-lg font-bold'>Total</span>
                       <span className='text-xl font-bold'>

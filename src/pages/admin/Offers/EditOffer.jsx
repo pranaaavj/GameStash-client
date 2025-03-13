@@ -78,6 +78,8 @@ export const EditOffer = () => {
     }
   }, [responseOffer, productsSuccess, brandsSuccess]);
 
+  console.log(offerInput);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 

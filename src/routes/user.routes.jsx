@@ -8,6 +8,7 @@ import {
   Home,
   Orders,
   OrderDetails,
+  Wishlist,
 } from '@/pages/user';
 import CartPage from '@/pages/user/Cart';
 
@@ -31,6 +32,10 @@ export const userRoutes = [
           {
             path: 'orders',
             element: <Orders />,
+          },
+          {
+            path: 'wishlist',
+            element: <Wishlist />,
           },
           {
             path: 'orders/:orderId',

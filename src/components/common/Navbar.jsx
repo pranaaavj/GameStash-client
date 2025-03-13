@@ -162,6 +162,13 @@ export const Navbar = ({ onCartClick }) => {
                         Orders
                       </DropdownMenuItem>
                     </Link>
+                    <Link
+                      to='/wishlist'
+                      className='w-full'>
+                      <DropdownMenuItem className='text-primary-text hover:text-accent-red hover:bg-primary-bg/10'>
+                        Wishlist
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem
                       onClick={handleLogout}
                       className='text-primary-text hover:text-accent-red hover:bg-primary-bg/10'>

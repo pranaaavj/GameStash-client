@@ -76,7 +76,7 @@ export default function OrderConfirmation() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}>
             <div className='flex gap-4'>
-              <Link to='/profile'>
+              <Link to='/orders'>
                 <Button className='bg-accent-blue hover:bg-hover-blue text-white shadow-lg flex items-center'>
                   <ShoppingBag className='mr-2 h-4 w-4' />
                   View All Orders

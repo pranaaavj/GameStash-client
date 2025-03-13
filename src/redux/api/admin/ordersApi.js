@@ -2,7 +2,6 @@ import { adminBaseApi } from './adminBaseApi';
 
 const ordersApi = adminBaseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Get all orders
     getAllOrders: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
         url: 'admin/order',
@@ -11,12 +10,19 @@ const ordersApi = adminBaseApi.injectEndpoints({
       providesTags: [{ type: 'Order', id: 'LIST' }],
     }),
 
-    // Update order status
     updateOrderStatus: builder.mutation({
       query: ({ orderId, status }) => ({
         url: `admin/order/${orderId}`,
         method: 'PATCH',
         body: { status },
+      }),
+      invalidatesTags: [{ type: 'Order', id: 'LIST' }],
+    }),
+    requestReturnAdmin: builder.mutation({
+      query: ({ orderId, productId, action }) => ({
+        url: `admin/order/${orderId}`,
+        method: 'PUT',
+        body: { productId, action },
       }),
       invalidatesTags: [{ type: 'Order', id: 'LIST' }],
     }),
