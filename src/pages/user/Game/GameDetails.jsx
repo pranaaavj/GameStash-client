@@ -15,6 +15,8 @@ import {
   Plus,
   AlertCircle,
   PenLine,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { GameListing } from '..';
 import { SystemRequirements, StarRating } from '@/components/user';
@@ -25,7 +27,8 @@ import {
 import { toast } from 'sonner';
 import { useUsers } from '@/hooks';
 import { requireLogin } from '@/utils';
-import { ImageGallery } from '@/components/common/ImageGallery';
+// import { ImageGallery } from '@/components/common/ImageGallery';
+import { motion } from 'framer-motion';
 import {
   Tooltip,
   TooltipContent,
@@ -35,6 +38,8 @@ import {
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Pagination } from '@/shadcn/components/ui/pagination';
 import { useAddToWishlistMutation } from '@/redux/api/user/wishlistApi';
+import { Card, CardContent } from '@/shadcn/components/ui/card';
+import { AnimatePresence } from 'framer-motion';
 
 export function GameDetails() {
   const user = useUsers();
@@ -47,6 +52,10 @@ export function GameDetails() {
   });
 
   const [addToWishlist] = useAddToWishlistMutation();
+
+  const [currentImage, setCurrentImage] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const [quantity, setQuantity] = useState(1);
   const [isOutOfStock, setIsOutOfStock] = useState(false);
@@ -148,6 +157,26 @@ export function GameDetails() {
       );
     }
   };
+  const nextImage = () => {
+    setCurrentImage(
+      (prev) => (prev + 1) % responseProducts?.data?.images?.length
+    );
+  };
+
+  const previousImage = () => {
+    setCurrentImage(
+      (prev) =>
+        (prev - 1 + responseProducts?.data?.images?.length) %
+        responseProducts?.data?.images?.length
+    );
+  };
+
+  const handleMouseMove = (event) => {
+    const { left, top, width, height } = event.target.getBoundingClientRect();
+    const x = ((event.clientX - left) / width) * 100;
+    const y = ((event.clientY - top) / height) * 100;
+    setMousePosition({ x, y });
+  };
 
   const calculateDiscount = () => {
     if (!responseProducts?.data?.discountedPrice) return null;
@@ -216,11 +245,89 @@ export function GameDetails() {
                 </div>
               </div>
               <div className='w-full lg:w-[110%] transition-all duration-300 hover:shadow-xl rounded-xl overflow-hidden'>
-                <ImageGallery
+                {/* <ImageGallery
                   images={responseProducts?.data?.images || []}
                   alt={responseProducts?.data?.name}
                   className='fade-transition'
-                />
+                /> */}
+                <div className='flex gap-4'>
+                  <div className='gap-5 flex flex-col'>
+                    {responseProducts?.data?.images?.map((image, index) => (
+                      <div
+                        key={index}
+                        className={` ${
+                          currentImage === index && 'border-2 border-accent-red'
+                        } w-16 h-16 p-1 border-0 rounded-lg shadow-sm hover:shadow-md transition-shadow`}>
+                        <img
+                          src={image}
+                          alt={image || `Variant ${index + 1}`}
+                          className='w-full h-full object-cover rounded-lg'
+                          onMouseEnter={() => setCurrentImage(index)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <Card className='relative overflow-hidden rounded-xl w-full shadow-lg h-[500px] border-0'>
+                    <CardContent className='p-0'>
+                      <div className='relative aspect-square'>
+                        <AnimatePresence mode='wait'>
+                          <motion.div
+                            key={currentImage}
+                            className='relative w-full h-full'
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.1 }}>
+                            <img
+                              src={
+                                responseProducts?.data?.images?.[currentImage]
+                              }
+                              alt={`boAt Rockerz 425 - Image ${
+                                currentImage + 1
+                              }`}
+                              className='w-full h-full object-contain '
+                              style={{
+                                transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
+                                transform: isZoomed ? 'scale(2)' : 'scale(1)',
+                                transition: 'transform 0.2s ease-out',
+                              }}
+                              onMouseEnter={() => setIsZoomed(true)}
+                              onMouseLeave={() => setIsZoomed(false)}
+                              onMouseMove={handleMouseMove}
+                            />
+                          </motion.div>
+                        </AnimatePresence>
+                        <button
+                          onClick={previousImage}
+                          className='absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-accent-red/80 rounded-full p-2 shadow-md transition-transform hover:scale-110'
+                          aria-label='Previous image'>
+                          <ChevronLeft className='h-6 w-6 text-gray-800' />
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className='absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-accent-red/80 rounded-full p-2 shadow-md transition-transform hover:scale-110'
+                          aria-label='Next image'>
+                          <ChevronRight className='h-6 w-6 text-gray-800' />
+                        </button>
+                      </div>
+
+                      <div className='flex justify-center gap-2 mt-4 pb-4'>
+                        {responseProducts?.data?.images?.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentImage(index)}
+                            className={`w-3 h-3 rounded-full transition-all ${
+                              currentImage === index
+                                ? 'bg-primary scale-125'
+                                : 'bg-gray-300'
+                            }`}
+                            aria-label={`Go to image ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </div>
 

@@ -117,7 +117,7 @@ export const Dashboard = () => {
         <Tabs
           value={period}
           onValueChange={handlePeriodChange}>
-          <TabsList className='bg-accent-blue text-primary-text'>
+          <TabsList className='-primary-bg bg-white/40ext-primary-text'>
             <TabsTrigger value='day'>Day</TabsTrigger>
             <TabsTrigger value='week'>Week</TabsTrigger>
             <TabsTrigger value='month'>Month</TabsTrigger>
@@ -149,7 +149,7 @@ export const Dashboard = () => {
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-primary-text'>
-        <Card className='bg-accent-red/80 border-transparent text-primary-text'>
+        <Card className='bg-primary-bg/50 border-transparent text-primary-text'>
           <CardHeader>
             <CardTitle>Total Revenue</CardTitle>
           </CardHeader>
@@ -157,7 +157,7 @@ export const Dashboard = () => {
             ₹{reportData?.data?.totalRevenue?.toLocaleString() || 0}
           </CardContent>
         </Card>
-        <Card className='bg-accent-red/80 border-transparent text-primary-text'>
+        <Card className='bg-primary-bg/50 border-transparent text-primary-text'>
           <CardHeader>
             <CardTitle>Total Orders</CardTitle>
           </CardHeader>
@@ -165,7 +165,7 @@ export const Dashboard = () => {
             {reportData?.data?.ordersCount?.toLocaleString() || 0}
           </CardContent>
         </Card>
-        <Card className='bg-accent-red/80 border-transparent text-primary-text'>
+        <Card className='bg-primary-bg/50 border-transparent text-primary-text'>
           <CardHeader>
             <CardTitle>Total Customers</CardTitle>
           </CardHeader>
@@ -173,7 +173,7 @@ export const Dashboard = () => {
             {reportData?.data?.customers?.toLocaleString() || 0}
           </CardContent>
         </Card>
-        <Card className='bg-accent-red/80 border-transparent text-primary-text'>
+        <Card className='bg-primary-bg/50 border-transparent text-primary-text'>
           <CardHeader>
             <CardTitle>Total Discounts</CardTitle>
           </CardHeader>
@@ -185,7 +185,7 @@ export const Dashboard = () => {
         </Card>
       </div>
 
-      <Card className='bg-accent-red/80 border-transparent text-primary-text'>
+      <Card className='bg-primary-bg/50 border-transparent text-primary-text'>
         <CardHeader>
           <CardTitle>Revenue Overview</CardTitle>
         </CardHeader>
@@ -213,62 +213,94 @@ export const Dashboard = () => {
         </CardContent>
       </Card>
 
-      <Card className='bg-accent-red/80 border-transparent text-primary-text'>
-        <CardHeader>
-          <CardTitle>Best Selling Products</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer
-            width='100%'
-            height={300}>
-            <PieChart>
-              <Pie
-                data={formatChartData(
-                  reportData?.data?.bestSellingProducts,
-                  'name',
-                  'totalSold'
-                )}
-                cx='50%'
-                cy='50%'
-                innerRadius={60}
-                outerRadius={80}
-                fill='#00e676'
-                dataKey='value'
-                label
-              />
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-      <Card className='bg-accent-red/80 border-transparent text-primary-text'>
-        <CardHeader>
-          <CardTitle>Best Selling Categories</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer
-            width='100%'
-            height={300}>
-            <PieChart>
-              <Pie
-                data={formatChartData(
-                  reportData?.data?.categoryData,
-                  'name',
-                  'totalSold'
-                )}
-                cx='50%'
-                cy='50%'
-                innerRadius={60}
-                outerRadius={80}
-                fill='#ff5252'
-                dataKey='value'
-                label
-              />
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      <div className='flex justify-between gap-4'>
+        <Card className='bg-primary-bg/50 border-transparent text-primary-text w-full'>
+          <CardHeader>
+            <CardTitle>Best Selling Products</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer
+              width='100%'
+              height={300}>
+              <PieChart>
+                <Pie
+                  data={formatChartData(
+                    reportData?.data?.bestSellingProducts,
+                    'name',
+                    'totalSold'
+                  )}
+                  cx='50%'
+                  cy='50%'
+                  innerRadius={60}
+                  outerRadius={80}
+                  fill='#00e676'
+                  dataKey='value'
+                  label
+                />
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className='bg-primary-bg/50 border-transparent text-primary-text w-full'>
+          <CardHeader>
+            <CardTitle>Best Selling Brands</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer
+              width='100%'
+              height={300}>
+              <PieChart>
+                <Pie
+                  data={formatChartData(
+                    reportData?.data?.bestSellingBrands,
+                    'name',
+                    'totalSold'
+                  )}
+                  cx='50%'
+                  cy='50%'
+                  innerRadius={60}
+                  outerRadius={80}
+                  fill='#ff5252'
+                  dataKey='value'
+                  label
+                />
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className='bg-primary-bg/50 border-transparent text-primary-text w-full'>
+          <CardHeader>
+            <CardTitle>Best Selling Genres</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer
+              width='100%'
+              height={300}>
+              <PieChart>
+                <Pie
+                  data={formatChartData(
+                    reportData?.data?.bestSellingGenres,
+                    'name',
+                    'totalSold'
+                  )}
+                  cx='50%'
+                  cy='50%'
+                  innerRadius={60}
+                  outerRadius={80}
+                  fill='#ff5252'
+                  dataKey='value'
+                  label
+                />
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

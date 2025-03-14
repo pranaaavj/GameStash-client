@@ -1,12 +1,12 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { logout, setToken, setStatus } from '../../slices/userSlice';
+import { logout, setToken } from '../../slices/userSlice';
 import { toast } from 'sonner';
+import { flushSync } from 'react-dom';
 
 const userBaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_SERVER_URL,
   credentials: 'include',
 
-  // Adding authorization headers with every request
   prepareHeaders: (headers, { getState }) => {
     const token = getState()?.user?.token;
     if (token) {
@@ -15,11 +15,13 @@ const userBaseQuery = fetchBaseQuery({
     return headers;
   },
 });
+let isLoggingOut = false; // ✅ Local flag to prevent duplicate logouts
 
 export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
   let response = await userBaseQuery(args, api, extraOptions);
+  console.log('Response: ', response);
 
-  //Todo: check if the status code is the reason for auth problem.
+  // 🔹 If token is invalid or expired
   if (response?.error?.status === 403 || response?.error?.status === 401) {
     const refreshResponse = await userBaseQuery(
       '/auth/refresh-token',
@@ -27,27 +29,53 @@ export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
       extraOptions
     );
 
-    // Updating token if refresh is successful
+    console.log('Refresh response: ', refreshResponse);
+
     if (refreshResponse?.data?.success) {
       api.dispatch(
         setToken({ token: refreshResponse?.data?.data?.accessToken })
       );
-
-      // Retrying initial with new access token
       response = await userBaseQuery(args, api, extraOptions);
     } else {
+      console.log(response.error);
+
+      // 🔥 Handling user block scenario properly
       if (
         response?.error?.status === 403 &&
-        response?.error?.data?.message === 'User has been blocked'
+        (response?.error?.data?.message === 'User has been blocked.' ||
+          response?.error?.data?.message ===
+            'You have been blocked by the admin.')
       ) {
-        api.dispatch(setStatus({ status: 'blocked' }));
-        toast.error('Your account has been blocked.');
-        api.dispatch(logout());
+        if (!isLoggingOut) {
+          isLoggingOut = true;
 
+          flushSync(() => {
+            toast.error('Your account has been blocked.');
+          });
+
+          setTimeout(() => {
+            api.dispatch(logout());
+            isLoggingOut = false;
+          }, 500);
+        }
         return response;
       }
-      // Logout if refresh fails
-      api.dispatch(logout());
+
+      // 🔹 Handle session expiration & logout
+      if (!isLoggingOut) {
+        isLoggingOut = true;
+
+        flushSync(() => {
+          toast.error('Your session has expired. Please log in again.');
+        });
+
+        setTimeout(() => {
+          api.dispatch(logout());
+          isLoggingOut = false;
+        }, 500);
+      }
+
+      console.log('User logged out');
     }
   }
 

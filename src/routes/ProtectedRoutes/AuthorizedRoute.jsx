@@ -16,7 +16,8 @@ export const AuthorizedRoute = () => {
       />
     );
 
-  if (user?.authStatus === 'blocked')
+  if (!user?.userInfo)
+    // User logged out or blocked
     return (
       <Navigate
         to='/auth/blocked'

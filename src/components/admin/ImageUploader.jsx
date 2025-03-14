@@ -115,6 +115,7 @@ const ImageUploader = ({
       setImages((prev) => [...prev, ...newImages]);
       setErrors([]);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [images.length]
   );
 

@@ -20,17 +20,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shadcn/components/ui/dialog';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
+import { ConfirmationModal } from '@/components/common';
 
 export default function Cart() {
   const user = useUsers();
@@ -546,7 +539,7 @@ export default function Cart() {
       )}
 
       {/* Remove Item Confirmation Dialog */}
-      <Dialog
+      {/* <Dialog
         open={showRemoveDialog}
         onOpenChange={setShowRemoveDialog}>
         <DialogContent className='bg-secondary-bg text-primary-text border-primary-bg/20'>
@@ -571,7 +564,14 @@ export default function Cart() {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+      <ConfirmationModal
+        description='Are you sure you want to remove this item from your cart?'
+        isOpen={showRemoveDialog}
+        onClose={() => setShowRemoveDialog(false)}
+        onConfirm={handleRemoveItem}
+        title='Remove Item'
+      />
     </div>
   );
 }

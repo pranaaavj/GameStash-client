@@ -1,5 +1,3 @@
-'use client';
-
 import { useNavigate } from 'react-router-dom';
 import {
   useGetOrdersQuery,
@@ -142,13 +140,13 @@ export const Orders = () => {
                   <div className='space-y-1.5'>
                     <CardTitle className='flex items-center gap-2 text-[#E2E4F3]'>
                       <Package className='h-4 w-4 text-[#6366F1]' />
-                      Order #{order._id.slice(-6)}
+                      Order #{order?._id.slice(-6)}
                     </CardTitle>
                     <div className='flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-[#A0A3BD]'>
                       <div className='flex items-center gap-1.5'>
                         <Calendar className='h-3.5 w-3.5' />
                         <span>
-                          {new Date(order.placedAt).toLocaleDateString(
+                          {new Date(order?.placedAt).toLocaleDateString(
                             'en-US',
                             {
                               year: 'numeric',
@@ -160,14 +158,14 @@ export const Orders = () => {
                       </div>
                       <div className='flex items-center gap-1.5'>
                         <CreditCard className='h-3.5 w-3.5' />
-                        <span>{order.paymentMethod}</span>
+                        <span>{order?.paymentMethod}</span>
                       </div>
                       <div className='flex items-center gap-1.5'>
                         <Clock className='h-3.5 w-3.5' />
                         <span>
-                          {order.deliveryBy
+                          {order?.deliveryBy
                             ? `Delivery by ${new Date(
-                                order.deliveryBy
+                                order?.deliveryBy
                               ).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
@@ -181,18 +179,20 @@ export const Orders = () => {
                   <div className='flex flex-col sm:items-end gap-1.5'>
                     <div className='flex items-center gap-3'>
                       <span className='font-bold text-lg text-[#E2E4F3]'>
-                        ₹{order.finalPrice.toFixed(2)}
+                        ₹{order?.finalPrice.toFixed(2)}
                       </span>
-                      <StatusBadge status={order.orderStatus} />
+                      <StatusBadge status={order?.orderStatus} />
                     </div>
                     <span className='text-sm text-[#A0A3BD]'>
                       Payment:{' '}
                       <Badge
                         variant={
-                          order.paymentStatus === 'Paid' ? 'success' : 'outline'
+                          order?.paymentStatus === 'Paid'
+                            ? 'success'
+                            : 'outline'
                         }
                         className='ml-1 bg-transparent'>
-                        {order.paymentStatus}
+                        {order?.paymentStatus}
                       </Badge>
                     </span>
                   </div>
@@ -202,35 +202,37 @@ export const Orders = () => {
               <CardContent className='pt-5 px-6 pb-6'>
                 <div className='space-y-4'>
                   {/* Show first 2 items, then a count of remaining items */}
-                  {order.orderItems.slice(0, 2).map((item) => (
+                  {order?.orderItems?.slice(0, 2).map((item) => (
                     <div
-                      key={item.product._id}
+                      key={item?.product?._id}
                       className='flex justify-between items-center py-2.5'>
                       <div className='flex items-center gap-4'>
                         <div className='h-16 w-16 rounded-lg bg-[#252536] overflow-hidden'>
                           <img
-                            src={item.product.images?.[0] || '/placeholder.svg'}
-                            alt={item.product.name}
+                            src={
+                              item?.product?.images?.[0] || '/placeholder.svg'
+                            }
+                            alt={item?.product?.name}
                             className='h-full w-full object-cover'
                           />
                         </div>
                         <div>
                           <p className='font-medium line-clamp-1 text-[#E2E4F3]'>
-                            {item.product.name}
+                            {item?.product?.name}
                           </p>
                           <div className='flex items-center gap-2.5 text-sm text-[#A0A3BD] mt-1'>
-                            <span>Qty: {item.quantity}</span>
-                            {item.status && (
+                            <span>Qty: {item?.quantity}</span>
+                            {item?.status && (
                               <Badge
                                 variant={
-                                  item.status === 'Delivered'
+                                  item?.status === 'Delivered'
                                     ? 'success'
-                                    : item.status === 'Cancelled'
+                                    : item?.status === 'Cancelled'
                                     ? 'destructive'
                                     : 'outline'
                                 }
                                 className='text-xs bg-transparent'>
-                                {item.status}
+                                {item?.status}
                               </Badge>
                             )}
                           </div>
@@ -238,20 +240,20 @@ export const Orders = () => {
                       </div>
                       <div className='text-right'>
                         <p className='font-medium text-[#E2E4F3]'>
-                          ₹{item.price.toFixed(2)}
+                          ₹{item?.price.toFixed(2)}
                         </p>
-                        {item.discount > 0 && (
+                        {item?.discount > 0 && (
                           <p className='text-xs text-[#FF6B6B] mt-0.5'>
-                            -₹{item.discount.toFixed(2)}
+                            -₹{item?.discount.toFixed(2)}
                           </p>
                         )}
                       </div>
                     </div>
                   ))}
 
-                  {order.orderItems.length > 2 && (
+                  {order?.orderItems.length > 2 && (
                     <p className='text-sm text-[#A0A3BD] pt-1'>
-                      + {order.orderItems.length - 2} more item(s)
+                      + {order?.orderItems.length - 2} more item(s)
                     </p>
                   )}
                 </div>

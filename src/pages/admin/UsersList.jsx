@@ -72,9 +72,11 @@ export const UsersList = () => {
     setIsModalOpen(false);
   };
 
-  const tableData = isSuccess
-    ? mapTableData(responseGetUsers?.data?.users, tableHeaders)
+  const filteredUsersData = isSuccess
+    ? responseGetUsers?.data?.users.filter((user) => user.role !== 'admin')
     : [];
+
+  const tableData = mapTableData(filteredUsersData, tableHeaders);
 
   if (isError) {
     console.log(error);
