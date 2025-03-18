@@ -160,7 +160,7 @@ export function CheckoutPage() {
           currency: response.data.currency,
           name: 'GameStash',
           description: 'GameStash Payment',
-          order_id: response?.data?.razorpayOrderId, //* Might be unnecessary
+          order_id: response?.data?.razorpayOrderId,
           handler: async function (razorpayResponse) {
             const paymentData = {
               razorpayOrderId: razorpayResponse?.razorpay_order_id,
@@ -184,6 +184,14 @@ export function CheckoutPage() {
             }
           },
           theme: { color: '#3399cc' },
+          prefill: {
+            name: user?.userInfo?.name,
+            email: user?.userInfo?.email,
+            contact: '+919876543210',
+          },
+          retry: {
+            enabled: true,
+          },
         };
 
         const razorpay = new window.Razorpay(options);

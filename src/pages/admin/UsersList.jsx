@@ -131,7 +131,7 @@ export const UsersList = () => {
 
       {/* Pagination */}
       <div className='sticky bottom-0 mt-4'>
-        {responseGetUsers?.data?.users?.length > 0 && (
+        {responseGetUsers?.data?.users?.length > 1 && (
           <AdminPagination
             currentPage={currentPage}
             totalPages={responseGetUsers?.data?.totalPages || 0}

@@ -18,6 +18,7 @@ import {
   CouponList,
   EditCoupon,
   AddCoupon,
+  Sales,
 } from '@/pages/admin';
 import { AdminError } from '@/components/error';
 import { AdminLayout } from '@/components/admin';
@@ -147,6 +148,10 @@ export const adminRoutes = [
           {
             path: 'users',
             element: <UsersList />,
+          },
+          {
+            path: 'sales',
+            element: <Sales />,
           },
         ],
       },

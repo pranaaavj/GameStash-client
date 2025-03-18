@@ -76,6 +76,9 @@ export const DatePicker = ({
             color={value ? 'white' : 'gray.400'}
             _hover={{ border: '1px', borderColor: '#c0c0c0' }}
             _focus={{ border: '1px', borderColor: '#f2f2f2' }}
+            whiteSpace='nowrap'
+            overflow='hidden'
+            textOverflow='ellipsis'
             {...props}>
             <CalendarIcon className='mr-2 h-4 w-4' />
             {value ? (

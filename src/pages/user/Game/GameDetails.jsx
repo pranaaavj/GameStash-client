@@ -181,15 +181,15 @@ export function GameDetails() {
   const calculateDiscount = () => {
     if (!responseProducts?.data?.discountedPrice) return null;
 
-    const originalPrice = responseProducts.data.price;
-    const discountedPrice = responseProducts.data.discountedPrice;
+    const originalPrice = responseProducts?.data?.price;
+    const discountedPrice = responseProducts?.data?.discountedPrice;
 
     if (discountedPrice >= originalPrice) return null;
 
     const difference = originalPrice - discountedPrice;
     const percentOff = Math.round((difference / originalPrice) * 100);
 
-    if (responseProducts.data.bestOffer.discountType === 'percentage') {
+    if (responseProducts?.data?.bestOffer?.discountType === 'percentage') {
       return `${percentOff}% OFF`;
     } else {
       return `₹${difference.toFixed(0)} OFF`;
@@ -338,10 +338,10 @@ export function GameDetails() {
                   {responseProducts?.data?.discountedPrice > 0 ? (
                     <>
                       <span className='text-primary-text text-3xl font-bold '>
-                        ₹{responseProducts.data.discountedPrice.toFixed(0)}
+                        ₹{responseProducts?.data?.discountedPrice?.toFixed(0)}
                       </span>
                       <span className='text-secondary-text text-xl line-through'>
-                        ₹{responseProducts.data.price.toFixed(0)}
+                        ₹{responseProducts?.data?.price?.toFixed(0)}
                       </span>
                       {discount && (
                         <Badge className='bg-accent-green hover:bg-hover-green text-black font-medium ml-2'>

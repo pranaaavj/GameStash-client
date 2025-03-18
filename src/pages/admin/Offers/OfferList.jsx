@@ -40,9 +40,9 @@ export const OfferList = () => {
   const [toggleOfferList] = useToggleOfferListMutation();
 
   const tableHeaders = [
-    'Offer ID',
     'Name',
     'Type',
+    'Target',
     'Discount',
     'Start Date',
     'End Date',
@@ -134,13 +134,13 @@ export const OfferList = () => {
                   key={offer._id}
                   className='transition-colors duration-200 even:bg-primary-bg/5 hover:bg-primary-bg/20'>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
-                    {offer._id}
-                  </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {offer.name}
                   </TableCell>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {offer.type}
+                  </TableCell>
+                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                    {offer.targetId.name}
                   </TableCell>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {offer.discountType === 'percentage'

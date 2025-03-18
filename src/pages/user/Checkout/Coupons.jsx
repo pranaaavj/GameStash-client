@@ -1,5 +1,3 @@
-'use client';
-
 /* eslint-disable react/prop-types */
 import { useState, useRef } from 'react';
 import { Button } from '@/shadcn/components/ui/button';

@@ -25,7 +25,7 @@ const initialOfferState = {
   type: '',
   targetId: '',
   discountType: '',
-  discountValue: null,
+  discountValue: '',
   startDate: undefined,
   endDate: undefined,
 };
@@ -93,7 +93,7 @@ export const AddOffer = () => {
       const response = await addOffer(offerInput).unwrap();
 
       console.log(response);
-
+      
       if (response.success) {
         toast.success(response.message, { duration: 1500 });
         navigate('/admin/offers');

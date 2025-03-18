@@ -1,22 +1,17 @@
 import { useState } from 'react';
-import {
-  useDownloadSalesExcelMutation,
-  useDownloadSalesPDFMutation,
-  useGetSalesReportQuery,
-} from '@/redux/api/admin/reportApi';
+import { useGetSalesReportQuery } from '@/redux/api/admin/salesApi';
 import { format, subDays, subMonths, subYears } from 'date-fns';
-import { toast } from 'sonner';
 import {
-  BarChart,
   Bar,
+  BarChart,
   XAxis,
   YAxis,
-  PieChart,
   Pie,
-  CartesianGrid,
-  ResponsiveContainer,
   Tooltip,
   Legend,
+  PieChart,
+  CartesianGrid,
+  ResponsiveContainer,
 } from 'recharts';
 import {
   Card,
@@ -25,13 +20,6 @@ import {
   CardTitle,
 } from '@/shadcn/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
-import { Button } from '@/shadcn/components/ui/button';
-import { Download, ChevronDown } from 'lucide-react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shadcn/components/ui/popover';
 
 export const Dashboard = () => {
   const [period, setPeriod] = useState('week');
@@ -48,9 +36,6 @@ export const Dashboard = () => {
     startDate: formattedStartDate,
     endDate: formattedEndDate,
   });
-
-  const [downloadExcel] = useDownloadSalesExcelMutation();
-  const [downloadPDF] = useDownloadSalesPDFMutation();
 
   const handlePeriodChange = (value) => {
     setPeriod(value);
@@ -73,32 +58,6 @@ export const Dashboard = () => {
         return;
     }
     setDateRange({ from, to: today });
-  };
-
-  const handleDownloadReport = async (format) => {
-    try {
-      const url =
-        format === 'pdf'
-          ? await downloadPDF({
-              startDate: formattedStartDate,
-              endDate: formattedEndDate,
-            }).unwrap()
-          : await downloadExcel({
-              startDate: formattedStartDate,
-              endDate: formattedEndDate,
-            }).unwrap();
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download =
-        `sales-report-${format}.` + (format === 'pdf' ? 'pdf' : 'xlsx');
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      toast.success(`Report downloaded as ${format.toUpperCase()}`);
-    } catch {
-      toast.error('Failed to download report');
-    }
   };
 
   const formatChartData = (data, labelKey, valueKey) => {
@@ -124,28 +83,6 @@ export const Dashboard = () => {
             <TabsTrigger value='year'>Year</TabsTrigger>
           </TabsList>
         </Tabs>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant='outline'
-              className='text-black'>
-              <Download className='mr-2 h-4 w-4' /> Export{' '}
-              <ChevronDown className='ml-2 h-4 w-4' />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Button
-              variant='ghost'
-              onClick={() => handleDownloadReport('pdf')}>
-              Download PDF
-            </Button>
-            <Button
-              variant='ghost'
-              onClick={() => handleDownloadReport('excel')}>
-              Download Excel
-            </Button>
-          </PopoverContent>
-        </Popover>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-primary-text'>

@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   Ticket,
   BadgePercent,
+  BadgeDollarSign,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -29,6 +30,7 @@ const menuItems = [
   { name: 'Orders', icon: ShoppingCart, to: '/admin/orders' },
   { name: 'Offers', icon: BadgePercent, to: '/admin/offers' },
   { name: 'Coupons', icon: Ticket, to: '/admin/coupons' },
+  { name: 'Sales', icon: BadgeDollarSign, to: '/admin/sales' },
 ];
 
 export const Sidebar = () => {

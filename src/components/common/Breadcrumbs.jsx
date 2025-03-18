@@ -4,15 +4,14 @@ import { useEffect, useState } from 'react';
 import { useGetProductQuery } from '@/redux/api/user/productApi';
 
 export const Breadcrumbs = () => {
-  const location = useLocation();
+const location = useLocation();
   const pathSegments = location.pathname.split('/').filter(Boolean);
 
   const [gameName, setGameName] = useState(null);
 
-  const gameIndex = pathSegments.indexOf('game');
+  const gameIndex = pathSegments.indexOf('games');
   const gameId = gameIndex !== -1 ? pathSegments[gameIndex + 1] : null;
 
-  // Fetch game details using RTK Query only if gameId exists
   const { data: response } = useGetProductQuery(gameId, {
     skip: !gameId,
   });
@@ -23,7 +22,6 @@ export const Breadcrumbs = () => {
     }
   }, [response]);
 
-  // Format each breadcrumb segment
   const formatSegment = (segment, isGame) => {
     if (isGame && gameName) return gameName;
     if (isGame) return 'Game';
@@ -32,6 +30,7 @@ export const Breadcrumbs = () => {
 
   return (
     <nav className='flex items-center space-x-2 text-sm font-medium text-primary-text mt-4 mb-4'>
+      {/* Home Link */}
       <Link
         to='/'
         className='flex items-center space-x-1 text-accent-red hover:text-accent-blue'>
@@ -39,30 +38,36 @@ export const Breadcrumbs = () => {
         <span>Home</span>
       </Link>
 
+      {/* Separator */}
       {pathSegments.length > 0 && (
         <ChevronRight className='h-4 w-4 text-secondary-text' />
       )}
 
+      {/* Breadcrumb Links */}
       {pathSegments.map((segment, index) => {
-        // if (index === gameIndex + 1) return null; // Skip gameId segment
+        if (index === gameIndex + 1) return null;
+
+        const isGameSegment = index === gameIndex && gameId;
+        const formattedSegment = formatSegment(segment, isGameSegment);
 
         const path = `/${pathSegments.slice(0, index + 1).join('/')}`;
         const isLast = index === pathSegments.length - 1;
-        // const isGameSegment = segment === 'game';
 
         return (
           <div
             key={path}
             className='flex items-center space-x-2'>
-            {!isLast ? (
+            {/* If it's the "Games" segment, make it a clickable link */}
+            {!isGameSegment && !isLast ? (
               <Link
                 to={path}
                 className='hover:text-accent-blue capitalize text-accent-red'>
-                {formatSegment(segment)}
+                {formattedSegment}
               </Link>
             ) : (
+              // If it's the game name (last breadcrumb), show as text only
               <span className='capitalize font-semibold text-accent-red'>
-                {formatSegment(segment)}
+                {formattedSegment}
               </span>
             )}
             {!isLast && <ChevronRight className='h-4 w-4 text-accent-red' />}
