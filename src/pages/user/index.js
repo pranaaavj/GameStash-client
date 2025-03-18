@@ -12,3 +12,5 @@ export { Orders } from './Orders';
 export { OrderDetails } from './OrderDetails';
 
 export { Wishlist } from './Wishlist';
+
+export { OrderConfirmationWrapper } from './Checkout/OrderConfirmationWrapper';

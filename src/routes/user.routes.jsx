@@ -9,6 +9,7 @@ import {
   Orders,
   OrderDetails,
   Wishlist,
+  OrderConfirmationWrapper,
 } from '@/pages/user';
 import CartPage from '@/pages/user/Cart';
 
@@ -48,6 +49,10 @@ export const userRoutes = [
           {
             path: 'cart',
             element: <CartPage />,
+          },
+          {
+            path: '/order-confirmation',
+            element: <OrderConfirmationWrapper />,
           },
         ],
       },

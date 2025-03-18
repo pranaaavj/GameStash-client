@@ -20,8 +20,8 @@ import { toast } from 'sonner';
 import {
   usePlaceOrderMutation,
   useVerifyRazorpayMutation,
+  useMarkPaymentAsFailedMutation,
 } from '@/redux/api/user/ordersApi';
-import OrderConfirmation from './OrderConfirm';
 
 export function CheckoutPage() {
   const user = useUsers();
@@ -32,10 +32,10 @@ export function CheckoutPage() {
   });
   const [placeOrder, { isError: isPlaceOrderError }] = usePlaceOrderMutation();
   const [verifyRazorpay] = useVerifyRazorpayMutation();
+  const [markPaymentAsFailed] = useMarkPaymentAsFailedMutation();
 
   const [discount, setDiscount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
-  const [isOrderComplete, setIsOrderComplete] = useState(false);
 
   useEffect(() => {
     if (responseCart) {
@@ -163,6 +163,7 @@ export function CheckoutPage() {
           order_id: response?.data?.razorpayOrderId,
           handler: async function (razorpayResponse) {
             const paymentData = {
+              orderId: response?.data?.orderId,
               razorpayOrderId: razorpayResponse?.razorpay_order_id,
               paymentId: razorpayResponse?.razorpay_payment_id,
               signature: razorpayResponse?.razorpay_signature,
@@ -175,7 +176,12 @@ export function CheckoutPage() {
               ).unwrap();
 
               if (paymentResponse?.success) {
-                setIsOrderComplete(true);
+                navigate('/order-confirmation', {
+                  state: {
+                    orderId: response.data.orderId,
+                    paymentStatus: 'success',
+                  },
+                });
               }
             } catch (error) {
               toast.error(error?.message || 'Something went wrong.', {
@@ -190,14 +196,63 @@ export function CheckoutPage() {
             contact: '+919876543210',
           },
           retry: {
-            enabled: true,
+            enabled: false,
+          },
+          modal: {
+            ondismiss: async function () {
+              console.log('Payment popup closed');
+              try {
+                await markPaymentAsFailed(response?.data?.orderId).unwrap();
+                navigate('/order-confirmation', {
+                  state: {
+                    orderId: response.data.orderId,
+                    paymentStatus: 'failed',
+                  },
+                });
+              } catch (error) {
+                console.log(error);
+                toast.error('Payment was not completed. Please retry.');
+              }
+            },
           },
         };
 
         const razorpay = new window.Razorpay(options);
         razorpay.open();
+
+        razorpay.on('payment.failed', async function () {
+          try {
+            await markPaymentAsFailed(response?.data?.orderId);
+
+            navigate('/order-confirmation', {
+              state: {
+                orderId: response?.data?.orderId,
+                paymentStatus: 'failed',
+              },
+            });
+          } catch (error) {
+            console.log(error);
+            toast.error('Payment failed. Please retry from order details.');
+          }
+        });
+
+        // setTimeout(async () => {
+        //   if (!razorpay) {
+        //     // If modal is closed, mark as failed
+        //     console.log('Payment modal closed without completing payment.');
+        //     await markPaymentAsFailed(response?.data?.orderId).unwrap();
+        //     navigate('/order-confirmation', {
+        //       state: {
+        //         orderId: response.data.orderId,
+        //         paymentStatus: 'failed',
+        //       },
+        //     });
+        //   }
+        // }, 5000);
       } else if (response?.success) {
-        setIsOrderComplete(true);
+        navigate('/order-confirmation', {
+          state: { orderId: response.data.orderId, paymentStatus: 'success' },
+        });
       }
     } catch (error) {
       console.log(error);
@@ -271,10 +326,6 @@ export function CheckoutPage() {
 
   if (isPlaceOrderError) {
     console.log('Error occurred while placing order');
-  }
-
-  if (isOrderComplete) {
-    return <OrderConfirmation />;
   }
 
   return (

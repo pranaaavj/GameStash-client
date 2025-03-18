@@ -2,6 +2,8 @@ import {
   useGetOrderQuery,
   useCancelOrderMutation,
   useRequestReturnOrderMutation,
+  useRetryPaymentMutation,
+  useVerifyRazorpayMutation,
 } from '@/redux/api/user/ordersApi';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -37,14 +39,16 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/shadcn/components/ui/tabs';
+import { useUsers } from '@/hooks';
 
 export const OrderDetails = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
+  const user = useUsers();
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState('cancel-item'); // 'cancel-item', 'cancel-order', 'return-item'
+  const [modalType, setModalType] = useState('cancel-item');
 
   const {
     data: responseOrder,
@@ -57,6 +61,8 @@ export const OrderDetails = () => {
     { isLoading: isCancelling, isError: isCancelError, error: cancelError },
   ] = useCancelOrderMutation();
 
+  const [retryPayment, { isLoading: isRetrying }] = useRetryPaymentMutation();
+  const [verifyRazorpay] = useVerifyRazorpayMutation();
   const [requestReturnOrder] = useRequestReturnOrderMutation();
 
   const handleCancelItem = async () => {
@@ -127,6 +133,61 @@ export const OrderDetails = () => {
       handleCancelOrder();
     } else if (modalType === 'return-item') {
       handleReturnItem();
+    }
+  };
+
+  const handleRetryPayment = async () => {
+    try {
+      const response = await retryPayment({
+        orderId: order._id,
+        paymentMethod: 'Razorpay',
+      }).unwrap();
+
+      if (response?.success) {
+        toast.success('Payment retry initiated!');
+        const options = {
+          key: import.meta.env.VITE_RZP_KEY_ID,
+          amount: response.data.amount,
+          currency: response.data.currency,
+          name: 'GameStash',
+          description: 'GameStash Payment',
+          order_id: response?.data?.razorpayOrderId,
+          handler: async function (razorpayResponse) {
+            const paymentData = {
+              orderId: response?.data?.orderId,
+              razorpayOrderId: razorpayResponse?.razorpay_order_id,
+              paymentId: razorpayResponse?.razorpay_payment_id,
+              signature: razorpayResponse?.razorpay_signature,
+            };
+
+            try {
+              const paymentResponse = await verifyRazorpay(
+                paymentData
+              ).unwrap();
+
+              if (paymentResponse?.success) {
+                toast.success('Payment successful!');
+              }
+            } catch (error) {
+              toast.error(error?.message || 'Payment verification failed.');
+            }
+          },
+          theme: { color: '#3399cc' },
+          prefill: {
+            name: user?.userInfo?.name,
+            email: user?.userInfo?.email,
+            contact: '+919876543210',
+          },
+          retry: {
+            enabled: false,
+          },
+        };
+
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      }
+    } catch (error) {
+      toast.error(error?.message || 'Failed to retry payment.');
     }
   };
 
@@ -395,6 +456,16 @@ export const OrderDetails = () => {
                   </Button>
                 </div>
               )}
+
+              {order.paymentStatus === 'Failed' &&
+                order.paymentMethod === 'Razorpay' && (
+                  <Button
+                    onClick={handleRetryPayment}
+                    disabled={isRetrying}
+                    variant='destructive'>
+                    Retry Payment
+                  </Button>
+                )}
             </TabsContent>
 
             <TabsContent

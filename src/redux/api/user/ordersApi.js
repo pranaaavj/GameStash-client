@@ -35,20 +35,37 @@ const ordersApi = userBaseApi.injectEndpoints({
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
 
+    requestReturnOrder: builder.mutation({
+      query: ({ orderId, productId, reason }) => ({
+        url: `/user/order/${orderId}`,
+        method: 'PATCH',
+        body: { productId, reason },
+      }),
+      invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
+    }),
+
     verifyRazorpay: builder.mutation({
-      query: (paymentData) => ({
-        url: `/user/order/razorpay`,
+      query: ({ orderId, ...paymentData }) => ({
+        url: `/user/order/razorpay/${orderId}`,
         method: 'POST',
         body: paymentData,
       }),
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
 
-    requestReturnOrder: builder.mutation({
-      query: ({ orderId, productId, reason }) => ({
-        url: `/user/order/${orderId}`,
+    markPaymentAsFailed: builder.mutation({
+      query: (orderId) => ({
+        url: `/user/order/razorpay/${orderId}`,
         method: 'PATCH',
-        body: { productId, reason },
+      }),
+      invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
+    }),
+
+    retryPayment: builder.mutation({
+      query: ({ orderId, ...paymentData }) => ({
+        url: `/user/order/razorpay/${orderId}`,
+        method: 'PUT',
+        body: paymentData,
       }),
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
@@ -62,4 +79,6 @@ export const {
   useCancelOrderMutation,
   useVerifyRazorpayMutation,
   useRequestReturnOrderMutation,
+  useRetryPaymentMutation,
+  useMarkPaymentAsFailedMutation,
 } = ordersApi;
