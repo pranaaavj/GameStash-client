@@ -4,7 +4,7 @@ import { AdminPagination } from '@/components/admin';
 import { Search, CircleX, DollarSign } from 'lucide-react';
 import { Alert, DatePicker, EmptyState } from '@/components/common';
 import { Badge } from '@/shadcn/components/ui/badge';
-import { format } from 'date-fns';
+import { format, subDays, subMonths, subYears } from 'date-fns';
 import {
   Table,
   TableBody,
@@ -27,9 +27,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/shadcn/components/ui/popover';
+import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
 
 export const Sales = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [period, setPeriod] = useState('week');
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState({
     startDate: '2025-03-01T00:00:00.000Z',
@@ -44,6 +46,8 @@ export const Sales = () => {
   useEffect(() => {
     setSelectedSale(null);
   }, []);
+
+  console.log(dateRange);
 
   // Fetching sales data
   const {
@@ -83,6 +87,31 @@ export const Sales = () => {
   const handleDateChange = ({ target: { name, value } }) => {
     console.log(name, value);
     setDateRange((prevDate) => ({ ...prevDate, [name]: value }));
+  };
+
+  const handlePeriodChange = (value) => {
+    setPeriod(value);
+    const today = new Date();
+    let startDate = dateRange.startDate;
+
+    switch (value) {
+      case 'day':
+        startDate = subDays(today, 1);
+        break;
+      case 'week':
+        startDate = subDays(today, 7);
+        break;
+      case 'month':
+        startDate = subMonths(today, 1);
+        break;
+      case 'year':
+        startDate = subYears(today, 1);
+        break;
+      case 'custom':
+        return; // Keep existing dates for custom
+    }
+
+    setDateRange({ startDate, endDate: today });
   };
 
   const handleDownloadReport = async (format) => {
@@ -164,21 +193,38 @@ export const Sales = () => {
             </PopoverContent>
           </Popover>
         </div>
-        <div className='flex items-center justify-center gap-x-4'>
-          <DatePicker
-            value={dateRange.startDate}
-            onChange={handleDateChange}
-            label='Start Date'
-            name='startDate'
-            placeHolder='Select start date'
-          />
-          <DatePicker
-            value={dateRange.endDate}
-            onChange={handleDateChange}
-            label='End Date'
-            name='endDate'
-            placeHolder='Select end date'
-          />
+        <div className='flex items-end justify-center gap-x-4'>
+          <Tabs
+            value={period}
+            onValueChange={handlePeriodChange}
+            className='w-full sm:w-auto'>
+            <TabsList className='bg-primary-bg'>
+              <TabsTrigger value='day'>Day</TabsTrigger>
+              <TabsTrigger value='week'>Week</TabsTrigger>
+              <TabsTrigger value='month'>Month</TabsTrigger>
+              <TabsTrigger value='year'>Year</TabsTrigger>
+              <TabsTrigger value='custom'>Custom</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {period === 'custom' && (
+            <div className='flex gap-2 items-center'>
+              <DatePicker
+                value={dateRange.startDate}
+                onChange={handleDateChange}
+                label='Start Date'
+                name='startDate'
+                className='w-36'
+              />
+              <DatePicker
+                value={dateRange.endDate}
+                onChange={handleDateChange}
+                label='End Date'
+                name='endDate'
+                className='w-36'
+              />
+            </div>
+          )}
         </div>
       </div>
 

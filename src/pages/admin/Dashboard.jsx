@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useGetSalesReportQuery } from '@/redux/api/admin/salesApi';
-import { format, subDays, subMonths, subYears } from 'date-fns';
+import { subDays, subMonths, subYears } from 'date-fns';
 import {
   Bar,
   BarChart,
@@ -20,45 +20,52 @@ import {
   CardTitle,
 } from '@/shadcn/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
+import { DatePicker } from '@/components/common';
 
 export const Dashboard = () => {
   const [period, setPeriod] = useState('week');
   const [dateRange, setDateRange] = useState({
-    from: subDays(new Date(), 7),
-    to: new Date(),
+    startDate: '2025-03-01T00:00:00.000Z',
+    endDate: '2025-03-31T23:59:59.999Z',
   });
 
-  const formattedStartDate = format(dateRange.from, 'yyyy-MM-dd');
-  const formattedEndDate = format(dateRange.to, 'yyyy-MM-dd');
-
-  const { data: reportData } = useGetSalesReportQuery({
-    period,
-    startDate: formattedStartDate,
-    endDate: formattedEndDate,
-  });
+  const handleDateChange = ({ target: { name, value } }) => {
+    setDateRange((prevDate) => ({ ...prevDate, [name]: value }));
+    if (period !== 'custom') setPeriod('custom');
+  };
 
   const handlePeriodChange = (value) => {
     setPeriod(value);
     const today = new Date();
-    let from;
+    let startDate = dateRange.startDate;
+
     switch (value) {
       case 'day':
-        from = subDays(today, 1);
+        startDate = subDays(today, 1);
         break;
       case 'week':
-        from = subDays(today, 7);
+        startDate = subDays(today, 7);
         break;
       case 'month':
-        from = subMonths(today, 1);
+        startDate = subMonths(today, 1);
         break;
       case 'year':
-        from = subYears(today, 1);
+        startDate = subYears(today, 1);
         break;
-      default:
-        return;
+      case 'custom':
+        return; // Keep existing dates for custom
     }
-    setDateRange({ from, to: today });
+
+    setDateRange({ startDate, endDate: today });
   };
+
+  const { data: reportData } = useGetSalesReportQuery({
+    period,
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+  });
+
+  console.log(dateRange);
 
   const formatChartData = (data, labelKey, valueKey) => {
     return (
@@ -73,16 +80,39 @@ export const Dashboard = () => {
     <div className='p-6 space-y-6 bg-secondary-bg text-primary-text'>
       <div className='flex justify-between items-center'>
         <h1 className='text-2xl font-bold'>Sales Dashboard</h1>
-        <Tabs
-          value={period}
-          onValueChange={handlePeriodChange}>
-          <TabsList className='-primary-bg bg-white/40ext-primary-text'>
-            <TabsTrigger value='day'>Day</TabsTrigger>
-            <TabsTrigger value='week'>Week</TabsTrigger>
-            <TabsTrigger value='month'>Month</TabsTrigger>
-            <TabsTrigger value='year'>Year</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className='flex flex-col items-end sm:flex-row gap-4 w-full sm:w-auto'>
+          <Tabs
+            value={period}
+            onValueChange={handlePeriodChange}
+            className='w-full sm:w-auto'>
+            <TabsList className='bg-white/40'>
+              <TabsTrigger value='day'>Day</TabsTrigger>
+              <TabsTrigger value='week'>Week</TabsTrigger>
+              <TabsTrigger value='month'>Month</TabsTrigger>
+              <TabsTrigger value='year'>Year</TabsTrigger>
+              <TabsTrigger value='custom'>Custom</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {period === 'custom' && (
+            <div className='flex gap-2 items-center'>
+              <DatePicker
+                value={dateRange.startDate}
+                onChange={handleDateChange}
+                label='Start Date'
+                name='startDate'
+                className='w-36'
+              />
+              <DatePicker
+                value={dateRange.endDate}
+                onChange={handleDateChange}
+                label='End Date'
+                name='endDate'
+                className='w-36'
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-primary-text'>
