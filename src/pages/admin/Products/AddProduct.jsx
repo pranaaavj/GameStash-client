@@ -76,6 +76,7 @@ export const AddProduct = () => {
       setProductInput((prev) => ({ ...prev, [name]: value }));
     }
   };
+
   // Mapping options from brands and genres
   const brandOptions = brandQuerySuccess
     ? mapOptionsData(responseBrands?.data?.brands)
@@ -103,7 +104,7 @@ export const AddProduct = () => {
       setImageValidation(imageValidation);
       return;
     }
-    console.log(productInput);
+
     try {
       const response = await addProduct({ ...productInput, images }).unwrap();
 
@@ -164,16 +165,6 @@ export const AddProduct = () => {
             isInvalid={!!productValidation.genre}
             errorMessage={productValidation.genre}
           />
-          {/* <InputField
-            type='text'
-            value={productInput.platform}
-            onChange={handleChange}
-            label='Platform'
-            name='platform'
-            placeHolder='Enter platform'
-            isInvalid={!!productValidation.platform}
-            errorMessage={productValidation.platform}
-          /> */}
           <SelectField
             type='text'
             value={productInput.platform}
@@ -278,10 +269,6 @@ export const AddProduct = () => {
           </div>
 
           {/* Image Uploader */}
-          {/* <ImageUploader
-            images={images}
-            setImages={setImages}
-          /> */}
           <ImageUploader
             onImagesChange={handleImagesChange}
             uploadProductImage={uploadProductImage}

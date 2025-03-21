@@ -35,6 +35,17 @@ const ordersApi = userBaseApi.injectEndpoints({
       invalidatesTags: [{ type: 'Orders', id: 'LIST' }],
     }),
 
+    downloadInvoicePDF: builder.mutation({
+      query: (orderId) => ({
+        url: `/user/order/${orderId}/invoice`,
+        method: 'POST',
+        responseHandler: async (response) => {
+          const blob = await response.blob();
+          return window.URL.createObjectURL(blob);
+        },
+      }),
+    }),
+
     requestReturnOrder: builder.mutation({
       query: ({ orderId, productId, reason }) => ({
         url: `/user/order/${orderId}`,
@@ -81,4 +92,5 @@ export const {
   useRequestReturnOrderMutation,
   useRetryPaymentMutation,
   useMarkPaymentAsFailedMutation,
+  useDownloadInvoicePDFMutation,
 } = ordersApi;

@@ -15,13 +15,12 @@ const userBaseQuery = fetchBaseQuery({
     return headers;
   },
 });
-let isLoggingOut = false; // ✅ Local flag to prevent duplicate logouts
+let isLoggingOut = false;
 
 export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
   let response = await userBaseQuery(args, api, extraOptions);
   console.log('Response: ', response);
 
-  // 🔹 If token is invalid or expired
   if (response?.error?.status === 403 || response?.error?.status === 401) {
     const refreshResponse = await userBaseQuery(
       '/auth/refresh-token',
@@ -39,7 +38,6 @@ export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
     } else {
       console.log(response.error);
 
-      // 🔥 Handling user block scenario properly
       if (
         response?.error?.status === 403 &&
         (response?.error?.data?.message === 'User has been blocked.' ||
@@ -61,13 +59,8 @@ export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
         return response;
       }
 
-      // 🔹 Handle session expiration & logout
       if (!isLoggingOut) {
         isLoggingOut = true;
-
-        flushSync(() => {
-          toast.error('Your session has expired. Please log in again.');
-        });
 
         setTimeout(() => {
           api.dispatch(logout());

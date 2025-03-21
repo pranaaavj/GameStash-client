@@ -35,7 +35,7 @@ export const AddOffer = () => {
 
   // Fetching products and brands
   const { data: responseProducts, isSuccess: productsSuccess } =
-    useGetAllProductsQuery({});
+    useGetAllProductsQuery({ limit: 10000 });
 
   const { data: responseBrands, isSuccess: brandsSuccess } =
     useGetAllBrandsQuery({});
@@ -93,7 +93,7 @@ export const AddOffer = () => {
       const response = await addOffer(offerInput).unwrap();
 
       console.log(response);
-      
+
       if (response.success) {
         toast.success(response.message, { duration: 1500 });
         navigate('/admin/offers');

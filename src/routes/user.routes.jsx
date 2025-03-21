@@ -12,6 +12,7 @@ import {
   OrderConfirmationWrapper,
 } from '@/pages/user';
 import CartPage from '@/pages/user/Cart';
+import { Test } from '@/pages/user/Game/GameTest';
 
 export const userRoutes = [
   {
@@ -59,6 +60,10 @@ export const userRoutes = [
       {
         path: 'games',
         element: <GameBrowse />,
+      },
+      {
+        path: 'test',
+        element: <Test />,
       },
       {
         path: 'games/:productId',

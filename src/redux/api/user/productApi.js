@@ -2,7 +2,6 @@ import { userBaseApi } from './userBaseApi';
 
 const productApi = userBaseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Get all the products
     getProducts: builder.query({
       query: ({ page = 1, limit = 5, queryOptions = null }) => ({
         url: '/user/products',
@@ -14,7 +13,6 @@ const productApi = userBaseApi.injectEndpoints({
           : [{ type: 'Product', id: 'LIST' }],
     }),
 
-    // Search products
     searchProducts: builder.query({
       query: ({ page = 1, limit = 5, queryOptions = null }) => ({
         url: '/user/products/search',
@@ -22,7 +20,6 @@ const productApi = userBaseApi.injectEndpoints({
       }),
     }),
 
-    // Getting products by genre
     getProductsByGenre: builder.query({
       query: ({ page = 1, limit = 5, genre }) => ({
         url: `/user/products/${genre}`,
@@ -30,7 +27,6 @@ const productApi = userBaseApi.injectEndpoints({
       }),
     }),
 
-    // Get single product
     getProduct: builder.query({
       query: (productId) => ({
         url: `/user/product/${productId}`,
@@ -38,14 +34,12 @@ const productApi = userBaseApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: 'Product', id }],
     }),
 
-    // Get all the reviews of a product
     getReviewByProduct: builder.query({
       query: (productId) => ({
         url: `/user/review/${productId}`,
       }),
     }),
 
-    // Get all genres
     getAllGenres: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/user/genres?page=${page}&limit=${limit}`,
@@ -56,7 +50,6 @@ const productApi = userBaseApi.injectEndpoints({
           : [{ type: 'Genre', id: 'LIST' }],
     }),
 
-    // Get all brands
     getAllBrands: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/user/brands?page=${page}&limit=${limit}`,

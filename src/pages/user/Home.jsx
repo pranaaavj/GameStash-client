@@ -1,15 +1,117 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GameListing } from './Game/GameListing';
-import { GameCarousal } from './Game/GameCarousal';
 import { useGetProductsQuery } from '@/redux/api/user/productApi';
 import { GameErrorFallback, GameLoading } from '@/components/error';
-import { Card, CardContent } from '@/shadcn/components/ui/card';
-import { Button } from '@/shadcn/components/ui/button';
+
+import { GameCarousal, ReferralModal } from '@/components/user';
+import { useUsers } from '@/hooks';
+import { useApplyReferralMutation } from '@/redux/api/user/referralApi';
+
+const FEATURED_GAMES = [
+  {
+    id: 'elden-ring',
+    title: 'Elden Ring',
+    tagline: 'BEST SELLER',
+    description:
+      'Embark on an epic quest in the Lands Between. From the creators of Dark Souls.',
+    price: 2999,
+    image:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg',
+    thumbnail:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1245620/header.jpg',
+  },
+  {
+    id: 'starfield',
+    title: 'Starfield',
+    tagline: 'EXPLORE THE STARS',
+    description:
+      'Bethesda’s next-gen RPG takes you to space. Explore planets, build ships, and unravel mysteries.',
+    price: 3499,
+    image:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1716740/header.jpg',
+    thumbnail:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1716740/header.jpg',
+  },
+  {
+    id: 'the-witcher-3',
+    title: 'The Witcher 3: Wild Hunt',
+    tagline: 'ICONIC RPG',
+    description:
+      'An award-winning open-world RPG where you play as Geralt, a monster hunter, in a war-torn world.',
+    price: 999,
+    image:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg',
+    thumbnail:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg',
+  },
+  {
+    id: 'hollow-knight-silksong',
+    title: 'Hollow Knight: Silksong',
+    tagline: 'COMING SOON',
+    description:
+      'A stunning sequel to Hollow Knight, featuring all-new combat, mechanics, and environments.',
+    price: 2499,
+    image:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1030300/header.jpg',
+    thumbnail:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1030300/header.jpg',
+  },
+  {
+    id: 'valorant',
+    title: 'Valorant',
+    tagline: 'FREE TO PLAY',
+    description:
+      'A 5v5 tactical shooter by Riot Games. Choose your agent, strategize, and outplay opponents.',
+    price: 0,
+    image:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1085660/header.jpg', // Not on Steam, but placeholder image
+    thumbnail:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1085660/header.jpg',
+  },
+  {
+    id: 'red-dead-redemption-2',
+    title: 'Red Dead Redemption 2',
+    tagline: 'AWARD-WINNING STORY',
+    description:
+      'Experience the life of an outlaw in this highly immersive open-world Western adventure.',
+    price: 1999,
+    image:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg',
+    thumbnail:
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg',
+  },
+];
 
 export const Home = () => {
-  const [pageState, setPageState] = useState({
-    latestGames: 1,
-  });
+  const { userInfo } = useUsers();
+  const [pageState, setPageState] = useState({ latestGames: 1 });
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
+
+  const [applyReferral] = useApplyReferralMutation();
+
+  useEffect(() => {
+    const hasSeenReferralModal = localStorage.getItem('hasSeenReferralModal');
+
+    console.log(userInfo, hasSeenReferralModal);
+    if (!hasSeenReferralModal && !userInfo?.referredBy) {
+      setIsReferralModalOpen(true);
+    }
+  }, [userInfo]);
+
+  const handleCloseReferralModal = () => {
+    setIsReferralModalOpen(false);
+    localStorage.setItem('hasSeenReferralModal', 'true');
+  };
+
+  const handleApplyReferral = async (code) => {
+    try {
+      const response = await applyReferral({ referralCode: code }).unwrap();
+      console.log('✅ Referral Applied:', response);
+      handleCloseReferralModal();
+    } catch (error) {
+      throw new Error(error?.data?.message || 'Failed to apply referral code');
+    }
+  };
 
   const {
     data: responseLatest,
@@ -24,60 +126,86 @@ export const Home = () => {
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
       <main className='container mx-auto pt-10'>
         {/* Home page carousel */}
-        <GameCarousal />
+        <GameCarousal
+          games={FEATURED_GAMES}
+          autoSwitchInterval={4000}
+        />
 
         {/* Listing games */}
-        {isError ? (
-          <GameErrorFallback
-            message={error?.data?.message}
-            onRetry={refetch}
-          />
-        ) : isLoading ? (
-          <GameLoading count={5} />
-        ) : (
-          isSuccess &&
-          responseLatest?.data?.products && (
-            <GameListing
-              title='Latest games'
-              games={responseLatest?.data.products}
-              currentPage={responseLatest?.data.currentPage}
-              totalPage={responseLatest?.data.totalPages}
-              onPageChange={(page) =>
-                setPageState((prev) => ({ ...prev, latestGames: page }))
-              }
+        <div className='my-10'>
+          {isError ? (
+            <GameErrorFallback
+              message={error?.data?.message}
+              onRetry={refetch}
             />
-          )
-        )}
-
-        <section className='mt-12'>
-          <h2 className='text-2xl font-bold mb-4 font-poppins'>
-            Promotion Cards
-          </h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <Card className='bg-accent-blue text-white'>
-              <CardContent className='p-6'>
-                <h3 className='text-2xl font-bold mb-2'>Deals of the Week</h3>
-                <p className='mb-4'>
-                  Check out our hottest deals, refreshed every week!
-                </p>
-                <Button className='bg-accent-red hover:bg-hover-red text-white'>
-                  View Deals
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className='bg-accent-green text-white'>
-              <CardContent className='p-6'>
-                <h3 className='text-2xl font-bold mb-2'>Mobile Rewards</h3>
-                <p className='mb-4'>
-                  Earn points and unlock exclusive mobile content!
-                </p>
-                <Button className='bg-accent-red hover:bg-hover-red text-white'>
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
+          ) : isLoading ? (
+            <GameLoading count={5} />
+          ) : (
+            isSuccess &&
+            responseLatest?.data?.products && (
+              <GameListing
+                title='Latest games'
+                games={responseLatest?.data.products}
+                currentPage={responseLatest?.data.currentPage}
+                totalPage={responseLatest?.data.totalPages}
+                onPageChange={(page) =>
+                  setPageState((prev) => ({ ...prev, latestGames: page }))
+                }
+              />
+            )
+          )}
+        </div>
+        <div className='my-10'>
+          {isError ? (
+            <GameErrorFallback
+              message={error?.data?.message}
+              onRetry={refetch}
+            />
+          ) : isLoading ? (
+            <GameLoading count={5} />
+          ) : (
+            isSuccess &&
+            responseLatest?.data?.products && (
+              <GameListing
+                title='Trending Games'
+                games={responseLatest?.data.products}
+                currentPage={responseLatest?.data.currentPage}
+                totalPage={responseLatest?.data.totalPages}
+                onPageChange={(page) =>
+                  setPageState((prev) => ({ ...prev, latestGames: page }))
+                }
+              />
+            )
+          )}
+        </div>
+        <div className='my-10'>
+          {isError ? (
+            <GameErrorFallback
+              message={error?.data?.message}
+              onRetry={refetch}
+            />
+          ) : isLoading ? (
+            <GameLoading count={5} />
+          ) : (
+            isSuccess &&
+            responseLatest?.data?.products && (
+              <GameListing
+                title='Discounted Games'
+                games={responseLatest?.data.products}
+                currentPage={responseLatest?.data.currentPage}
+                totalPage={responseLatest?.data.totalPages}
+                onPageChange={(page) =>
+                  setPageState((prev) => ({ ...prev, latestGames: page }))
+                }
+              />
+            )
+          )}
+        </div>
+        <ReferralModal
+          isOpen={isReferralModalOpen}
+          onClose={handleCloseReferralModal}
+          onApply={handleApplyReferral}
+        />
       </main>
     </div>
   );

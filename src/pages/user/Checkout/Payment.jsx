@@ -1,13 +1,33 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/shadcn/components/ui/button';
 import { Label } from '@/shadcn/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shadcn/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
-import { Wallet, Smartphone, AlertCircle } from 'lucide-react';
+import { Wallet, Smartphone, AlertCircle, Info } from 'lucide-react';
+import { useUsers } from '@/hooks';
+import { useGetCartQuery } from '@/redux/api/user/cartApi';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/shadcn/components/ui/tooltip';
 
 export default function PaymentSection({ onPaymentSelect }) {
+  const user = useUsers();
+
   const [selectedMethod, setSelectedMethod] = useState('');
+  const [isCodDisabled, setIsCodDisabled] = useState(false);
+  const { data: responseCart } = useGetCartQuery(user?.userInfo?.id, {
+    skip: !user?.userInfo?.id,
+  });
+
+  console.log(responseCart?.data?.total);
+  useEffect(() => {
+    if (responseCart?.data?.total >= 2000) {
+      setIsCodDisabled(true);
+    }
+  }, [responseCart]);
 
   const handlePaymentSelection = (value) => {
     setSelectedMethod(value);
@@ -86,20 +106,38 @@ export default function PaymentSection({ onPaymentSelect }) {
             value='Cash on Delivery'
             id='COD'
             className='peer sr-only'
+            disabled={isCodDisabled}
           />
-          <Label
-            htmlFor='COD'
-            className='flex items-center justify-between p-4 bg-secondary-bg/50 rounded-lg cursor-pointer border border-transparent peer-data-[state=checked]:border-accent-red'>
-            <div className='flex items-center space-x-3'>
-              <Wallet className='w-5 h-5' />
-              <div>
-                <p className='font-medium'>Cash/Card on Delivery</p>
-                <p className='text-sm text-secondary-text'>
-                  Pay when you receive your order
-                </p>
-              </div>
-            </div>
-          </Label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Label
+                htmlFor='COD'
+                className={`flex items-center border-transparent justify-between p-4 bg-secondary-bg/50 rounded-lg cursor-pointer border ${
+                  isCodDisabled
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'peer-data-[state=checked]:border-accent-red'
+                }`}>
+                <div className='flex items-center space-x-3'>
+                  <Wallet className='w-5 h-5' />
+                  <div>
+                    <p className='font-medium'>Cash/Card on Delivery</p>
+                    <p className='text-sm text-secondary-text'>
+                      Pay when you receive your order
+                    </p>
+                  </div>
+                </div>
+
+                {/* Show Info Icon when COD is disabled */}
+                {isCodDisabled && <Info className='w-5 h-5 text-gray-400' />}
+              </Label>
+            </TooltipTrigger>
+            {/* Show reason for disabling COD */}
+            {isCodDisabled && (
+              <TooltipContent className='bg-accent-red/70 text-white p-2 text-sm rounded-md'>
+                {'Cash on delivery is not available for orders above Rs 2000.'}
+              </TooltipContent>
+            )}
+          </Tooltip>
         </div>
       </RadioGroup>
 

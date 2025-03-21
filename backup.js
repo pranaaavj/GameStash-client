@@ -510,7 +510,6 @@
 // //   );
 // // }
 
-
 // "use client"
 
 // import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -838,7 +837,6 @@
 //   )
 // }
 
-
 // {item.status === "Return Requested" && (
 //                                                   <div className="flex flex-col gap-2 mt-1">
 //                                                     {item.returnRequest?.reason && (
@@ -873,24 +871,24 @@
 //                                                   </div>
 //                                                 )}
 
-  // const handleReturnRequest = async (orderId, productId, action) => {
-  //   try {
-  //     await requestReturnAdmin({
-  //       orderId,
-  //       productId,
-  //       action,
-  //     }).unwrap();
+// const handleReturnRequest = async (orderId, productId, action) => {
+//   try {
+//     await requestReturnAdmin({
+//       orderId,
+//       productId,
+//       action,
+//     }).unwrap();
 
-  //     toast.success(
-  //       `Return request ${
-  //         action === 'approve' ? 'approved' : 'rejected'
-  //       } successfully`,
-  //       { duration: 1500 }
-  //     );
-  //   } catch (error) {
-  //     console.error('Error processing return request:', error);
-  //     toast.error(
-  //       error?.data?.message || 'Failed to process the return request'
-  //     );
-  //   }
-  // };
+//     toast.success(
+//       `Return request ${
+//         action === 'approve' ? 'approved' : 'rejected'
+//       } successfully`,
+//       { duration: 1500 }
+//     );
+//   } catch (error) {
+//     console.error('Error processing return request:', error);
+//     toast.error(
+//       error?.data?.message || 'Failed to process the return request'
+//     );
+//   }
+// };

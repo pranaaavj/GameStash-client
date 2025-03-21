@@ -4,6 +4,7 @@ import {
   useRequestReturnOrderMutation,
   useRetryPaymentMutation,
   useVerifyRazorpayMutation,
+  useDownloadInvoicePDFMutation,
 } from '@/redux/api/user/ordersApi';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -64,6 +65,7 @@ export const OrderDetails = () => {
   const [retryPayment, { isLoading: isRetrying }] = useRetryPaymentMutation();
   const [verifyRazorpay] = useVerifyRazorpayMutation();
   const [requestReturnOrder] = useRequestReturnOrderMutation();
+  const [downloadInvoicePDF] = useDownloadInvoicePDFMutation();
 
   const handleCancelItem = async () => {
     setIsModalOpen(false);
@@ -191,6 +193,23 @@ export const OrderDetails = () => {
     }
   };
 
+  const handleDownloadInvoice = async () => {
+    try {
+      const url = await downloadInvoicePDF(orderId).unwrap();
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sales-report-${orderId}.pdf`;
+
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.success(`Report downloading as PDF`);
+    } catch {
+      toast.error('Failed to download report');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className='p-6 md:p-8 text-primary-text'>
@@ -265,12 +284,12 @@ export const OrderDetails = () => {
       <Button
         variant='ghost'
         onClick={() => navigate('/orders')}
-        className='mb-8 flex items-center gap-2 hover:bg-[#252536] text-[#E2E4F3]'>
+        className='mb-8 flex items-center gap-2 hover:bg-secondary text-[#E2E4F3]'>
         <ArrowLeft className='h-4 w-4' /> Back to Orders
       </Button>
 
-      <Card className='bg-[#1E1E2A] shadow-md rounded-xl overflow-hidden'>
-        <CardHeader className='bg-[#252536] py-6 px-6'>
+      <Card className='bg-secondary-bg shadow-md rounded-xl overflow-hidden border-0'>
+        <CardHeader className='bg-secondary-bg py-6 px-6'>
           <div className='flex flex-col md:flex-row justify-between md:items-center gap-4'>
             <div className='space-y-2'>
               <CardTitle className='text-2xl flex items-center gap-2 text-[#E2E4F3]'>
@@ -331,6 +350,12 @@ export const OrderDetails = () => {
                   {order.paymentStatus}
                 </Badge>
               </div>
+              <Button
+                variant='ghost'
+                onClick={() => handleDownloadInvoice()}
+                className='bg-accent-blue m-2'>
+                Download PDF
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -339,7 +364,7 @@ export const OrderDetails = () => {
           <Tabs
             defaultValue='items'
             className='w-full'>
-            <TabsList className='w-full bg-[#1E1E2A] rounded-none justify-start h-auto p-0'>
+            <TabsList className='w-full bg-secondary-bg rounded-none justify-start h-auto p-0'>
               <TabsTrigger
                 value='items'
                 className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-[#6366F1] data-[state=active]:bg-transparent py-4 px-6 text-[#A0A3BD] data-[state=active]:text-[#E2E4F3]'>
@@ -364,7 +389,7 @@ export const OrderDetails = () => {
                 {order.orderItems.map((item) => (
                   <div
                     key={item.product._id}
-                    className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 p-5 bg-[#252536] rounded-xl'>
+                    className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 p-5 bg-primary-bg/60 rounded-xl'>
                     <div className='flex items-center gap-4'>
                       <div className='h-20 w-20 rounded-lg bg-[#2A2A3A] overflow-hidden'>
                         <img
@@ -395,6 +420,7 @@ export const OrderDetails = () => {
                           <span className='font-medium text-[#E2E4F3]'>
                             ₹{item.price.toFixed(2)}
                           </span>
+
                           {item.discount > 0 && (
                             <span className='text-xs text-[#FF6B6B] ml-2'>
                               -₹{item.discount.toFixed(2)} discount

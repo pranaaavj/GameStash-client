@@ -134,8 +134,8 @@ export const Orders = () => {
           {responseOrders?.data?.orders.map((order) => (
             <Card
               key={order._id}
-              className='bg-[#1E1E2A] shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl overflow-hidden'>
-              <CardHeader className='bg-[#252536] py-5 px-6'>
+              className='bg-secondary-bg shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl border-none overflow-hidden'>
+              <CardHeader className='bg-secondary-bg py-5 px-6'>
                 <div className='flex flex-col sm:flex-row justify-between sm:items-center gap-4'>
                   <div className='space-y-1.5'>
                     <CardTitle className='flex items-center gap-2 text-[#E2E4F3]'>
@@ -263,7 +263,7 @@ export const Orders = () => {
                 <div className='flex justify-between items-center'>
                   <Button
                     variant='outline'
-                    className='border-[#6366F1] text-[#6366F1] hover:bg-[#6366F1] hover:text-white rounded-lg'
+                    className='bg-accent-blue text-primary-text hover:text-primary-text hover:bg-accent-blue/90 border-none rounded-lg'
                     onClick={() => handleOrderClick(order._id)}>
                     View Details <ChevronRight className='ml-1 h-4 w-4' />
                   </Button>

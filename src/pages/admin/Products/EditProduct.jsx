@@ -20,7 +20,7 @@ import ImageUploader from '@/components/admin/ImageUploader';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, InputField, SelectField } from '@/components/common';
-import { validateProduct, mapOptionsData } from '@/utils';
+import { validateProduct, mapOptionsData, validateImages } from '@/utils';
 import { Loading } from '@/components/error';
 
 const initialProductState = {
@@ -71,6 +71,7 @@ export const EditProduct = () => {
   const [productInput, setProductInput] = useState(initialProductState);
   const [productValidation, setProductValidation] =
     useState(initialProductState);
+  const [imageValidation, setImageValidation] = useState('');
 
   useEffect(() => {
     if (responseProduct && brandQuerySuccess && genreQuerySuccess) {
@@ -122,8 +123,11 @@ export const EditProduct = () => {
     e.preventDefault();
 
     const productValidation = validateProduct(productInput);
-    if (Object.keys(productValidation).length > 0) {
+    const imageValidation = validateImages(images);
+
+    if (Object.keys(productValidation).length > 0 || imageValidation) {
       setProductValidation(productValidation);
+      setImageValidation(imageValidation);
       return;
     }
 
@@ -305,6 +309,10 @@ export const EditProduct = () => {
             deleteProductImage={deleteProductImage}
             initialImages={images}
           />
+
+          {imageValidation && (
+            <span className='text-red-500 text-sm mt-0'>{imageValidation}</span>
+          )}
 
           <Button
             type='submit'

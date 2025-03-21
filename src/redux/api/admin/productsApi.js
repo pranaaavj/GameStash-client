@@ -47,7 +47,7 @@ const productsEndpoints = adminBaseApi.injectEndpoints({
         method: 'PATCH',
         body: { productId },
       }),
-      // invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
 
     uploadProductImage: builder.mutation({

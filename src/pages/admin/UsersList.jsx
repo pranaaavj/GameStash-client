@@ -28,6 +28,8 @@ export const UsersList = () => {
     error,
   } = useGetAllUsersQuery({ page: currentPage, limit: 6 });
 
+  console.log(responseGetUsers);
+
   const [
     toggleBlockUser,
     { isError: isToggleBlockError, error: toggleBlockError },
@@ -71,12 +73,10 @@ export const UsersList = () => {
     setSelectedUser(null);
     setIsModalOpen(false);
   };
-
-  const filteredUsersData = isSuccess
-    ? responseGetUsers?.data?.users.filter((user) => user.role !== 'admin')
-    : [];
-
-  const tableData = mapTableData(filteredUsersData, tableHeaders);
+  const tableData = mapTableData(
+    isSuccess ? responseGetUsers?.data?.users : [],
+    tableHeaders
+  );
 
   if (isError) {
     console.log(error);
