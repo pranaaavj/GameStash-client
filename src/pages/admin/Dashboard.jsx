@@ -15,9 +15,9 @@ import {
 } from 'recharts';
 import {
   Card,
-  CardContent,
-  CardHeader,
   CardTitle,
+  CardHeader,
+  CardContent,
 } from '@/shadcn/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
 import { DatePicker } from '@/components/common';
@@ -85,7 +85,7 @@ export const Dashboard = () => {
             value={period}
             onValueChange={handlePeriodChange}
             className='w-full sm:w-auto'>
-            <TabsList className='bg-white/40'>
+            <TabsList className='bg-primary-bg'>
               <TabsTrigger value='day'>Day</TabsTrigger>
               <TabsTrigger value='week'>Week</TabsTrigger>
               <TabsTrigger value='month'>Month</TabsTrigger>

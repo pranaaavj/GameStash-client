@@ -488,7 +488,7 @@ export default function Cart() {
         </motion.div>
       ) : (
         <motion.div
-          className='flex flex-col items-center justify-center h-[calc(100vh-200px)] text-primary-text rounded-xl shadow-sm p-8 bg-secondary-bg/50'
+          className='flex flex-col items-center justify-center h-[calc(100vh-300px)] text-primary-text rounded-xl shadow-sm p-8'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}>
@@ -530,7 +530,7 @@ export default function Cart() {
             Log in to view your cart and start shopping
           </motion.p>
           <motion.button
-            className='px-8 py-4 bg-accent-blue text-white rounded-lg font-medium text-lg hover:bg-hover-blue transition duration-300 shadow-sm hover:shadow-md'
+            className='px-4 py-2 bg-accent-blue text-white rounded-lg font-medium text-lg hover:bg-hover-blue transition duration-300 shadow-sm hover:shadow-md'
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}>
             Log In

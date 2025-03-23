@@ -48,10 +48,6 @@ export const userRoutes = [
             element: <ProtectCheckout />,
           },
           {
-            path: 'cart',
-            element: <CartPage />,
-          },
-          {
             path: '/order-confirmation',
             element: <OrderConfirmationWrapper />,
           },
@@ -60,6 +56,10 @@ export const userRoutes = [
       {
         path: 'games',
         element: <GameBrowse />,
+      },
+      {
+        path: 'cart',
+        element: <CartPage />,
       },
       {
         path: 'test',

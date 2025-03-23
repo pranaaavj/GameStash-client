@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react';
 import { GameListing } from './Game/GameListing';
 import { useGetProductsQuery } from '@/redux/api/user/productApi';
 import { GameErrorFallback, GameLoading } from '@/components/error';
-
-import { GameCarousal, ReferralModal } from '@/components/user';
+import {
+  GameCarousal,
+  RecommendedGames,
+  ReferralModal,
+} from '@/components/user';
 import { useUsers } from '@/hooks';
 import { useApplyReferralMutation } from '@/redux/api/user/referralApi';
+import { useGetRecommendedGamesQuery } from '@/redux/api/user/recommendationApi';
 
 const FEATURED_GAMES = [
   {
@@ -92,7 +96,6 @@ export const Home = () => {
   useEffect(() => {
     const hasSeenReferralModal = localStorage.getItem('hasSeenReferralModal');
 
-    console.log(userInfo, hasSeenReferralModal);
     if (!hasSeenReferralModal && !userInfo?.referredBy) {
       setIsReferralModalOpen(true);
     }
@@ -122,6 +125,12 @@ export const Home = () => {
     refetch,
   } = useGetProductsQuery({ page: pageState.latestGames, limit: 5 });
 
+  const { data: responseRecommended, isSuccess: isRecommendedSuccess } =
+    useGetRecommendedGamesQuery({
+      limit: 5,
+    });
+
+  console.log(responseRecommended?.data);
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
       <main className='container mx-auto pt-10'>
@@ -145,7 +154,7 @@ export const Home = () => {
             responseLatest?.data?.products && (
               <GameListing
                 title='Latest games'
-                games={responseLatest?.data.products}
+                games={responseLatest?.data?.products}
                 currentPage={responseLatest?.data.currentPage}
                 totalPage={responseLatest?.data.totalPages}
                 onPageChange={(page) =>
@@ -155,52 +164,16 @@ export const Home = () => {
             )
           )}
         </div>
+
         <div className='my-10'>
-          {isError ? (
-            <GameErrorFallback
-              message={error?.data?.message}
-              onRetry={refetch}
+          {isRecommendedSuccess && (
+            <RecommendedGames
+              title='Recommended'
+              games={responseRecommended?.data}
             />
-          ) : isLoading ? (
-            <GameLoading count={5} />
-          ) : (
-            isSuccess &&
-            responseLatest?.data?.products && (
-              <GameListing
-                title='Trending Games'
-                games={responseLatest?.data.products}
-                currentPage={responseLatest?.data.currentPage}
-                totalPage={responseLatest?.data.totalPages}
-                onPageChange={(page) =>
-                  setPageState((prev) => ({ ...prev, latestGames: page }))
-                }
-              />
-            )
           )}
         </div>
-        <div className='my-10'>
-          {isError ? (
-            <GameErrorFallback
-              message={error?.data?.message}
-              onRetry={refetch}
-            />
-          ) : isLoading ? (
-            <GameLoading count={5} />
-          ) : (
-            isSuccess &&
-            responseLatest?.data?.products && (
-              <GameListing
-                title='Discounted Games'
-                games={responseLatest?.data.products}
-                currentPage={responseLatest?.data.currentPage}
-                totalPage={responseLatest?.data.totalPages}
-                onPageChange={(page) =>
-                  setPageState((prev) => ({ ...prev, latestGames: page }))
-                }
-              />
-            )
-          )}
-        </div>
+
         <ReferralModal
           isOpen={isReferralModalOpen}
           onClose={handleCloseReferralModal}
