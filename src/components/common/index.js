@@ -11,4 +11,4 @@ export { ConfirmationModal } from './ConfirmationModal';
 export { ScrollToTop } from './ScrollToTop';
 export { StatusBadge } from './StatusBadge';
 export { DatePicker } from './DatePicker';
-export { EmptyState } from './emptyState';
+export { EmptyState } from './EmptyState';
