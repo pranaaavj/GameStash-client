@@ -285,7 +285,8 @@ export function GameDetails() {
                               alt={`boAt Rockerz 425 - Image ${
                                 currentImage + 1
                               }`}
-                              className='w-full h-full object-contain '
+                              // Changed object-contain to object cover
+                              className='w-full h-full object-cover'
                               style={{
                                 transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
                                 transform: isZoomed ? 'scale(2)' : 'scale(1)',

@@ -21,8 +21,6 @@ export const RecommendedGameCard = ({ game }) => {
     }
   };
 
-  console.log(game.images[0]);
-
   return (
     <Link to={`/games/${game._id}`}>
       <div className='bg-transparent rounded-lg overflow-hidden h-[23rem] w-56 transition-transform duration-300 flex flex-col justify-between cursor-pointer relative'>

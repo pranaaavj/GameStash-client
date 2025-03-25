@@ -68,7 +68,7 @@ const FEATURED_GAMES = [
       'A 5v5 tactical shooter by Riot Games. Choose your agent, strategize, and outplay opponents.',
     price: 0,
     image:
-      'https://cdn.cloudflare.steamstatic.com/steam/apps/1085660/header.jpg', // Not on Steam, but placeholder image
+      'https://cdn.cloudflare.steamstatic.com/steam/apps/1085660/header.jpg',
     thumbnail:
       'https://cdn.cloudflare.steamstatic.com/steam/apps/1085660/header.jpg',
   },
@@ -101,10 +101,26 @@ export const Home = () => {
     }
   }, [userInfo]);
 
+  const {
+    data: responseLatest,
+    error,
+    isError,
+    isLoading,
+    isSuccess,
+    refetch,
+  } = useGetProductsQuery({ page: pageState.latestGames, limit: 5 });
+
+  const { data: responseRecommended, isSuccess: isRecommendedSuccess } =
+    useGetRecommendedGamesQuery({ limit: 5 });
+
   const handleCloseReferralModal = () => {
     setIsReferralModalOpen(false);
     localStorage.setItem('hasSeenReferralModal', 'true');
   };
+
+  useEffect(() => {
+    console.log('🔥 Home component re-rendered');
+  }, []);
 
   const handleApplyReferral = async (code) => {
     try {
@@ -116,70 +132,53 @@ export const Home = () => {
     }
   };
 
-  const {
-    data: responseLatest,
-    error,
-    isError,
-    isLoading,
-    isSuccess,
-    refetch,
-  } = useGetProductsQuery({ page: pageState.latestGames, limit: 5 });
-
-  const { data: responseRecommended, isSuccess: isRecommendedSuccess } =
-    useGetRecommendedGamesQuery({
-      limit: 5,
-    });
-
-  console.log(responseRecommended?.data);
   return (
     <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
-      <main className='container mx-auto pt-10'>
-        {/* Home page carousel */}
-        <GameCarousal
-          games={FEATURED_GAMES}
-          autoSwitchInterval={4000}
-        />
+      {/* Home page carousel */}
+      <GameCarousal
+        games={FEATURED_GAMES}
+        autoSwitchInterval={4000}
+      />
 
-        {/* Listing games */}
-        <div className='my-10'>
-          {isError ? (
-            <GameErrorFallback
-              message={error?.data?.message}
-              onRetry={refetch}
+      {/* Listing games */}
+      <div className='my-10'>
+        {isError ? (
+          <GameErrorFallback
+            message={error?.data?.message}
+            onRetry={refetch}
+          />
+        ) : isLoading ? (
+          <GameLoading count={5} />
+        ) : (
+          isSuccess &&
+          responseLatest?.data?.products && (
+            <GameListing
+              title='Latest games'
+              games={responseLatest?.data?.products}
+              currentPage={pageState.latestGames}
+              totalPage={responseLatest?.data?.totalPages}
+              onPageChange={(page) =>
+                setPageState((prev) => ({ ...prev, latestGames: page }))
+              }
             />
-          ) : isLoading ? (
-            <GameLoading count={5} />
-          ) : (
-            isSuccess &&
-            responseLatest?.data?.products && (
-              <GameListing
-                title='Latest games'
-                games={responseLatest?.data?.products}
-                currentPage={responseLatest?.data.currentPage}
-                totalPage={responseLatest?.data.totalPages}
-                onPageChange={(page) =>
-                  setPageState((prev) => ({ ...prev, latestGames: page }))
-                }
-              />
-            )
-          )}
-        </div>
+          )
+        )}
+      </div>
 
-        <div className='my-10'>
-          {isRecommendedSuccess && (
-            <RecommendedGames
-              title='Recommended'
-              games={responseRecommended?.data}
-            />
-          )}
-        </div>
+      <div className='my-10'>
+        {isRecommendedSuccess && (
+          <RecommendedGames
+            title='Recommended'
+            games={responseRecommended?.data}
+          />
+        )}
+      </div>
 
-        <ReferralModal
-          isOpen={isReferralModalOpen}
-          onClose={handleCloseReferralModal}
-          onApply={handleApplyReferral}
-        />
-      </main>
+      <ReferralModal
+        isOpen={isReferralModalOpen}
+        onClose={handleCloseReferralModal}
+        onApply={handleApplyReferral}
+      />
     </div>
   );
 };

@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
 
 export const GameCarousal = ({
   games,
@@ -13,10 +13,8 @@ export const GameCarousal = ({
   const [isPaused, setIsPaused] = useState(false);
   const intervalRef = useRef(null);
 
-  // Function to start rotation
   const startRotation = () => {
     clearInterval(intervalRef.current);
-
     intervalRef.current = setInterval(() => {
       if (!isPaused) {
         setActiveIndex((prev) => (prev + 1) % games.length);
@@ -24,13 +22,12 @@ export const GameCarousal = ({
     }, autoSwitchInterval);
   };
 
-  // Initialize rotation
   useEffect(() => {
     startRotation();
     return () => clearInterval(intervalRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPaused, autoSwitchInterval, games.length]);
 
-  // Handle manual game selection
   const handleGameSelect = (index) => {
     setActiveIndex(index);
     onGameSelect(games[index]);
@@ -38,7 +35,6 @@ export const GameCarousal = ({
     startRotation();
   };
 
-  // Pause on hover
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);
 
@@ -46,7 +42,7 @@ export const GameCarousal = ({
 
   return (
     <div
-      className='w-full bg-[#121212] text-white overflow-hidden rounded-xl px-6 py-3'
+      className='w-full bg-[#121212] text-white overflow-hidden rounded-xl px-4 sm:px-6 md:px-10 py-3'
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       <div className='flex flex-col lg:flex-row'>
@@ -67,33 +63,34 @@ export const GameCarousal = ({
                   className='w-full h-full object-cover overflow-hidden rounded-xl'
                 />
 
-                {/* Game Info */}
-                <div className='absolute bottom-0 left-0 p-6 md:p-10 w-full md:w-2/3'>
-                  <div className='space-y-4'>
-                    <h1 className='text-4xl md:text-6xl font-bold tracking-tight drop-shadow-lg'>
-                      {activeGame.title}
-                    </h1>
-                    <div className='text-sm font-semibold tracking-wider text-white/90'>
-                      {activeGame.tagline}
-                    </div>
-                    <p className='text-base md:text-lg text-gray-200'>
-                      {activeGame.description}
-                    </p>
-                    <div className='text-2xl font-bold'>
-                      {activeGame.price > 0
-                        ? `₹${activeGame.price.toLocaleString('en-IN')}`
-                        : 'Free'}
-                    </div>
-                    <div className='flex flex-col sm:flex-row gap-3 pt-2'>
-                      <Link to={`/game/${activeGame.id}`}>
-                        <button className='bg-white hover:bg-gray-200 text-black py-3 px-8 rounded-md font-medium flex items-center justify-center transition-colors'>
-                          Buy Now
+                <div className='absolute bottom-0 left-0 w-full h-full rounded-b-xl bg-gradient-to-t from-black/80 via-black/40 to-transparent overflow-hidden'>
+                  <div className='w-full h-full flex items-end px-3 sm:px-6 md:px-10 pb-3 sm:pb-6 md:pb-10 pt-4 sm:pt-6 md:pt-10'>
+                    <div className='space-y-2 sm:space-y-3 md:space-y-4'>
+                      <h1 className='text-base sm:text-xl md:text-3xl lg:text-5xl font-bold tracking-tight drop-shadow-lg'>
+                        {activeGame.title}
+                      </h1>
+                      <div className='text-[10px] sm:text-xs md:text-sm font-semibold tracking-wider text-white/90'>
+                        {activeGame.tagline}
+                      </div>
+                      <p className='hidden sm:block text-xs sm:text-sm md:text-base text-gray-200'>
+                        {activeGame.description}
+                      </p>
+                      <div className='text-sm sm:text-base md:text-lg font-bold'>
+                        {activeGame.price > 0
+                          ? `₹${activeGame.price.toLocaleString('en-IN')}`
+                          : 'Free'}
+                      </div>
+                      <div className='flex flex-col sm:flex-row gap-3 pt-2'>
+                        <Link to={`/game/${activeGame.id}`}>
+                          <button className='bg-white hover:bg-gray-200 text-black text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6 rounded-md font-medium flex items-center justify-center transition-colors'>
+                            Buy Now
+                          </button>
+                        </Link>
+                        <button className='border border-white/30 hover:border-white text-white text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6 rounded-md font-medium flex items-center justify-center transition-colors'>
+                          <Plus className='mr-2 h-4 w-4' />
+                          Add to Wishlist
                         </button>
-                      </Link>
-                      <button className='border border-white/30 hover:border-white text-white py-3 px-6 rounded-md font-medium flex items-center justify-center transition-colors'>
-                        <Plus className='mr-2 h-5 w-5' />
-                        Add to Wishlist
-                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -102,28 +99,18 @@ export const GameCarousal = ({
           </AnimatePresence>
         </div>
 
-        {/* Game Selection Sidebar with Animated Fill Effect */}
-        <div className='w-full lg:w-[22%] bg-transparent pl-5'>
-          <div className='h-full py-2 flex flex-col justify-evenly'>
+        <div className='hidden lg:flex  w-full lg:w-[22%] bg-transparent pl-5 flex-col gap-2 overflow-hidden max-h-[100%] md:max-h-[400px] xl:max-h-full'>
+          <div className='h-full py-2 flex flex-col justify-between overflow-hidden'>
             {games.map((game, index) => (
               <motion.div
                 key={game.id}
                 className='relative cursor-pointer transition-all duration-300 rounded-xl overflow-hidden'
                 onClick={() => handleGameSelect(index)}
                 initial={{ background: 'rgba(42, 42, 42, 0)' }}
-                // animate={{
-                //   background:
-                //     activeIndex === index
-                //       ? 'rgba(42, 42, 42, 0)'
-                //       : 'rgba(42, 42, 42, 0)',
-                // }}
                 transition={{ duration: 0.3 }}>
-                {/* Animated Background Fill for Active Game */}
                 {activeIndex === index && (
                   <motion.div
-                    className={`absolute inset-0 bg-[#2a2a2a] ${
-                      activeIndex == index ? 'bg-[#2a2a2a]' : ''
-                    }`}
+                    className='absolute inset-0 bg-[#2a2a2a]'
                     initial={{ width: '0%' }}
                     animate={{ width: '100%' }}
                     transition={{
@@ -132,18 +119,17 @@ export const GameCarousal = ({
                     }}
                   />
                 )}
-
-                <div className='relative flex items-center p-4 z-10'>
+                <div className='relative flex items-center px-2 py-1 sm:px-2 sm:py-1 md:px-2.5 md:py-1.5 xl:px-4 xl:py-4 z-10'>
                   <div className='flex-shrink-0'>
                     <img
                       src={game.thumbnail || '/placeholder.svg'}
                       alt={game.title}
-                      className='w-12 h-12 object-cover rounded'
+                      className='w-10 h-10 sm:w-12 sm:h-12 object-cover rounded'
                     />
                   </div>
-                  <div className='ml-3'>
+                  <div className='ml-2 sm:ml-3'>
                     <h3
-                      className={`text-base font-normal ${
+                      className={`text-xs sm:text-sm font-normal ${
                         activeIndex === index ? 'text-white' : 'text-gray-300'
                       }`}>
                       {game.title}

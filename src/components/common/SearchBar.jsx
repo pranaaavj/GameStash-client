@@ -33,8 +33,6 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
     }
   }, [transcript]);
 
-  console.log('Transcript:', transcript);
-
   const handleBlur = () => {
     setIsDropdownVisible(false);
     setTimeout(() => {
