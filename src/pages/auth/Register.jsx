@@ -68,7 +68,7 @@ export const Register = () => {
   };
 
   return (
-    <div className='flex h-screen w-full items-center justify-center'>
+    <div className='flex min-h-screen w-full pt-10 justify-center'>
       <div className='flex flex-col space-y-6 w-full max-w-md px-6 sm:px-8 py-4 sm:py-6 text-primary-text'>
         <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
           Complete Registration

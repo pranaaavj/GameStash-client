@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/shadcn/components/ui/card';
 import { ConfirmationModal, InputField } from '@/components/common';
-import { MapPin, Plus, Trash2, Edit2, Save } from 'lucide-react';
+import { MapPin, Plus, Trash2, Edit2, Save, Loader2 } from 'lucide-react';
 import {
   useGetAllAddressesQuery,
   useAddAddressMutation,
@@ -17,6 +17,7 @@ import {
 } from '@/redux/api/user/addressApi';
 import { toast } from 'sonner';
 import { validateAddress } from '@/utils/validation/validateAddress';
+import { AddressLoading } from '@/components/error';
 
 const initialAddressState = {
   addressName: '',
@@ -39,10 +40,11 @@ export function Address({ onAddressSelect }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // API Hooks
-  const { data: responseAddresses } = useGetAllAddressesQuery();
-  const [addAddress] = useAddAddressMutation();
-  const [editAddress] = useEditAddressMutation();
-  const [deleteAddress] = useDeleteAddressMutation();
+  const { data: responseAddresses, isLoading: isAddressLoading } =
+    useGetAllAddressesQuery();
+  const [addAddress, { isLoading: isAdding }] = useAddAddressMutation();
+  const [editAddress, { isLoading: isEditing }] = useEditAddressMutation();
+  const [deleteAddress, { isLoading: isDeleting }] = useDeleteAddressMutation();
 
   // Load addresses when response data changes
   useEffect(() => {
@@ -137,8 +139,12 @@ export function Address({ onAddressSelect }) {
     setIsAddingNew(false);
   };
 
+  if (isAddressLoading) {
+    return <AddressLoading />;
+  }
+
   return (
-    <Card className='bg-secondary-bg border-none shadow-lg text-primary-text overflow-hidden'>
+    <Card className='bg-secondary-bg border-none text-primary-text overflow-hidden'>
       <CardHeader className='bg-secondary-bg'>
         <CardTitle className='text-3xl font-bold flex items-center'>
           <MapPin className='w-8 h-8 mr-2 text-primary-text' />
@@ -239,8 +245,14 @@ export function Address({ onAddressSelect }) {
                     <Button
                       type='submit'
                       size='sm'
+                      disabled={isEditing}
                       className='bg-accent-blue hover:bg-hover-blue text-white'>
-                      <Save className='w-4 h-4 mr-2' /> Save
+                      {isEditing ? (
+                        <Loader2 className='w-4 h-4 animate-spin mr-2' />
+                      ) : (
+                        <Save className='w-4 h-4 mr-2' />
+                      )}{' '}
+                      Save
                     </Button>
                   </div>
                 </form>
@@ -280,8 +292,11 @@ export function Address({ onAddressSelect }) {
                         variant='ghost'
                         onClick={() => setIsModalOpen(true)}
                         className='text-red-500 hover:bg-red-500/20'>
-                        <Trash2 className='w-4 h-4' />
-                        <span className='sr-only'>Delete</span>
+                        {isDeleting ? (
+                          <Loader2 className='h-4 w-4 animate-spin' />
+                        ) : (
+                          <Trash2 className='w-4 h-4' />
+                        )}
                       </Button>
                       <ConfirmationModal
                         isOpen={isModalOpen}
@@ -423,8 +438,14 @@ export function Address({ onAddressSelect }) {
               <Button
                 type='submit'
                 size='sm'
+                disabled={isAdding}
                 className='bg-accent-blue hover:bg-hover-blue text-white'>
-                <Save className='w-4 h-4 mr-2' /> Save Address
+                {isAdding ? (
+                  <Loader2 className='w-4 h-4 animate-spin mr-2' />
+                ) : (
+                  <Save className='w-4 h-4 mr-2' />
+                )}{' '}
+                Save Address
               </Button>
             </div>
           </form>

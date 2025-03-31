@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GameListing } from './Game/GameListing';
 import { useGetProductsQuery } from '@/redux/api/user/productApi';
-import { GameErrorFallback, GameLoading } from '@/components/error';
 import {
   GameCarousal,
   RecommendedGames,
@@ -88,7 +87,6 @@ const FEATURED_GAMES = [
 
 export const Home = () => {
   const { userInfo } = useUsers();
-  const [pageState, setPageState] = useState({ latestGames: 1 });
   const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
 
   const [applyReferral] = useApplyReferralMutation();
@@ -101,14 +99,32 @@ export const Home = () => {
     }
   }, [userInfo]);
 
-  const {
-    data: responseLatest,
-    error,
-    isError,
-    isLoading,
-    isSuccess,
-    refetch,
-  } = useGetProductsQuery({ page: pageState.latestGames, limit: 5 });
+  const [pageState, setPageState] = useState({
+    latestGames: 1,
+    topRatedGames: 1,
+    discountedGames: 1,
+  });
+
+  const latestGamesQuery = useGetProductsQuery({
+    page: pageState.latestGames,
+    limit: 4,
+    type: 'latest',
+  });
+
+  const topRatedGamesQuery = useGetProductsQuery({
+    page: pageState.topRatedGames,
+    limit: 4,
+    type: 'toprated',
+  });
+
+  const discountedGamesQuery = useGetProductsQuery({
+    page: pageState.discountedGames,
+    limit: 4,
+    type: 'discounted',
+  });
+
+  console.log(topRatedGamesQuery);
+  console.log(discountedGamesQuery);
 
   const { data: responseRecommended, isSuccess: isRecommendedSuccess } =
     useGetRecommendedGamesQuery({ limit: 5 });
@@ -117,10 +133,6 @@ export const Home = () => {
     setIsReferralModalOpen(false);
     localStorage.setItem('hasSeenReferralModal', 'true');
   };
-
-  useEffect(() => {
-    console.log('🔥 Home component re-rendered');
-  }, []);
 
   const handleApplyReferral = async (code) => {
     try {
@@ -142,27 +154,53 @@ export const Home = () => {
 
       {/* Listing games */}
       <div className='my-10'>
-        {isError ? (
-          <GameErrorFallback
-            message={error?.data?.message}
-            onRetry={refetch}
+        <div className='my-10'>
+          <GameListing
+            title='Latest Games'
+            games={latestGamesQuery.data?.data?.products}
+            currentPage={pageState.latestGames}
+            totalPage={latestGamesQuery.data?.data?.totalPages}
+            onPageChange={(page) =>
+              setPageState((prev) => ({ ...prev, latestGames: page }))
+            }
+            isLoading={latestGamesQuery.isLoading}
+            isFetching={latestGamesQuery.isFetching}
+            isError={latestGamesQuery.isError}
+            onRetry={latestGamesQuery.refetch}
           />
-        ) : isLoading ? (
-          <GameLoading count={5} />
-        ) : (
-          isSuccess &&
-          responseLatest?.data?.products && (
-            <GameListing
-              title='Latest games'
-              games={responseLatest?.data?.products}
-              currentPage={pageState.latestGames}
-              totalPage={responseLatest?.data?.totalPages}
-              onPageChange={(page) =>
-                setPageState((prev) => ({ ...prev, latestGames: page }))
-              }
-            />
-          )
-        )}
+        </div>
+
+        <div className='my-10'>
+          <GameListing
+            title='Top Rated Games'
+            games={topRatedGamesQuery.data?.data?.products}
+            currentPage={pageState.topRatedGames}
+            totalPage={topRatedGamesQuery.data?.data?.totalPages}
+            onPageChange={(page) =>
+              setPageState((prev) => ({ ...prev, topRatedGames: page }))
+            }
+            isLoading={topRatedGamesQuery.isLoading}
+            isFetching={topRatedGamesQuery.isFetching}
+            isError={topRatedGamesQuery.isError}
+            onRetry={topRatedGamesQuery.refetch}
+          />
+        </div>
+
+        <div className='my-10'>
+          <GameListing
+            title='Discounted Games'
+            games={discountedGamesQuery.data?.data?.products}
+            currentPage={pageState.discountedGames}
+            totalPage={discountedGamesQuery.data?.data?.totalPages}
+            onPageChange={(page) =>
+              setPageState((prev) => ({ ...prev, discountedGames: page }))
+            }
+            isLoading={discountedGamesQuery.isLoading}
+            isFetching={discountedGamesQuery.isFetching}
+            isError={discountedGamesQuery.isError}
+            onRetry={discountedGamesQuery.refetch}
+          />
+        </div>
       </div>
 
       <div className='my-10'>

@@ -1,13 +1,7 @@
-import {
-  useGetProductQuery,
-  useGetReviewByProductQuery,
-  useGetProductsByGenreQuery,
-} from '@/redux/api/user/productApi';
-import { Button } from '@/shadcn/components/ui/button';
-import { Reviews } from '../../../components/user/Reviews';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { RelatedGamesFallback } from '@/components/error/RelatedFallback';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import {
   ShoppingCart,
   Heart,
@@ -18,28 +12,36 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { GameListing } from '..';
-import { SystemRequirements, StarRating } from '@/components/user';
-import {
-  useAddItemToCartMutation,
-  useGetCartQuery,
-} from '@/redux/api/user/cartApi';
-import { toast } from 'sonner';
-import { useUsers } from '@/hooks';
-import { requireLogin } from '@/utils';
-// import { ImageGallery } from '@/components/common/ImageGallery';
-import { motion } from 'framer-motion';
+
+import { Button } from '@/shadcn/components/ui/button';
+import { Badge } from '@/shadcn/components/ui/badge';
+import { Card, CardContent } from '@/shadcn/components/ui/card';
+import { Pagination } from '@/shadcn/components/ui/pagination';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/shadcn/components/ui/tooltip';
-import { Badge } from '@/shadcn/components/ui/badge';
-import { Pagination } from '@/shadcn/components/ui/pagination';
+
+import { GameListing } from '..';
+import { Reviews } from '../../../components/user/Reviews';
+import { SystemRequirements, StarRating } from '@/components/user';
+import { GameDetailsError, GameDetailsLoading } from '@/components/error';
+
+import {
+  useGetProductQuery,
+  useGetReviewByProductQuery,
+  useGetProductsByGenreQuery,
+} from '@/redux/api/user/productApi';
+import {
+  useAddItemToCartMutation,
+  useGetCartQuery,
+} from '@/redux/api/user/cartApi';
 import { useAddToWishlistMutation } from '@/redux/api/user/wishlistApi';
-import { Card, CardContent } from '@/shadcn/components/ui/card';
-import { AnimatePresence } from 'framer-motion';
+
+import { useUsers } from '@/hooks';
+import { requireLogin } from '@/utils';
 
 export function GameDetails() {
   const user = useUsers();
@@ -47,16 +49,10 @@ export function GameDetails() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { data: cartData } = useGetCartQuery(user?.userInfo?.id, {
-    skip: !user?.userInfo?.id,
-  });
-
-  const [addToWishlist] = useAddToWishlistMutation();
-
+  // State management
   const [currentImage, setCurrentImage] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isZoomed, setIsZoomed] = useState(false);
-
   const [quantity, setQuantity] = useState(1);
   const [isOutOfStock, setIsOutOfStock] = useState(false);
   const [pageState, setPageState] = useState({
@@ -65,52 +61,50 @@ export function GameDetails() {
   });
   const [reviewsPerPage] = useState(5);
 
+  // API queries
   const {
-    data: responseProducts,
-    isError: isProductsError,
-    error: productsError,
+    data: responseProduct,
+    isError: isProductError,
+    error: productError,
     isSuccess: isProductsSuccess,
+    isLoading: isProductLoading,
   } = useGetProductQuery(productId);
 
-  const { data: responseRelated, isSuccess: isRelatedProductSuccess } =
-    useGetProductsByGenreQuery(
-      {
-        page: pageState.relatedGames,
-        limit: 5,
-        genre: responseProducts?.data?.genre?.name,
-      },
-      { skip: !responseProducts?.data?.genre?.name }
-    );
+  const { data: cartData } = useGetCartQuery(user?.userInfo?.id, {
+    skip: !user?.userInfo?.id,
+  });
 
+  const { data: responseReviews } = useGetReviewByProductQuery(productId);
+
+  const relatedQuery = useGetProductsByGenreQuery(
+    {
+      page: pageState.relatedGames,
+      limit: 5,
+      genre: responseProduct?.data?.genre?.name,
+    },
+    { skip: !responseProduct?.data?.genre?.name }
+  );
+
+  // API mutations
+  const [addItemToCart, addItemToCartMeta] = useAddItemToCartMutation();
+  const [addToWishlist, addToWishlistMeta] = useAddToWishlistMutation();
+
+  // Effects
   useEffect(() => {
     setQuantity(1);
   }, [productId]);
 
   useEffect(() => {
-    if (cartData?.data?.items.length > 0) {
+    if (cartData?.data?.items?.length > 0) {
       const item = cartData.data.items.find(
         (item) => item?.product?._id === productId
       );
-      const stockLeft = responseProducts?.data?.stock - (item?.quantity || 0);
+      const stockLeft = responseProduct?.data?.stock - (item?.quantity || 0);
       setIsOutOfStock(stockLeft <= 0);
     }
-  }, [cartData, responseProducts, productId]);
+  }, [cartData, responseProduct, productId]);
 
-  const {
-    data: responseReviews,
-    isProductsError: isReviewError,
-    productsError: reviewError,
-  } = useGetReviewByProductQuery(productId);
-
-  const [addItemToCart, { isError: isAddCartError, error: addCartError }] =
-    useAddItemToCartMutation();
-
-  const filteredRelatedProducts =
-    isRelatedProductSuccess &&
-    responseRelated?.data?.products?.filter(
-      (product) => product._id !== productId
-    );
-
+  // Handlers
   const handleAddToCart = async () => {
     if (!requireLogin(user, navigate, location)) return;
 
@@ -123,7 +117,7 @@ export function GameDetails() {
       return;
     }
 
-    if (responseProducts?.data?.stock <= item?.quantity) {
+    if (responseProduct?.data?.stock <= item?.quantity) {
       setIsOutOfStock(true);
       return;
     }
@@ -133,18 +127,20 @@ export function GameDetails() {
       if (response.success) {
         toast.success('Added to cart successfully!');
 
-        const updatedStock = responseProducts?.data?.stock - quantity;
+        const updatedStock = responseProduct?.data?.stock - quantity;
 
         if (updatedStock <= 0) {
           setIsOutOfStock(true);
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error('Add to cart error:', error);
     }
   };
 
   const handleAddToWishlist = async () => {
+    if (!requireLogin(user, navigate, location)) return;
+
     try {
       const response = await addToWishlist(productId).unwrap();
 
@@ -153,21 +149,22 @@ export function GameDetails() {
       }
     } catch (error) {
       toast.error(
-        error.data.message || 'Failed to add to wishlist, please try again.'
+        error.data?.message || 'Failed to add to wishlist, please try again.'
       );
     }
   };
+
   const nextImage = () => {
-    setCurrentImage(
-      (prev) => (prev + 1) % responseProducts?.data?.images?.length
-    );
+    if (!responseProduct?.data?.images?.length) return;
+    setCurrentImage((prev) => (prev + 1) % responseProduct.data.images.length);
   };
 
   const previousImage = () => {
+    if (!responseProduct?.data?.images?.length) return;
     setCurrentImage(
       (prev) =>
-        (prev - 1 + responseProducts?.data?.images?.length) %
-        responseProducts?.data?.images?.length
+        (prev - 1 + responseProduct.data.images.length) %
+        responseProduct.data.images.length
     );
   };
 
@@ -179,23 +176,24 @@ export function GameDetails() {
   };
 
   const calculateDiscount = () => {
-    if (!responseProducts?.data?.discountedPrice) return null;
+    if (!responseProduct?.data?.discountedPrice) return null;
 
-    const originalPrice = responseProducts?.data?.price;
-    const discountedPrice = responseProducts?.data?.discountedPrice;
+    const originalPrice = responseProduct?.data?.price;
+    const discountedPrice = responseProduct?.data?.discountedPrice;
 
     if (discountedPrice >= originalPrice) return null;
 
     const difference = originalPrice - discountedPrice;
     const percentOff = Math.round((difference / originalPrice) * 100);
 
-    if (responseProducts?.data?.bestOffer?.discountType === 'percentage') {
+    if (responseProduct?.data?.bestOffer?.discountType === 'percentage') {
       return `${percentOff}% OFF`;
     } else {
       return `₹${difference.toFixed(0)} OFF`;
     }
   };
 
+  // Derived state
   const discount = calculateDiscount();
 
   const paginatedReviews = responseReviews?.data
@@ -209,83 +207,79 @@ export function GameDetails() {
     ? Math.ceil(responseReviews.data.length / reviewsPerPage)
     : 0;
 
-  if (isReviewError) {
-    console.log(reviewError);
+  // Loading and error states
+  if (isProductLoading) {
+    return <GameDetailsLoading />;
   }
 
-  if (isProductsError) {
-    console.log(productsError);
-  }
-
-  if (isAddCartError) {
-    console.log(addCartError);
+  if (isProductError) {
+    return <GameDetailsError error={productError} />;
   }
 
   return (
     isProductsSuccess && (
-      <div className='min-h-screen bg-primary-bg text-primary-text font-sans px-4 sm:px-8 lg:px-16 select-none'>
-        <div className='container mx-auto py-8'>
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12'>
-            {/* Left Column - Carousel */}
-            <div className='space-y-6'>
+      <div className='min-h-screen bg-primary-bg text-primary-text font-sans select-none'>
+        <div className='container mx-auto px-4 py-6 sm:py-8'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10'>
+            {/* Left Column */}
+            <div className='space-y-4 sm:space-y-6'>
               <div>
-                <h1 className='text-4xl md:text-5xl lg:text-6xl font-bold mb-3'>
-                  {responseProducts?.data?.name}
+                <h1 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 break-words'>
+                  {responseProduct?.data?.name}
                 </h1>
-                <div className='my-5 flex items-center'>
-                  <StarRating rating={responseProducts?.data?.averageRating} />
-                  <span className='ml-2 text-secondary-text'>
-                    ({responseProducts?.data?.reviewCount} reviews)
+                <div className='my-4 flex flex-wrap items-center gap-2'>
+                  <StarRating rating={responseProduct?.data?.averageRating} />
+                  <span className='text-secondary-text text-sm sm:text-base'>
+                    ({responseProduct?.data?.reviewCount} reviews)
                   </span>
-                  {responseProducts?.data?.averageRating > 0 && (
-                    <span className='ml-3 font-bold text-accent-green'>
-                      {responseProducts?.data?.averageRating.toFixed(1)}
+                  {responseProduct?.data?.averageRating > 0 && (
+                    <span className='font-bold text-accent-green text-sm sm:text-base'>
+                      {responseProduct?.data?.averageRating.toFixed(1)}
                     </span>
                   )}
                 </div>
               </div>
-              <div className='w-full lg:w-[110%] transition-all duration-300 hover:shadow-xl rounded-xl overflow-hidden'>
-                {/* <ImageGallery
-                  images={responseProducts?.data?.images || []}
-                  alt={responseProducts?.data?.name}
-                  className='fade-transition'
-                /> */}
-                <div className='flex gap-4'>
-                  <div className='gap-5 flex flex-col'>
-                    {responseProducts?.data?.images?.map((image, index) => (
+
+              <div className='w-full transition-all duration-300 hover:shadow-xl overflow-hidden'>
+                <div className='flex gap-3 sm:gap-4 flex-col sm:flex-row'>
+                  <div className='flex sm:flex-col gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible scrollbar-hide'>
+                    {responseProduct?.data?.images?.map((image, index) => (
                       <div
                         key={index}
-                        className={` ${
-                          currentImage === index && 'border-2 border-accent-red'
-                        } w-16 h-16 p-1 border-0 rounded-lg shadow-sm hover:shadow-md transition-shadow`}>
+                        className={`${
+                          currentImage === index
+                            ? 'border-2 border-accent-red'
+                            : ''
+                        } w-14 h-14 sm:w-16 sm:h-16 p-1 border-0 rounded-lg shadow-sm hover:shadow-md transition-shadow flex-shrink-0`}>
                         <img
-                          src={image}
-                          alt={image || `Variant ${index + 1}`}
-                          className='w-full h-full object-cover rounded-lg'
+                          src={image || '/placeholder.svg'}
+                          alt={`Thumbnail ${index + 1}`}
+                          className='w-full h-full object-cover rounded-sm'
                           onMouseEnter={() => setCurrentImage(index)}
+                          loading='lazy'
                         />
                       </div>
                     ))}
                   </div>
-                  <Card className='relative overflow-hidden rounded-xl w-full shadow-lg h-[500px] border-0'>
-                    <CardContent className='p-0'>
-                      <div className='relative aspect-square'>
+
+                  {/* Main Image Card */}
+                  <Card className='relative overflow-hidden rounded-xl w-full shadow-lg aspect-square border-0'>
+                    <CardContent className='p-0 w-full h-full'>
+                      <div className='relative w-full h-full'>
                         <AnimatePresence mode='wait'>
                           <motion.div
                             key={currentImage}
-                            className='relative w-full h-full'
+                            className='absolute inset-0'
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.1 }}>
                             <img
                               src={
-                                responseProducts?.data?.images?.[currentImage]
+                                responseProduct?.data?.images?.[currentImage] ||
+                                '/placeholder.svg'
                               }
-                              alt={`boAt Rockerz 425 - Image ${
-                                currentImage + 1
-                              }`}
-                              // Changed object-contain to object cover
+                              alt={`Image ${currentImage + 1}`}
                               className='w-full h-full object-cover'
                               style={{
                                 transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
@@ -295,29 +289,32 @@ export function GameDetails() {
                               onMouseEnter={() => setIsZoomed(true)}
                               onMouseLeave={() => setIsZoomed(false)}
                               onMouseMove={handleMouseMove}
+                              loading='lazy'
                             />
                           </motion.div>
                         </AnimatePresence>
+
+                        {/* Navigation Buttons */}
                         <button
                           onClick={previousImage}
-                          className='absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-accent-red/80 rounded-full p-2 shadow-md transition-transform hover:scale-110'
+                          className='absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-10 bg-accent-red/80 rounded-full p-2 shadow-md transition-transform hover:scale-110'
                           aria-label='Previous image'>
-                          <ChevronLeft className='h-6 w-6 text-gray-800' />
+                          <ChevronLeft className='h-5 w-5 sm:h-6 sm:w-6 text-gray-800' />
                         </button>
                         <button
                           onClick={nextImage}
-                          className='absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-accent-red/80 rounded-full p-2 shadow-md transition-transform hover:scale-110'
+                          className='absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-10 bg-accent-red/80 rounded-full p-2 shadow-md transition-transform hover:scale-110'
                           aria-label='Next image'>
-                          <ChevronRight className='h-6 w-6 text-gray-800' />
+                          <ChevronRight className='h-5 w-5 sm:h-6 sm:w-6 text-gray-800' />
                         </button>
                       </div>
 
-                      <div className='flex justify-center gap-2 mt-4 pb-4'>
-                        {responseProducts?.data?.images?.map((_, index) => (
+                      <div className='flex justify-center gap-2 mt-3 sm:mt-4 pb-4'>
+                        {responseProduct?.data?.images?.map((_, index) => (
                           <button
                             key={index}
                             onClick={() => setCurrentImage(index)}
-                            className={`w-3 h-3 rounded-full transition-all ${
+                            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all ${
                               currentImage === index
                                 ? 'bg-primary scale-125'
                                 : 'bg-gray-300'
@@ -333,48 +330,48 @@ export function GameDetails() {
             </div>
 
             {/* Right Column - Game Info and Action Buttons */}
-            <div className='ml-0 md:ml-5 lg:ml-10 mt-6 lg:mt-16 space-y-6'>
-              <div className='bg-secondary-bg/30 p-5 rounded-xl'>
-                <div className='flex items-baseline gap-3 mb-2'>
-                  {responseProducts?.data?.discountedPrice > 0 ? (
+            <div className='ml-0 md:ml-4 lg:ml-6 mt-6 lg:mt-0 space-y-6'>
+              <div className='bg-secondary-bg/30 px-4 py-5 sm:px-5 sm:py-6 rounded-xl'>
+                <div className='flex flex-wrap items-baseline gap-2 sm:gap-3 mb-2'>
+                  {responseProduct?.data?.discountedPrice > 0 ? (
                     <>
-                      <span className='text-primary-text text-3xl font-bold '>
-                        ₹{responseProducts?.data?.discountedPrice?.toFixed(0)}
+                      <span className='text-primary-text text-2xl sm:text-3xl font-bold'>
+                        ₹{responseProduct?.data?.discountedPrice?.toFixed(0)}
                       </span>
-                      <span className='text-secondary-text text-xl line-through'>
-                        ₹{responseProducts?.data?.price?.toFixed(0)}
+                      <span className='text-secondary-text text-lg sm:text-xl line-through'>
+                        ₹{responseProduct?.data?.price?.toFixed(0)}
                       </span>
                       {discount && (
-                        <Badge className='bg-accent-green hover:bg-hover-green text-black font-medium ml-2'>
+                        <Badge className='bg-accent-green hover:bg-hover-green text-black font-medium'>
                           {discount}
                         </Badge>
                       )}
                     </>
                   ) : (
-                    <span className='text-primary-text text-3xl font-bold'>
-                      ₹{responseProducts?.data?.price.toFixed(0)}
+                    <span className='text-primary-text text-2xl sm:text-3xl font-bold'>
+                      ₹{responseProduct?.data?.price?.toFixed(0)}
                     </span>
                   )}
                 </div>
 
-                {responseProducts?.data?.stock === 0 ? (
+                {responseProduct?.data?.stock === 0 ? (
                   <div className='flex items-center mt-3'>
-                    <AlertCircle className='w-4 h-4 text-accent-red mr-2' />
+                    <AlertCircle className='w-4 h-4 text-accent-red mr-2 flex-shrink-0' />
                     <p className='text-accent-red text-sm font-semibold'>
                       Out of Stock
                     </p>
                   </div>
-                ) : responseProducts?.data?.stock < 10 ? (
+                ) : responseProduct?.data?.stock < 10 ? (
                   <div className='flex items-center mt-3'>
-                    <AlertCircle className='w-4 h-4 text-hover-red mr-2' />
+                    <AlertCircle className='w-4 h-4 text-hover-red mr-2 flex-shrink-0' />
                     <p className='text-hover-red text-sm font-semibold'>
-                      Hurry! Only {responseProducts?.data?.stock} units left in
+                      Hurry! Only {responseProduct?.data?.stock} units left in
                       stock!
                     </p>
                   </div>
                 ) : (
                   <p className='text-secondary-text text-sm mt-3'>
-                    In Stock: {responseProducts?.data?.stock} units available
+                    In Stock: {responseProduct?.data?.stock} units available
                   </p>
                 )}
               </div>
@@ -392,6 +389,7 @@ export function GameDetails() {
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
                           disabled={quantity <= 1}>
                           <Minus className='h-3 w-3 md:h-4 md:w-4' />
+                          <span className='sr-only'>Decrease quantity</span>
                         </Button>
                       </TooltipTrigger>
                       {quantity <= 1 && (
@@ -416,17 +414,16 @@ export function GameDetails() {
                           className='h-8 w-8 rounded-full border border-primary-bg/30 bg-primary-bg/5 hover:bg-accent-blue/20 hover:border-accent-blue/50 transition-colors'
                           onClick={() => setQuantity(quantity + 1)}
                           disabled={
-                            quantity >= responseProducts?.data?.stock ||
+                            quantity >= responseProduct?.data?.stock ||
                             quantity >= 5
                           }>
                           <Plus className='h-3 w-3 md:h-4 md:w-4' />
+                          <span className='sr-only'>Increase quantity</span>
                         </Button>
                       </TooltipTrigger>
-                      {quantity >= responseProducts?.data?.stock ? (
+                      {quantity >= responseProduct?.data?.stock ? (
                         <TooltipContent>
-                          <p>
-                            Only {responseProducts?.data?.stock} units left!
-                          </p>
+                          <p>Only {responseProduct?.data?.stock} units left!</p>
                         </TooltipContent>
                       ) : quantity >= 5 ? (
                         <TooltipContent>
@@ -440,8 +437,8 @@ export function GameDetails() {
 
               {/* Additional space for message to avoid layout shift */}
               <span className='text-red-500 text-sm mt-2 min-h-[1.5rem] block'>
-                {quantity >= responseProducts?.data?.stock
-                  ? `Only ${responseProducts?.data?.stock} items are available in stock.`
+                {quantity >= responseProduct?.data?.stock
+                  ? `Only ${responseProduct?.data?.stock} items are available in stock.`
                   : quantity >= 5
                   ? 'You can only order up to 5 items at a time.'
                   : ''}
@@ -450,12 +447,13 @@ export function GameDetails() {
               <div className='space-y-3'>
                 <Button
                   className={`w-full font-semibold py-5 text-white transition-all duration-200 ${
-                    responseProducts?.data?.stock >= 1 && !isOutOfStock
+                    responseProduct?.data?.stock >= 1 && !isOutOfStock
                       ? 'bg-accent-blue hover:bg-hover-blue'
                       : 'bg-gray-600 cursor-not-allowed'
                   }`}
-                  disabled={isOutOfStock || responseProducts?.data?.stock < 1}>
-                  {responseProducts?.data?.stock >= 1 && !isOutOfStock
+                  disabled={isOutOfStock || responseProduct?.data?.stock < 1}
+                  onClick={() => requireLogin(user, navigate, location)}>
+                  {responseProduct?.data?.stock >= 1 && !isOutOfStock
                     ? 'Buy Now'
                     : 'No Stocks Left'}
                 </Button>
@@ -463,10 +461,16 @@ export function GameDetails() {
                 <Button
                   variant='secondary'
                   className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white py-5'
-                  disabled={isOutOfStock || responseProducts?.data?.stock < 1}
+                  disabled={
+                    isOutOfStock ||
+                    responseProduct?.data?.stock < 1 ||
+                    addItemToCartMeta.isLoading
+                  }
                   onClick={handleAddToCart}>
                   <ShoppingCart className='w-4 h-4 mr-2' />
-                  {responseProducts?.data?.stock >= 1 && !isOutOfStock
+                  {addItemToCartMeta.isLoading
+                    ? 'Adding to Cart...'
+                    : responseProduct?.data?.stock >= 1 && !isOutOfStock
                     ? 'Add To Cart'
                     : 'No Stocks Left'}
                 </Button>
@@ -474,9 +478,12 @@ export function GameDetails() {
                 <Button
                   variant='secondary'
                   className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white py-5 hover:text-accent-blue transition-colors'
-                  onClick={handleAddToWishlist}>
+                  onClick={handleAddToWishlist}
+                  disabled={addToWishlistMeta.isLoading}>
                   <Heart className='w-4 h-4 mr-2' />
-                  Add to Wishlist
+                  {addToWishlistMeta.isLoading
+                    ? 'Saving to Wishlist...'
+                    : 'Add to Wishlist'}
                 </Button>
               </div>
 
@@ -485,34 +492,36 @@ export function GameDetails() {
                   <div className='space-y-3'>
                     <div className='flex flex-col'>
                       <span className='text-secondary-text text-sm'>Brand</span>
-                      <span className='font-medium text-primary-text'>
-                        {responseProducts?.data?.brand.name}
+                      <span className='font-medium text-primary-text truncate'>
+                        {responseProduct?.data?.brand?.name || 'N/A'}
                       </span>
                     </div>
                     <div className='flex flex-col'>
                       <span className='text-secondary-text text-sm'>
                         Platform
                       </span>
-                      <span className='font-medium text-primary-text'>
-                        {responseProducts?.data?.platform}
+                      <span className='font-medium text-primary-text truncate'>
+                        {responseProduct?.data?.platform || 'N/A'}
                       </span>
                     </div>
                   </div>
                   <div className='space-y-3'>
                     <div className='flex flex-col'>
                       <span className='text-secondary-text text-sm'>Genre</span>
-                      <span className='font-medium text-primary-text'>
-                        {responseProducts?.data?.genre.name}
+                      <span className='font-medium text-primary-text truncate'>
+                        {responseProduct?.data?.genre?.name || 'N/A'}
                       </span>
                     </div>
                     <div className='flex flex-col'>
                       <span className='text-secondary-text text-sm'>
                         Release Date
                       </span>
-                      <span className='font-medium text-primary-text'>
-                        {new Date(
-                          responseProducts?.data?.createdAt
-                        ).toLocaleDateString()}
+                      <span className='font-medium text-primary-text truncate'>
+                        {responseProduct?.data?.createdAt
+                          ? new Date(
+                              responseProduct.data.createdAt
+                            ).toLocaleDateString()
+                          : 'N/A'}
                       </span>
                     </div>
                   </div>
@@ -522,42 +531,49 @@ export function GameDetails() {
           </div>
 
           {/* Bottom Section - Game Details, Description, System Requirements, Reviews */}
-          <div className='mt-16 space-y-12'>
-            <div className='bg-secondary-bg/20 p-6 rounded-xl'>
-              <h2 className='text-2xl font-bold mb-4'>Description</h2>
+          <div className='mt-12 sm:mt-16 space-y-8 sm:space-y-12'>
+            <div className='bg-secondary-bg/20 p-4 sm:p-6 rounded-xl'>
+              <h2 className='text-xl sm:text-2xl font-bold mb-4'>
+                Description
+              </h2>
               <p className='text-secondary-text leading-relaxed'>
-                {responseProducts?.data?.description}
+                {responseProduct?.data?.description ||
+                  'No description available'}
               </p>
             </div>
 
-            <div className='bg-secondary-bg/20 p-6 rounded-xl'>
-              <h2 className='text-2xl font-bold mb-4'>System Requirements</h2>
-              {responseProducts?.data?.systemRequirements ? (
+            <div className='bg-secondary-bg/20 p-4 sm:p-6 rounded-xl'>
+              <h2 className='text-xl sm:text-2xl font-bold mb-4'>
+                System Requirements
+              </h2>
+              {responseProduct?.data?.systemRequirements ? (
                 <SystemRequirements
-                  requirements={responseProducts?.data?.systemRequirements}
+                  requirements={responseProduct?.data?.systemRequirements}
                 />
               ) : (
-                'No system requirements'
+                <p className='text-secondary-text'>
+                  No system requirements available
+                </p>
               )}
             </div>
 
-            <div className='bg-secondary-bg/20 p-6 rounded-xl'>
-              <div className='flex justify-between items-center mb-6'>
-                <div className='flex items-center gap-3'>
-                  <h2 className='text-2xl font-bold'>Reviews</h2>
-                  {responseProducts?.data?.averageRating > 0 && (
+            <div className='bg-secondary-bg/20 p-4 sm:p-6 rounded-xl'>
+              <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6'>
+                <div className='flex items-center gap-3 flex-wrap'>
+                  <h2 className='text-xl sm:text-2xl font-bold'>Reviews</h2>
+                  {responseProduct?.data?.averageRating > 0 && (
                     <div className='flex items-center bg-secondary-bg/50 px-3 py-1 rounded-lg'>
                       <StarRating
-                        rating={responseProducts?.data?.averageRating}
+                        rating={responseProduct?.data?.averageRating}
                       />
                       <span className='ml-2 font-bold text-accent-green'>
-                        {responseProducts?.data?.averageRating.toFixed(1)}
+                        {responseProduct?.data?.averageRating.toFixed(1)}
                       </span>
                     </div>
                   )}
                 </div>
                 <Button
-                  className='bg-accent-blue hover:bg-hover-blue text-white'
+                  className='bg-accent-blue hover:bg-hover-blue text-white w-full sm:w-auto'
                   onClick={() =>
                     toast.info('Write a review feature coming soon!')
                   }>
@@ -571,7 +587,7 @@ export function GameDetails() {
                   <Reviews reviews={paginatedReviews} />
 
                   {totalReviewPages > 1 && (
-                    <div className='flex justify-center mt-8'>
+                    <div className='flex justify-center mt-8 overflow-x-auto'>
                       <Pagination>
                         <Button
                           variant='outline'
@@ -585,7 +601,7 @@ export function GameDetails() {
                           }>
                           Previous
                         </Button>
-                        <span className='flex items-center px-4'>
+                        <span className='flex items-center px-4 whitespace-nowrap'>
                           Page {pageState.reviews} of {totalReviewPages}
                         </span>
                         <Button
@@ -612,20 +628,23 @@ export function GameDetails() {
             </div>
           </div>
 
-          <div className='mt-16 space-y-8'>
-            {filteredRelatedProducts?.length ? (
-              <GameListing
-                title='Related Games'
-                games={filteredRelatedProducts}
-                currentPage={responseRelated?.data.currentPage}
-                totalPage={responseRelated?.data.totalPages}
-                onPageChange={(page) =>
-                  setPageState((prev) => ({ ...prev, relatedGames: page }))
-                }
-              />
-            ) : (
-              <RelatedGamesFallback />
-            )}
+          <div className='mt-12 sm:mt-16 space-y-8'>
+            <GameListing
+              key={productId}
+              title='Related Games'
+              games={relatedQuery?.data?.data?.products}
+              currentPage={relatedQuery?.data?.data?.currentPage}
+              totalPage={relatedQuery?.data?.data?.totalPages}
+              onPageChange={(page) =>
+                setPageState((prev) => ({
+                  ...prev,
+                  relatedGames: page,
+                }))
+              }
+              isLoading={relatedQuery.isLoading}
+              isError={relatedQuery.isError}
+              onRetry={relatedQuery.refetch}
+            />
           </div>
         </div>
       </div>

@@ -1,17 +1,17 @@
 import {
   Dialog,
+  DialogTitle,
   DialogClose,
-  DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
+  DialogContent,
+  DialogDescription,
 } from '@/shadcn/components/ui/dialog';
 import {
-  useGoogleSignInMutation,
   useLoginUserMutation,
   useSendOtpUserMutation,
+  useGoogleSignInMutation,
 } from '@/redux/api/user/authApi';
 import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
@@ -21,13 +21,13 @@ import { setUser } from '@/redux/slices/userSlice';
 import { setToken } from '@/redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
 import { validateLogin } from '@/utils';
-import { signInWithPopup, auth, provider } from '../../utils/firebase';
 import { Alert, InputField } from '../../components/common';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
 import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
 import { InputGroup, InputRightElement } from '@chakra-ui/react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { signInWithPopup, auth, provider } from '../../utils/firebase';
 
 const initLoginInput = { email: '', password: '' };
 
@@ -84,6 +84,7 @@ export const Login = () => {
         dispatch(setUser({ user: response?.data?.user }));
         dispatch(setToken({ token: response?.data?.accessToken }));
 
+        console.log(location.state);
         const redirect = location.state?.from || '/';
         navigate(redirect);
       }

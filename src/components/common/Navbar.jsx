@@ -17,11 +17,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { SearchBar } from './SearchBar';
 import { logout } from '@/redux/slices/userSlice';
 import { Button } from '@/shadcn/components/ui/button';
+import { persistor } from '@/redux/store';
 import { useUsers } from '@/hooks';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLogoutUserMutation } from '@/redux/api/user/authApi';
 import { Menu, Search, ShoppingCart, User, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const Navbar = ({ onCartClick }) => {
   const navigate = useNavigate();
@@ -35,6 +37,8 @@ export const Navbar = ({ onCartClick }) => {
   const handleLogout = async () => {
     await logoutUser();
     dispatch(logout());
+    persistor.purge();
+    toast.success('You have been successfully logged out');
   };
 
   return (

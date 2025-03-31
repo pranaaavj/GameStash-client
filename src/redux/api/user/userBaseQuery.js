@@ -19,7 +19,7 @@ let isLoggingOut = false;
 
 export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
   let response = await userBaseQuery(args, api, extraOptions);
-  // console.log('Fetching products: ', args);
+  console.log('Response', response);
 
   if (response?.error?.status === 403 || response?.error?.status === 401) {
     const refreshResponse = await userBaseQuery(
@@ -28,7 +28,7 @@ export const userBaseQueryWithReAuth = async (args, api, extraOptions) => {
       extraOptions
     );
 
-    // console.log('Refresh response: ', refreshResponse);
+    console.log('Refresh response: ', refreshResponse);
 
     if (refreshResponse?.data?.success) {
       api.dispatch(

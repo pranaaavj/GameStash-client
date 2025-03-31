@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/shadcn/components/ui/button';
@@ -22,6 +23,7 @@ import {
   useVerifyRazorpayMutation,
   useMarkPaymentAsFailedMutation,
 } from '@/redux/api/user/ordersApi';
+import { Loading } from '@/components/error';
 
 export function CheckoutPage() {
   const user = useUsers();
@@ -30,7 +32,10 @@ export function CheckoutPage() {
   const { data: responseCart } = useGetCartQuery(user?.userInfo?.id, {
     skip: !user?.userInfo?.id,
   });
-  const [placeOrder, { isError: isPlaceOrderError }] = usePlaceOrderMutation();
+  const [
+    placeOrder,
+    { isError: isPlaceOrderError, isLoading: isPlaceOrderLoading },
+  ] = usePlaceOrderMutation();
   const [verifyRazorpay] = useVerifyRazorpayMutation();
   const [markPaymentAsFailed] = useMarkPaymentAsFailedMutation();
 
@@ -46,6 +51,7 @@ export function CheckoutPage() {
           `Your cart is empty, Please add something and proceed to checkout.`
         );
       }
+      setDiscount(responseCart?.data?.discount);
     }
   }, [responseCart, navigate]);
 
@@ -96,7 +102,7 @@ export function CheckoutPage() {
     }
 
     setSelectedCoupon(coupon);
-    setDiscount(discountAmount);
+    setDiscount((prevDiscount) => prevDiscount + discountAmount);
     setCompletedSections((prev) => ({ ...prev, coupons: true }));
     setActiveSection('review');
   };
@@ -152,6 +158,8 @@ export function CheckoutPage() {
 
     try {
       const response = await placeOrder(orderData).unwrap();
+
+      console.log(response);
 
       if (selectedPayment === 'Razorpay') {
         const options = {
@@ -322,10 +330,13 @@ export function CheckoutPage() {
   );
 
   const shipping = 0.0;
-  const total = subtotal + shipping - discount;
 
   if (isPlaceOrderError) {
     console.log('Error occurred while placing order');
+  }
+
+  if (isPlaceOrderLoading) {
+    return <Loading />;
   }
 
   return (
@@ -455,22 +466,28 @@ export function CheckoutPage() {
                   <div className='space-y-3 pt-4 border-t border-primary-bg/20'>
                     <div className='flex justify-between text-sm'>
                       <span className='text-secondary-text'>Subtotal</span>
-                      <span> ₹ {subtotal.toFixed(2)}</span>
+                      <span>₹{subtotal.toFixed(2)}</span>
                     </div>
+
                     <div className='flex justify-between text-sm'>
                       <span className='text-secondary-text'>Shipping</span>
-                      <span>₹{shipping.toFixed(2)}</span>
+                      <span>₹{shipping}</span>
                     </div>
-                    {selectedCoupon && (
+
+                    {discount > 0 && (
                       <div className='flex justify-between text-sm text-accent-red'>
-                        <span>Discount ({selectedCoupon.code})</span>
+                        <span>
+                          Discount
+                          {selectedCoupon?.code && ` (${selectedCoupon.code})`}
+                        </span>
                         <span>-₹{discount.toFixed(2)}</span>
                       </div>
                     )}
+
                     <div className='flex justify-between items-center pt-3 border-t border-primary-bg/20'>
                       <span className='text-lg font-bold'>Total</span>
                       <span className='text-xl font-bold'>
-                        ₹{total.toFixed(2)}
+                        ₹{(subtotal + shipping - discount).toFixed(2)}
                       </span>
                     </div>
                   </div>

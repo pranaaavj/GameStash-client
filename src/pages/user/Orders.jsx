@@ -1,36 +1,36 @@
-import { useNavigate } from 'react-router-dom';
+import {
+  Card,
+  CardTitle,
+  CardHeader,
+  CardContent,
+} from '@/shadcn/components/ui/card';
+import {
+  Clock,
+  Package,
+  Calendar,
+  CreditCard,
+  ShoppingBag,
+  ChevronRight,
+} from 'lucide-react';
 import {
   useGetOrdersQuery,
   useCancelOrderMutation,
 } from '@/redux/api/user/ordersApi';
-import { StatusBadge } from '@/components/common';
-import { useState } from 'react';
-import { ConfirmationModal } from '@/components/common';
 import { toast } from 'sonner';
-import {
-  Package,
-  Calendar,
-  CreditCard,
-  Clock,
-  ChevronRight,
-  ShoppingBag,
-  AlertCircle,
-} from 'lucide-react';
-import { Button } from '@/shadcn/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/shadcn/components/ui/card';
 import { Badge } from '@/shadcn/components/ui/badge';
+import { Button } from '@/shadcn/components/ui/button';
+import { useState } from 'react';
 import { Separator } from '@/shadcn/components/ui/separator';
-import { Skeleton } from '@/shadcn/components/ui/skeleton';
+import { StatusBadge } from '@/components/common';
+import { useNavigate } from 'react-router-dom';
+import { ConfirmationModal } from '@/components/common';
+import { OrdersListError, OrdersListLoading } from '@/components/error';
 
 export const Orders = () => {
+  const navigate = useNavigate();
+
   const { data: responseOrders, isLoading, isError } = useGetOrdersQuery({});
   const [cancelOrder, { isLoading: isCancelling }] = useCancelOrderMutation();
-  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
@@ -44,9 +44,7 @@ export const Orders = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success(response?.message, {
-          duration: 1500,
-        });
+        toast.success(response?.message, { duration: 1500 });
       }
     } catch (error) {
       toast.error('Failed to cancel order');
@@ -62,52 +60,11 @@ export const Orders = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className='p-6 md:p-8 text-primary-text'>
-        <h1 className='text-3xl font-bold mb-8'>Your Orders</h1>
-        <div className='space-y-6'>
-          {[1, 2].map((i) => (
-            <Card
-              key={i}
-              className='bg-[#1E1E2A] shadow-md'>
-              <CardHeader className='pb-2'>
-                <div className='flex justify-between'>
-                  <Skeleton className='h-6 w-32 bg-[#2A2A3A]' />
-                  <Skeleton className='h-6 w-24 bg-[#2A2A3A]' />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className='space-y-4'>
-                  <div className='flex justify-between'>
-                    <div className='flex gap-4'>
-                      <Skeleton className='h-16 w-16 rounded bg-[#2A2A3A]' />
-                      <div className='space-y-2'>
-                        <Skeleton className='h-4 w-40 bg-[#2A2A3A]' />
-                        <Skeleton className='h-4 w-20 bg-[#2A2A3A]' />
-                      </div>
-                    </div>
-                    <Skeleton className='h-6 w-16 bg-[#2A2A3A]' />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
+    return <OrdersListLoading />;
   }
 
   if (isError) {
-    return (
-      <div className='p-6 md:p-8 text-primary-text'>
-        <div className='bg-[#3A1C1C] rounded-lg p-5 flex items-center gap-3'>
-          <AlertCircle className='h-5 w-5 text-red-500' />
-          <p className='text-red-500'>
-            Error loading orders. Please try again later.
-          </p>
-        </div>
-      </div>
-    );
+    return <OrdersListError />;
   }
 
   const hasOrders = responseOrders?.data?.orders?.length > 0;
@@ -117,15 +74,15 @@ export const Orders = () => {
       <h1 className='text-3xl font-bold mb-8'>Your Orders</h1>
 
       {!hasOrders ? (
-        <div className='bg-[#1E1E2A] p-10 rounded-xl text-center shadow-md'>
-          <ShoppingBag className='h-14 w-14 mx-auto mb-5 text-[#6C7293]' />
+        <div className='bg-secondary-bg/50 p-10 rounded-xl text-center shadow-md'>
+          <ShoppingBag className='h-14 w-14 mx-auto mb-5 text-primary-text' />
           <h2 className='text-2xl font-semibold mb-3'>No orders yet</h2>
-          <p className='text-[#A0A3BD] mb-7 max-w-md mx-auto'>
+          <p className='text-primary-text mb-7 max-w-md mx-auto'>
             You haven&apos;t placed any orders yet.
           </p>
           <Button
             onClick={() => navigate('/')}
-            className='bg-[#6366F1] hover:bg-[#4F46E5] text-white px-6 py-2.5 rounded-lg'>
+            className='bg-accent-red hover:bg-hover-red text-white px-6 py-2.5 rounded-lg'>
             Start Shopping
           </Button>
         </div>
@@ -134,7 +91,7 @@ export const Orders = () => {
           {responseOrders?.data?.orders.map((order) => (
             <Card
               key={order._id}
-              className='bg-secondary-bg shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl border-none overflow-hidden'>
+              className='bg-secondary-bg shadow-md hover:shadow-lg transition-shadow duration-300 border-none rounded-xl overflow-hidden'>
               <CardHeader className='bg-secondary-bg py-5 px-6'>
                 <div className='flex flex-col sm:flex-row justify-between sm:items-center gap-4'>
                   <div className='space-y-1.5'>
@@ -184,14 +141,16 @@ export const Orders = () => {
                       <StatusBadge status={order?.orderStatus} />
                     </div>
                     <span className='text-sm text-[#A0A3BD]'>
-                      Payment:{' '}
+                      Payment:
                       <Badge
                         variant={
                           order?.paymentStatus === 'Paid'
                             ? 'success'
-                            : 'outline'
+                            : order?.paymentStatus === 'Pending'
+                            ? 'warning'
+                            : 'destructive'
                         }
-                        className='ml-1 bg-transparent'>
+                        className='ml-1'>
                         {order?.paymentStatus}
                       </Badge>
                     </span>
@@ -201,7 +160,6 @@ export const Orders = () => {
 
               <CardContent className='pt-5 px-6 pb-6'>
                 <div className='space-y-4'>
-                  {/* Show first 2 items, then a count of remaining items */}
                   {order?.orderItems?.slice(0, 2).map((item) => (
                     <div
                       key={item?.product?._id}
@@ -231,7 +189,7 @@ export const Orders = () => {
                                     ? 'destructive'
                                     : 'outline'
                                 }
-                                className='text-xs bg-transparent'>
+                                className='text-xs'>
                                 {item?.status}
                               </Badge>
                             )}
@@ -239,12 +197,27 @@ export const Orders = () => {
                         </div>
                       </div>
                       <div className='text-right'>
-                        <p className='font-medium text-[#E2E4F3]'>
-                          ₹{item?.price.toFixed(2)}
-                        </p>
-                        {item?.discount > 0 && (
-                          <p className='text-xs text-[#FF6B6B] mt-0.5'>
-                            -₹{item?.discount.toFixed(2)}
+                        {item?.product?.discountedPrice &&
+                        item?.product?.discountedPrice <
+                          item?.product?.price ? (
+                          <>
+                            <p className='text-xs text-[#FF6B6B]'>
+                              -₹
+                              {(
+                                item.product.price -
+                                item.product.discountedPrice
+                              ).toFixed(2)}
+                            </p>
+                            <p className='font-medium text-[#E2E4F3]'>
+                              ₹
+                              {(
+                                item.product.discountedPrice * item.quantity
+                              ).toFixed(2)}
+                            </p>
+                          </>
+                        ) : (
+                          <p className='font-medium text-[#E2E4F3]'>
+                            ₹{(item.product.price * item.quantity).toFixed(2)}
                           </p>
                         )}
                       </div>
@@ -288,7 +261,6 @@ export const Orders = () => {
         </div>
       )}
 
-      {/* Cancel Order Modal */}
       <ConfirmationModal
         isOpen={isModalOpen}
         title='Cancel Order'

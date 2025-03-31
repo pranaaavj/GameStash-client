@@ -101,14 +101,6 @@ export const adminRoutes = [
                 index: true,
                 element: <OrderList />,
               },
-              // {
-              //   path: 'add',
-              //   element: <AddBrand />,
-              // },
-              // {
-              //   path: 'edit/:brandId',
-              //   element: <EditBrand />,
-              // },
             ],
           },
           {

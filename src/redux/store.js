@@ -19,7 +19,6 @@ const rootReducer = combineReducers({
   auth: authReducer,
   admin: adminReducer,
   [authApi.reducerPath]: authApi.reducer,
-  // [userApi.reducerPath]: userApi.reducer,
   [userBaseApi.reducerPath]: userBaseApi.reducer,
   [adminBaseApi.reducerPath]: adminBaseApi.reducer,
 });

@@ -40,7 +40,8 @@ export const AddOffer = () => {
   const { data: responseBrands, isSuccess: brandsSuccess } =
     useGetAllBrandsQuery({});
 
-  const [addOffer, { isError, error }] = useAddOfferMutation();
+  const [addOffer, { isError, error, isLoading: isAddOfferLoading }] =
+    useAddOfferMutation();
 
   // Offer state
   const [offerInput, setOfferInput] = useState(initialOfferState);
@@ -212,7 +213,8 @@ export const AddOffer = () => {
 
           <Button
             type='submit'
-            className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
+            className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'
+            disabled={isAddOfferLoading}>
             Add Offer
           </Button>
         </form>

@@ -13,17 +13,21 @@ import {
   Lock,
   AlertTriangle,
   AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import { useUsers } from '@/hooks';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
 import { ConfirmationModal } from '@/components/common';
+
+const CartLoading = lazy(() => import('@/components/error/CartLoading'));
+const CartError = lazy(() => import('@/components/error/CartError'));
 
 export default function Cart() {
   const user = useUsers();
@@ -32,6 +36,7 @@ export default function Cart() {
   const {
     data: responseCart,
     isError: isCartError,
+    isLoading: isCartLoading,
     refetch,
   } = useGetCartQuery(user?.userInfo?.id, {
     skip: !user?.userInfo?.id,
@@ -40,49 +45,31 @@ export default function Cart() {
   });
 
   const [updateCartItem] = useUpdateCartItemMutation();
-  const [removeItemFromCart] = useRemoveItemFromCartMutation();
+  const [removeItemFromCart, removeItemFromCartMeta] =
+    useRemoveItemFromCartMutation();
 
   const [cartItems, setCartItems] = useState([]);
-  const [total, setTotal] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
-  const [discount, setDiscount] = useState(0);
   const [itemToRemove, setItemToRemove] = useState(null);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+  const [isVerifyingCheckout, setIsVerifyingCheckout] = useState(false);
   const abortControllerRef = useRef(null);
 
   useEffect(() => {
-    if (responseCart) {
+    if (responseCart?.data?.items) {
       setCartItems(responseCart.data.items);
-      setSubtotal(responseCart.data.total);
-
-      let subtotalAmount = 0;
-      let discountAmount = 0;
-
-      responseCart.data.items.forEach((item) => {
-        const originalPrice = item.product.price * item.quantity;
-        subtotalAmount += originalPrice;
-
-        if (item.product.discountedPrice > 0) {
-          const itemDiscount =
-            originalPrice - item.product.discountedPrice * item.quantity;
-          discountAmount += itemDiscount;
-        }
-      });
-
-      setSubtotal(subtotalAmount);
-      setDiscount(discountAmount);
-      setTotal(subtotalAmount - discountAmount);
+      const total = responseCart.data.items.reduce(
+        (acc, item) => acc + item.product.price * item.quantity,
+        0
+      );
+      setSubtotal(total);
     }
   }, [responseCart]);
 
   const refetchCart = async () => {
     try {
       const { data: newCart } = await refetch();
-
-      if (newCart?.data?.items) {
-        setCartItems([...newCart.data.items]);
-        setTotal(newCart.data.total);
-      }
+      if (newCart?.data?.items) setCartItems([...newCart.data.items]);
     } catch (error) {
       console.error('Failed to refetch cart:', error);
     }
@@ -91,9 +78,7 @@ export default function Cart() {
   const debouncedUpdateQuantity = useDebouncedCallback(
     async (productId, quantity) => {
       try {
-        if (abortControllerRef.current) {
-          abortControllerRef.current.abort();
-        }
+        abortControllerRef.current?.abort();
         abortControllerRef.current = new AbortController();
 
         const response = await updateCartItem(
@@ -101,14 +86,13 @@ export default function Cart() {
           { signal: abortControllerRef.current.signal }
         ).unwrap();
 
-        if (response?.success) {
+        if (response?.success)
           toast.success(response?.message, { duration: 1500 });
-        }
       } catch (error) {
         if (error.name !== 'AbortError') {
           console.error('Failed to update cart item:', error);
+          toast.error('Something went wrong, please try again later.');
         }
-        toast.error('Something went wrong, please try again later.');
         await refetchCart();
       }
     },
@@ -116,20 +100,14 @@ export default function Cart() {
   );
 
   const handleUpdateQuantity = (productId, quantity) => {
-    if (quantity > 5) {
-      toast.error('Maximum quantity reached.');
-      return;
-    }
-    if (quantity < 1) return;
-
+    if (quantity > 5 || quantity < 1)
+      return toast.error('Quantity limit reached.');
     const item = cartItems.find((item) => item.product._id === productId);
-    if (item && item.product.stock < quantity) {
-      toast.error('Insufficient stock.');
-      return;
-    }
+    if (item?.product.stock < quantity)
+      return toast.error('Insufficient stock.');
 
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
+    setCartItems((prev) =>
+      prev.map((item) =>
         item.product._id === productId ? { ...item, quantity } : item
       )
     );
@@ -144,51 +122,45 @@ export default function Cart() {
 
   const handleRemoveItem = async () => {
     if (!itemToRemove) return;
-
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.product._id !== itemToRemove)
+    setCartItems((prev) =>
+      prev.filter((item) => item.product._id !== itemToRemove)
     );
-
     try {
       const response = await removeItemFromCart(itemToRemove).unwrap();
-
-      if (response.success) {
-        toast.success(response.message, {
-          duration: 1500,
-        });
-      }
+      if (response.success) toast.success(response.message, { duration: 1500 });
     } catch (error) {
       console.error('Failed to remove item from cart:', error);
     }
-
     setShowRemoveDialog(false);
     setItemToRemove(null);
   };
 
   const handleCheckout = async () => {
-    if (cartItems.length === 0) {
-      toast.error('Your cart is empty!');
-      return;
-    }
+    if (!cartItems.length) return toast.error('Your cart is empty!');
 
-    // const outOfStockItems = cartItems.filter(
-    //   (item) => item.product.stock < item.quantity
-    // );
+    setIsVerifyingCheckout(true);
+    try {
+      const { data: updatedCart } = await refetch();
+      const updatedCartItems = updatedCart?.data?.items || [];
 
-    const { data: updatedCart } = await refetch();
-    const updatedCartItems = updatedCart?.data?.items || [];
-
-    const outOfStockItems = updatedCartItems.filter(
-      (item) => item.product.stock < item.quantity
-    );
-    if (outOfStockItems.length > 0) {
-      toast.error(
-        'Some items in your cart are out of stock. Please remove them before proceeding.'
+      const outOfStock = updatedCartItems.some(
+        (item) => item.product.stock < item.quantity
       );
-      return;
-    }
 
-    navigate('/checkout', { state: { isCheckoutAllowed: true } });
+      if (outOfStock) {
+        toast.error('Some items are out of stock. Please remove them.');
+        return;
+      }
+
+      navigate('/checkout', { state: { isCheckoutAllowed: true } });
+    } catch (error) {
+      toast.error(
+        error?.data?.message ||
+          'Something went wrong while verifying your cart.'
+      );
+    } finally {
+      setIsVerifyingCheckout(false);
+    }
   };
 
   const calculateDiscount = (product) => {
@@ -196,18 +168,14 @@ export default function Cart() {
       !product.bestOffer ||
       !product.discountedPrice ||
       product.discountedPrice >= product.price
-    ) {
+    )
       return null;
-    }
 
-    const difference = product.price - product.discountedPrice;
-    const percentOff = Math.round((difference / product.price) * 100);
-
-    if (product.bestOffer.discountType === 'percentage') {
-      return `-${percentOff}% OFF`;
-    } else {
-      return `-₹${difference.toFixed(0)} OFF`;
-    }
+    const diff = product.price - product.discountedPrice;
+    const percent = Math.round((diff / product.price) * 100);
+    return product.bestOffer.discountType === 'percentage'
+      ? `-${percent}% OFF`
+      : `-₹${diff.toFixed(0)} OFF`;
   };
 
   const hasOutOfStockItems = cartItems.some((item) => item.product.stock === 0);
@@ -215,12 +183,22 @@ export default function Cart() {
     (item) => item.product.stock < item.quantity
   );
 
-  if (isCartError) {
-    console.log('Cart error occurred');
-  }
+  if (isCartError)
+    return (
+      <Suspense fallback={null}>
+        <CartError />
+      </Suspense>
+    );
+
+  if (isCartLoading)
+    return (
+      <Suspense fallback={null}>
+        <CartLoading />
+      </Suspense>
+    );
 
   return (
-    <div className='container mx-auto px-4 py-4 max-w-6xl no-scrollbar'>
+    <div className='container mx-auto py-4 max-w-6xl no-scrollbar'>
       <h1 className='text-3xl md:text-4xl font-bold mb-10 text-primary-text'>
         Your Cart
       </h1>
@@ -255,71 +233,61 @@ export default function Cart() {
                     </Alert>
                   )}
                 </div>
-                <ScrollArea className='h-[calc(100vh-250px)] pr-4 no-scrollbar'>
+                <ScrollArea className=' pr-2 sm:pr-4 no-scrollbar'>
                   <AnimatePresence initial={false}>
-                    <motion.div className='space-y-6 no-scrollbar'>
+                    <motion.div className='space-y-4 sm:space-y-5 md:space-y-6'>
                       {cartItems.map((item) => (
                         <motion.div
                           key={item._id}
-                          className='flex gap-6 bg-secondary-bg p-5 md:p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:bg-secondary-bg/80'
+                          className='flex items-start gap-3 sm:gap-4 bg-secondary-bg p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:bg-secondary-bg/80'
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ duration: 0.3 }}>
-                          <div className='h-28 w-28 md:h-32 md:w-32 rounded-lg bg-primary-bg/50 p-2 flex-shrink-0 overflow-hidden'>
+                          {/* Left Image */}
+                          <div className='w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-lg bg-primary-bg/50 p-2 flex-shrink-0 overflow-hidden'>
                             <img
                               src={
                                 item.product?.images?.[0] || '/placeholder.svg'
                               }
                               alt={item.product?.name}
-                              className='h-full w-full object-cover rounded-md transition-transform duration-300 hover:scale-105'
+                              className='w-full h-full object-cover rounded-md transition-transform duration-300 hover:scale-105'
                             />
                           </div>
-                          <div className='flex flex-1 flex-col justify-between'>
-                            <div>
-                              <div className='flex items-start justify-between'>
-                                <h3 className='text-lg md:text-xl font-semibold text-primary-text mb-1'>
+
+                          {/* Right content */}
+                          <div className='flex flex-1 justify-between sm:gap-4'>
+                            <div className='flex flex-col justify-between'>
+                              <div>
+                                <h3 className='text-sm sm:text-base md:text-lg font-semibold text-primary-text'>
                                   {item.product?.name}
                                 </h3>
-                              </div>
+                                <p className='text-xs text-secondary-text mb-1'>
+                                  {item.product?.platform}
+                                </p>
 
-                              <p className='text-sm text-secondary-text mb-2'>
-                                {item.product?.platform}
-                              </p>
-
-                              {item.product.stock === 0 && (
-                                <div className='text-accent-red bg-hover-red/10 p-2 rounded-md mb-2 flex items-center'>
-                                  <AlertCircle className='w-4 h-4 mr-2' />
-                                  <p className='font-medium text-sm'>
-                                    Out of Stock
-                                  </p>
-                                </div>
-                              )}
-
-                              {item.product.bestOffer &&
-                                item.product.discountedPrice > 0 && (
-                                  <div className='flex items-center gap-2 mb-2'>
-                                    {/* <Tag className='h-3.5 w-3.5 text-accent-green' /> */}
-                                    {/* <span className='text-sm text-accent-green font-medium'>
-                                      {item.product.bestOffer.name}
-                                    </span> */}
+                                {item.product.stock === 0 && (
+                                  <div className='text-accent-red bg-hover-red/10 p-2 rounded-md mb-1 flex items-center'>
+                                    <AlertCircle className='w-4 h-4 mr-2' />
+                                    <p className='font-medium text-xs'>
+                                      Out of Stock
+                                    </p>
                                   </div>
                                 )}
 
-                              {item.product.stock > 0 &&
-                                item.product.stock < 10 && (
-                                  <span className='text-xs px-2 py-0.5 bg-amber-500/20 text-amber-500 rounded-full'>
-                                    Only {item.product.stock} left in stock
-                                  </span>
-                                )}
-                            </div>
+                                {item.product.stock > 0 &&
+                                  item.product.stock < 10 && (
+                                    <span className='text-[11px] px-2 py-0.5 bg-amber-500/20 text-amber-500 rounded-full'>
+                                      Only {item.product.stock} left in stock
+                                    </span>
+                                  )}
+                              </div>
 
-                            <div className='flex items-center justify-between mt-2'>
-                              <div className='flex items-center gap-2 md:gap-3'>
+                              <div className='flex items-center gap-2 mt-3'>
                                 <Button
                                   variant='outline'
                                   size='icon'
-                                  className='h-8 w-8 rounded-full border hover:bg-accent-blue/10 hover:border-accent-blue transition-colors'
+                                  className='h-7 w-7 rounded-full border hover:bg-accent-blue hover:border-accent-blue'
                                   onClick={() =>
                                     handleUpdateQuantity(
                                       item.product._id,
@@ -330,15 +298,15 @@ export default function Cart() {
                                     item.quantity <= 1 ||
                                     item.product.stock === 0
                                   }>
-                                  <Minus className='h-3 w-3 md:h-4 md:w-4' />
+                                  <Minus className='h-3 w-3' />
                                 </Button>
-                                <span className='w-8 text-center text-primary-text text-lg font-medium'>
+                                <span className='w-6 text-center text-sm text-primary-text font-medium'>
                                   {item.quantity}
                                 </span>
                                 <Button
                                   variant='outline'
                                   size='icon'
-                                  className='h-8 w-8 rounded-full border hover:bg-accent-blue/10 hover:border-accent-blue transition-colors'
+                                  className='h-7 w-7 rounded-full border hover:bg-accent-blue hover:border-accent-blue'
                                   onClick={() =>
                                     handleUpdateQuantity(
                                       item.product._id,
@@ -350,84 +318,93 @@ export default function Cart() {
                                     item.quantity >= item.product.stock ||
                                     item.product.stock === 0
                                   }>
-                                  <Plus className='h-3 w-3 md:h-4 md:w-4' />
+                                  <Plus className='h-3 w-3' />
                                 </Button>
                               </div>
+                            </div>
 
-                              <div className='text-right'>
-                                {item.product.discountedPrice > 0 ? (
-                                  <div className='flex flex-col items-end'>
-                                    <div className='py-2'>
-                                      {calculateDiscount(item.product) && (
-                                        <Badge className='bg-accent-red text-white cursor-default hover:bg-hover-red'>
-                                          {calculateDiscount(item.product)}
-                                        </Badge>
-                                      )}
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                      <span className='text-sm text-secondary-text line-through'>
-                                        ₹
-                                        {(
-                                          item.product.price * item.quantity
-                                        ).toFixed(2)}
-                                      </span>
-                                      <span className='text-xl font-bold text-accent-green'>
-                                        ₹
-                                        {(
-                                          item.product.discountedPrice *
-                                          item.quantity
-                                        ).toFixed(2)}
-                                      </span>
-                                    </div>
+                            <div className='flex flex-col items-end justify-between w-24'>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                className='text-secondary-text hover:text-accent-red hover:bg-accent-red/10 self-end transition-colors'
+                                onClick={() =>
+                                  confirmRemoveItem(item.product._id)
+                                }
+                                disabled={removeItemFromCartMeta.isLoading}>
+                                <Trash2 className='h-5 w-5' />
+                              </Button>
+
+                              {item.product.discountedPrice > 0 ? (
+                                <div className='flex flex-col items-end'>
+                                  <div className='py-1'>
+                                    {calculateDiscount(item.product) && (
+                                      <Badge className='bg-accent-red text-white cursor-default hover:bg-hover-red text-nowrap'>
+                                        {calculateDiscount(item.product)}
+                                      </Badge>
+                                    )}
                                   </div>
-                                ) : (
-                                  <p className='text-xl font-bold text-primary-text'>
-                                    ₹
-                                    {(
-                                      item.product.price * item.quantity
-                                    ).toFixed(2)}
-                                  </p>
-                                )}
-                              </div>
+                                  <div className='flex flex-col sm:flex-row items-center gap-1'>
+                                    <span className='text-xs text-secondary-text line-through'>
+                                      ₹
+                                      {(
+                                        item.product.price * item.quantity
+                                      ).toFixed(2)}
+                                    </span>
+                                    <span className='text-sm font-bold text-accent-green'>
+                                      ₹
+                                      {(
+                                        item.product.discountedPrice *
+                                        item.quantity
+                                      ).toFixed(2)}
+                                    </span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className='text-sm font-bold text-primary-text'>
+                                  ₹
+                                  {(item.product.price * item.quantity).toFixed(
+                                    2
+                                  )}
+                                </p>
+                              )}
                             </div>
                           </div>
-                          <Button
-                            variant='ghost'
-                            size='icon'
-                            className='text-secondary-text hover:text-accent-red hover:bg-accent-red/10 self-start transition-colors'
-                            onClick={() => confirmRemoveItem(item.product._id)}>
-                            <Trash2 className='h-5 w-5' />
-                          </Button>
                         </motion.div>
                       ))}
                     </motion.div>
                   </AnimatePresence>
                 </ScrollArea>
               </div>
+
               <motion.div
                 className='lg:col-span-1'
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}>
                 <Card className='bg-secondary-bg border-none text-primary-text sticky top-6'>
-                  <CardContent className='p-6 space-y-6'>
+                  <CardContent className='p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5 md:space-y-6'>
                     <div className='flex items-center justify-between'>
-                      <h2 className='text-xl font-bold'>Order Summary</h2>
-                      <span className='text-sm text-secondary-text'>
+                      <h2 className='text-base sm:text-lg md:text-xl font-bold'>
+                        Order Summary
+                      </h2>
+                      <span className='text-xs sm:text-sm text-secondary-text'>
                         {cartItems.length} items
                       </span>
                     </div>
 
-                    <div className='space-y-3 pt-4 border-t border-primary-bg/20'>
+                    <div className='space-y-2 sm:space-y-3 pt-4 border-t border-primary-bg/20'>
                       <div className='flex justify-between text-sm'>
                         <span className='text-secondary-text'>Subtotal</span>
                         <span>₹{subtotal.toFixed(2)}</span>
                       </div>
 
-                      {discount > 0 && (
+                      {responseCart?.data?.discount > 0 && (
                         <div className='flex justify-between text-sm text-accent-red'>
                           <span>Discount</span>
-                          <span>-₹{discount.toFixed(2)}</span>
+                          <span>
+                            -₹{responseCart?.data?.discount.toFixed(2)}
+                          </span>
                         </div>
                       )}
 
@@ -437,26 +414,36 @@ export default function Cart() {
                       </div>
 
                       <div className='flex justify-between items-center pt-3 border-t border-primary-bg/20'>
-                        <span className='text-lg font-bold'>Total</span>
-                        <span className='text-xl font-bold'>
-                          ₹{total.toFixed(2)}
+                        <span className='text-base sm:text-lg font-bold'>
+                          Total
+                        </span>
+                        <span className='text-lg sm:text-xl font-bold'>
+                          ₹{responseCart?.data?.total.toFixed(2)}
                         </span>
                       </div>
                     </div>
 
                     <Button
-                      className='w-full bg-accent-blue hover:bg-hover-blue text-white py-6'
+                      className='w-full bg-accent-blue hover:bg-hover-blue text-white py-4 sm:py-5'
                       onClick={handleCheckout}
                       disabled={
                         cartItems.length === 0 ||
                         cartItems.some((item) => item.product.stock === 0) ||
                         cartItems.some(
                           (item) => item.product.stock < item.quantity
-                        )
+                        ) ||
+                        isVerifyingCheckout // this is the loading state you'll manage in handleCheckout
                       }>
-                      {cartItems.some((item) => item.product.stock === 0)
-                        ? 'Remove Out of Stock Items'
-                        : 'Proceed to Checkout'}
+                      {isVerifyingCheckout ? (
+                        <span className='flex items-center justify-center gap-2'>
+                          <Loader2 className='w-4 h-4 animate-spin' />
+                          Verifying...
+                        </span>
+                      ) : cartItems.some((item) => item.product.stock === 0) ? (
+                        'Remove Out of Stock Items'
+                      ) : (
+                        'Proceed to Checkout'
+                      )}
                     </Button>
 
                     <p className='text-xs text-secondary-text text-center'>
@@ -479,7 +466,7 @@ export default function Cart() {
                 <Button
                   variant='outline'
                   onClick={() => navigate('/')}
-                  className='text-accent-blue border-accent-blue hover:bg-accent-blue hover:text-white px-6 py-5 font-medium transition-all duration-300'>
+                  className='text-white border-none bg-accent-blue hover:bg-hover-blue hover:scale-105 hover:text-white px-6 py-5 font-medium transition-all duration-300'>
                   Start Shopping
                 </Button>
               </motion.div>
@@ -532,7 +519,8 @@ export default function Cart() {
           <motion.button
             className='px-4 py-2 bg-accent-blue text-white rounded-lg font-medium text-lg hover:bg-hover-blue transition duration-300 shadow-sm hover:shadow-md'
             whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}>
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/auth/login')}>
             Log In
           </motion.button>
         </motion.div>
@@ -565,6 +553,7 @@ export default function Cart() {
           </DialogFooter>
         </DialogContent>
       </Dialog> */}
+
       <ConfirmationModal
         description='Are you sure you want to remove this item from your cart?'
         isOpen={showRemoveDialog}

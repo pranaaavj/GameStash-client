@@ -42,7 +42,7 @@ export const GameCarousal = ({
 
   return (
     <div
-      className='w-full bg-[#121212] text-white overflow-hidden rounded-xl px-4 sm:px-6 md:px-10 py-3'
+      className='w-full bg-[#121212] text-white overflow-hidden rounded-xl py-3'
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       <div className='flex flex-col lg:flex-row'>
@@ -65,7 +65,7 @@ export const GameCarousal = ({
 
                 <div className='absolute bottom-0 left-0 w-full h-full rounded-b-xl bg-gradient-to-t from-black/80 via-black/40 to-transparent overflow-hidden'>
                   <div className='w-full h-full flex items-end px-3 sm:px-6 md:px-10 pb-3 sm:pb-6 md:pb-10 pt-4 sm:pt-6 md:pt-10'>
-                    <div className='space-y-2 sm:space-y-3 md:space-y-4'>
+                    <div className='space-y-1 sm:space-y-2 md:space-y-4'>
                       <h1 className='text-base sm:text-xl md:text-3xl lg:text-5xl font-bold tracking-tight drop-shadow-lg'>
                         {activeGame.title}
                       </h1>
@@ -99,7 +99,7 @@ export const GameCarousal = ({
           </AnimatePresence>
         </div>
 
-        <div className='hidden lg:flex  w-full lg:w-[22%] bg-transparent pl-5 flex-col gap-2 overflow-hidden max-h-[100%] md:max-h-[400px] xl:max-h-full'>
+        <div className='hidden lg:flex w-full lg:w-[22%] bg-transparent pl-5 flex-col gap-2 overflow-hidden max-h-[100%] md:max-h-[400px] xl:max-h-full'>
           <div className='h-full py-2 flex flex-col justify-between overflow-hidden'>
             {games.map((game, index) => (
               <motion.div
@@ -119,7 +119,7 @@ export const GameCarousal = ({
                     }}
                   />
                 )}
-                <div className='relative flex items-center px-2 py-1 sm:px-2 sm:py-1 md:px-2.5 md:py-1.5 xl:px-4 xl:py-4 z-10'>
+                <div className='relative flex items-center px-2 py-1 sm:px-2 sm:py-1 md:px-2.5 md:py-1.5 xl:px-3 xl:py-3 z-10'>
                   <div className='flex-shrink-0'>
                     <img
                       src={game.thumbnail || '/placeholder.svg'}

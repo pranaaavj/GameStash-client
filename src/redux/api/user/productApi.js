@@ -3,9 +3,9 @@ import { userBaseApi } from './userBaseApi';
 const productApi = userBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: ({ page = 1, limit = 5, queryOptions = null }) => ({
+      query: ({ page = 1, limit = 5, type }) => ({
         url: '/user/products',
-        params: { page, limit, queryOptions },
+        params: { page, limit, type },
       }),
       providesTags: (result) =>
         result

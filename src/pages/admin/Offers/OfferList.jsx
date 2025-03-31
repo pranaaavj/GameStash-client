@@ -37,7 +37,8 @@ export const OfferList = () => {
   } = useGetAllOffersQuery({ page: currentPage, limit: 10 });
 
   // Toggle Offer Status Mutation
-  const [toggleOfferList] = useToggleOfferListMutation();
+  const [toggleOfferList, { isLoading: isToggleLoading }] =
+    useToggleOfferListMutation();
 
   const tableHeaders = [
     'Name',
@@ -75,6 +76,9 @@ export const OfferList = () => {
           duration: 1500,
         });
       }
+
+      setIsModalOpen(false);
+      setSelectedOffer(null);
     } catch (error) {
       console.log(error);
     }
@@ -135,6 +139,7 @@ export const OfferList = () => {
                   className='transition-colors duration-200 even:bg-primary-bg/5 hover:bg-primary-bg/20'>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {offer.name}
+                    {console.log(selectedOffer == offer._id)}
                   </TableCell>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {offer.type}
@@ -167,7 +172,7 @@ export const OfferList = () => {
                           size='sm'
                           disabled={
                             new Date(offer.endDate).getTime() <
-                            new Date().getTime()
+                              new Date().getTime() || isToggleLoading
                           }
                           onClick={() =>
                             navigate(`/admin/offers/edit/${offer._id}`)
@@ -181,6 +186,7 @@ export const OfferList = () => {
                           variant='outline'
                           size='icon'
                           onClick={() => handleListingModal(offer._id)}
+                          disabled={isToggleLoading}
                           className='bg-accent-red border-none h-8 w-8 px-5 py-5 text-primary-text hover:bg-accent-red/90 transition'>
                           {offer.isActive ? (
                             <X className='h-4 w-4' />

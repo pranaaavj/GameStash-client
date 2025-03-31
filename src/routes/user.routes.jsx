@@ -10,9 +10,11 @@ import {
   OrderDetails,
   Wishlist,
   OrderConfirmationWrapper,
+  About,
+  Support,
 } from '@/pages/user';
 import CartPage from '@/pages/user/Cart';
-import { Test } from '@/pages/user/Game/GameTest';
+import { StableWrapper } from '@/pages/Stable';
 
 export const userRoutes = [
   {
@@ -51,6 +53,14 @@ export const userRoutes = [
             path: '/order-confirmation',
             element: <OrderConfirmationWrapper />,
           },
+          {
+            path: '/about',
+            element: <About />,
+          },
+          {
+            path: '/support',
+            element: <Support />,
+          },
         ],
       },
       {
@@ -63,7 +73,7 @@ export const userRoutes = [
       },
       {
         path: 'test',
-        element: <Test />,
+        element: <StableWrapper />,
       },
       {
         path: 'games/:productId',

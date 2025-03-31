@@ -59,7 +59,7 @@ export const SendOtpEmail = () => {
   };
 
   return (
-    <div className='flex flex-col md:flex-row h-[calc(100vh-100px)] h-min-screen w-full items-center justify-center'>
+    <div className='flex flex-col md:flex-row pt-20 h-min-screen w-full items-center justify-center'>
       <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md lg:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
         <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
           Enter Your Email to Get Started
