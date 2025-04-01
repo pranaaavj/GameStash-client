@@ -1,18 +1,17 @@
 export { Home } from './Home';
 
-export { GameCard } from './Game/GameCard';
-export { GameDetails } from './Game/GameDetails';
-export { GameListing } from './Game/GameListing';
-export { GameBrowse } from './Game/GameBrowse';
+export { GameDetails } from './GameDetails';
+export { GameBrowse } from './GameBrowse';
 
-export { UserProfile } from './Profile/UserProfile';
+export { UserProfile } from './UserProfile';
 
 export { Orders } from './Orders';
 export { OrderDetails } from './OrderDetails';
 
 export { About } from './About';
+export { Cart } from './Cart';
 
 export { Wishlist } from './Wishlist';
 export { Support } from './Support';
 
-export { OrderConfirmationWrapper } from './Checkout/OrderConfirmationWrapper';
+export { OrderConfirmationWrapper } from './OrderConfirmationWrapper';

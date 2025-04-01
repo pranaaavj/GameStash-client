@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';

@@ -1,10 +1,15 @@
 export { Alert } from './Alert';
+export { Breadcrumbs } from './Breadcrumbs';
 
 export { Navbar } from './Navbar';
 export { Footer } from './Footer';
 
+export { VoiceSearch } from './VoiceSearch';
+
 export { InputField } from './InputField';
 export { SelectField } from './SelectField';
+
+export { SearchBar } from './SearchBar';
 
 export { ConfirmationModal } from './ConfirmationModal';
 

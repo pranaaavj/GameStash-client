@@ -1,8 +1,7 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { GameCard } from './GameCard';
+import { GameCard } from '../../components/user';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { UserPagination } from '@/components/user';

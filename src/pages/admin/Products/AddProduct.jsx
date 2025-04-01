@@ -13,7 +13,7 @@ import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ImageUploader from '@/components/admin/ImageUploader';
+import { ImageUploader } from '@/components/admin';
 import { Alert, InputField, SelectField } from '@/components/common';
 import { validateProduct, mapOptionsData, validateImages } from '@/utils';
 import {

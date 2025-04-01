@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { CheckoutPage } from '@/pages/user/Checkout/CheckoutPage';
+import { CheckoutPage } from '@/pages/user/CheckoutPage';
 
 export const ProtectCheckout = () => {
   const location = useLocation();

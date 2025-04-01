@@ -12,9 +12,8 @@ import {
   OrderConfirmationWrapper,
   About,
   Support,
+  Cart,
 } from '@/pages/user';
-import CartPage from '@/pages/user/Cart';
-import { StableWrapper } from '@/pages/Stable';
 
 export const userRoutes = [
   {
@@ -69,12 +68,9 @@ export const userRoutes = [
       },
       {
         path: 'cart',
-        element: <CartPage />,
+        element: <Cart />,
       },
-      {
-        path: 'test',
-        element: <StableWrapper />,
-      },
+
       {
         path: 'games/:productId',
         element: <GameDetails />,

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Button } from '@/shadcn/components/ui/button';
 import { Edit } from 'lucide-react';
 

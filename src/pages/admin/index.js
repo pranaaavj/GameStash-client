@@ -1,4 +1,4 @@
-export { Sidebar } from './Sidebar';
+export { Sidebar } from '@/components/admin/Sidebar';
 export { Dashboard } from './Dashboard';
 export { AdminLogin } from './AdminLogin';
 
@@ -26,4 +26,4 @@ export { AddCoupon } from './Coupons/AddCoupon';
 
 export { Sales } from './Sales/Sales';
 
-export { UsersList } from './UsersList';
+export { UsersList } from './Users/UsersList';

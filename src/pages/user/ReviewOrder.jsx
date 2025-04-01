@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/shadcn/components/ui/radio-group';
 import { Label } from '@/shadcn/components/ui/label';

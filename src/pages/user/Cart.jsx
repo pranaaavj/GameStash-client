@@ -29,7 +29,7 @@ import { ConfirmationModal } from '@/components/common';
 const CartLoading = lazy(() => import('@/components/error/CartLoading'));
 const CartError = lazy(() => import('@/components/error/CartError'));
 
-export default function Cart() {
+export function Cart() {
   const user = useUsers();
   const navigate = useNavigate();
 

@@ -11,7 +11,7 @@ import {
 } from '@/shadcn/components/ui/tooltip';
 import { MapPin, CreditCard, Gift, Package, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Address } from '../Profile/Address';
+import { Address } from '../../components/user/Address';
 import PaymentSection from './Payment';
 import CouponSection from './Coupons';
 import ReviewOrder from './ReviewOrder';

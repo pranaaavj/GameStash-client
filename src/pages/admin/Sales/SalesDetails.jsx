@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { format } from 'date-fns';
 import { useGetSalesDataQuery } from '@/redux/api/admin/salesApi';
 import { CircleX, DollarSign, Package } from 'lucide-react';

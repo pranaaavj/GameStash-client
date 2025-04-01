@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 export const SystemRequirements = ({ requirements }) => {
   return (
     <div className='w-full'>

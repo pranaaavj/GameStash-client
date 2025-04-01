@@ -1,62 +1,18 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertCircle, RefreshCw } from 'lucide-react';
 
-import { GameCard } from './GameCard';
+import { GameCard } from '@/components/user';
 import { UserPagination } from '@/components/user';
-import { FilterSection } from '../../../components/user/FilterSection';
+import { FilterSection } from '@/components/user/FilterSection';
 import { useSearchProductsQuery } from '@/redux/api/user/productApi';
 import { Button } from '@/shadcn/components/ui/button';
 
-// Loading skeleton for game cards
-const GameCardSkeleton = () => (
-  <div className='rounded-xl overflow-hidden bg-secondary-bg/30 animate-pulse'>
-    <div className='h-48 bg-secondary-bg/50'></div>
-    <div className='p-4 space-y-3'>
-      <div className='h-4 bg-secondary-bg/50 rounded w-3/4'></div>
-      <div className='h-4 bg-secondary-bg/50 rounded w-1/2'></div>
-      <div className='h-6 bg-secondary-bg/50 rounded w-1/3 mt-2'></div>
-    </div>
-  </div>
-);
-
-// Error component
-const ErrorDisplay = ({ message, onRetry }) => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className='col-span-full flex flex-col items-center justify-center py-10 px-4 text-center'>
-    <AlertCircle className='h-12 w-12 text-accent-red mb-4' />
-    <h3 className='text-xl font-bold mb-2'>Oops! Something went wrong</h3>
-    <p className='text-secondary-text mb-6 max-w-md'>
-      {message || "We couldn't load the games. Please try again."}
-    </p>
-    <Button
-      onClick={onRetry}
-      className='bg-accent-blue hover:bg-hover-blue text-white'>
-      <RefreshCw className='h-4 w-4 mr-2' />
-      Try Again
-    </Button>
-  </motion.div>
-);
-
-// Empty results component
-const EmptyResults = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className='col-span-full flex flex-col items-center justify-center py-10 px-4 text-center'>
-    <div className='bg-secondary-bg/30 p-6 rounded-xl max-w-md'>
-      <h3 className='text-xl font-bold mb-2'>No Games Found</h3>
-      <p className='text-secondary-text'>
-        We could not find any games matching your filters. Try adjusting your
-        search criteria or clearing filters.
-      </p>
-    </div>
-  </motion.div>
-);
+import {
+  GameBrowserLoading,
+  GameBrowserError,
+  GameBrowserEmpty,
+} from '@/components/error';
 
 export const GameBrowse = () => {
   const [queryOptions, setQueryOptions] = useState({
@@ -163,17 +119,17 @@ export const GameBrowse = () => {
                 Array(6)
                   .fill()
                   .map((_, index) => (
-                    <GameCardSkeleton key={`skeleton-${index}`} />
+                    <GameBrowserLoading key={`skeleton-${index}`} />
                   ))
               ) : isError ? (
                 // Error state
-                <ErrorDisplay
+                <GameBrowserError
                   message={error?.data?.message || 'Failed to load games'}
                   onRetry={refetch}
                 />
               ) : responseGames?.data?.products?.length === 0 ? (
                 // Empty results
-                <EmptyResults />
+                <GameBrowserEmpty />
               ) : (
                 // Game cards
                 responseGames?.data?.products.map((game) => (

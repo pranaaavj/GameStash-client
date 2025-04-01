@@ -1,5 +1,12 @@
 export { UserLayout } from './UserLayout';
 export { UserPagination } from './UserPagination';
+export { AddMoneyForm } from './AddMoneyForm';
+
+export { GameCard } from './GameCard';
+export { GameListing } from './GameListing';
+
+export { GenreCard } from './GenreCard';
+export { GenreListing } from './GenreListing';
 
 export { FilterSection } from './FilterSection';
 

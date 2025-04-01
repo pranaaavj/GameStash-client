@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { DayPicker } from 'react-day-picker';
 
 import { cn } from '@/shadcn/lib/utils';

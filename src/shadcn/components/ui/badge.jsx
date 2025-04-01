@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { cn } from '@/shadcn/lib/utils';
 import { badgeVariants } from '@/shadcn/lib/badgeStyles';
 

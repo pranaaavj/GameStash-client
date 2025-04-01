@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import { Button } from '@/shadcn/components/ui/button';
 import { InputField } from '@/components/common';

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { FileQuestion } from 'lucide-react';
 import { Button } from '@/shadcn/components/ui/button';
 import { motion } from 'framer-motion';

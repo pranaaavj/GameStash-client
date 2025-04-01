@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Component } from 'react';
 import { GameErrorFallback } from './GameErrorFallback';
 
@@ -7,7 +6,7 @@ export class ErrorBoundary extends Component {
 
   static getDerivedStateFromError() {
     return { hasError: true };
-}
+  }
 
   render() {
     if (this.state.hasError) {

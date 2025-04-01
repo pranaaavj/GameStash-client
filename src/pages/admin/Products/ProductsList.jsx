@@ -14,8 +14,8 @@ import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { Link, useNavigate } from 'react-router-dom';
-import { Alert, ConfirmationModal } from '@/components/common';
-import { Check, CircleX, Plus, Search, X } from 'lucide-react';
+import { Alert, ConfirmationModal, EmptyState } from '@/components/common';
+import { Check, CircleX, Plus, Search, ShoppingCart, X } from 'lucide-react';
 
 export const ProductList = () => {
   const navigate = useNavigate();
@@ -138,7 +138,13 @@ export const ProductList = () => {
             actions={actions}
           />
         ) : (
-          'No Data to show'
+          <div className='w-full flex items-center justify-center'>
+            <EmptyState
+              icon={ShoppingCart}
+              title='No orders available'
+              description='There are no orders to display at the moment.'
+            />
+          </div>
         )}
       </div>
 

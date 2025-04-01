@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
 import {
   Select,

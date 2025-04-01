@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Button } from '@/shadcn/components/ui/button';
 import { AlertCircle, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

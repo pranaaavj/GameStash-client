@@ -24,9 +24,8 @@ import {
   TooltipTrigger,
 } from '@/shadcn/components/ui/tooltip';
 
-import { GameListing } from '..';
-import { Reviews } from '../../../components/user/Reviews';
-import { SystemRequirements, StarRating } from '@/components/user';
+import { Reviews } from '../../components/user/Reviews';
+import { SystemRequirements, StarRating, GameListing } from '@/components/user';
 import { GameDetailsError, GameDetailsLoading } from '@/components/error';
 
 import {

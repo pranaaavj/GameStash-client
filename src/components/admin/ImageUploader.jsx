@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Cropper from 'react-easy-crop';
@@ -23,7 +21,7 @@ const extractPublicId = (imageUrl) => {
   return imageUrl.split('/').pop().split('.')[0];
 };
 
-const ImageUploader = ({
+export const ImageUploader = ({
   initialImages = [],
   onImagesChange,
   uploadProductImage,
@@ -495,5 +493,3 @@ const ImageUploader = ({
     </div>
   );
 };
-
-export default ImageUploader;

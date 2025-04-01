@@ -1,6 +1,5 @@
 import { Star } from 'lucide-react';
 
-/* eslint-disable react/prop-types */
 export const StarRating = ({ rating }) => (
   <div className='flex'>
     {[1, 2, 3, 4, 5].map((star) => (

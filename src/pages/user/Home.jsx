@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { GameListing } from './Game/GameListing';
+
 import { useGetProductsQuery } from '@/redux/api/user/productApi';
 import {
   GameCarousal,
   RecommendedGames,
   ReferralModal,
+  GameListing,
 } from '@/components/user';
 import { useUsers } from '@/hooks';
 import { useApplyReferralMutation } from '@/redux/api/user/referralApi';

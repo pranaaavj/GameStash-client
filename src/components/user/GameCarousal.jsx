@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';

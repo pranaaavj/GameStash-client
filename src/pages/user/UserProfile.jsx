@@ -1,6 +1,6 @@
 import ProfileView from './ProfileView';
 import { ChangePassword } from './ChangePassword';
-import { Address } from './Address';
+import { Address } from '../../components/user/Address';
 
 import { ModernWallet } from './ModernWallet';
 
