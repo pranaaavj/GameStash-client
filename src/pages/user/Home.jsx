@@ -124,9 +124,6 @@ export const Home = () => {
     type: 'discounted',
   });
 
-  console.log(topRatedGamesQuery);
-  console.log(discountedGamesQuery);
-
   const { data: responseRecommended, isSuccess: isRecommendedSuccess } =
     useGetRecommendedGamesQuery({ limit: 5 });
 
@@ -137,8 +134,8 @@ export const Home = () => {
 
   const handleApplyReferral = async (code) => {
     try {
-      const response = await applyReferral({ referralCode: code }).unwrap();
-      console.log('✅ Referral Applied:', response);
+      await applyReferral({ referralCode: code }).unwrap();
+
       handleCloseReferralModal();
     } catch (error) {
       throw new Error(error?.data?.message || 'Failed to apply referral code');

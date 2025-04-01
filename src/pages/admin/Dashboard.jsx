@@ -65,8 +65,6 @@ export const Dashboard = () => {
     endDate: dateRange.endDate,
   });
 
-  console.log(dateRange);
-
   const formatChartData = (data, labelKey, valueKey) => {
     return (
       data?.map((item) => ({

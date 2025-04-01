@@ -28,8 +28,6 @@ export const UsersList = () => {
     error,
   } = useGetAllUsersQuery({ page: currentPage, limit: 6 });
 
-  console.log(responseGetUsers);
-
   const [
     toggleBlockUser,
     { isError: isToggleBlockError, error: toggleBlockError },
@@ -54,8 +52,6 @@ export const UsersList = () => {
   };
 
   const handleConfirmBlockUnblock = async () => {
-    console.log(selectedUser);
-
     try {
       const responseToggleBlock = await toggleBlockUser(selectedUser);
 

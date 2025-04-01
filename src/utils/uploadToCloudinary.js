@@ -17,7 +17,6 @@ export const uploadToCloudinary = async (blob) => {
     );
 
     const data = await response.json();
-    console.log(data);
     return data.secure_url;
   } catch (error) {
     toast.error('Something went wrong.');

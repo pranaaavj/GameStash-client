@@ -47,8 +47,6 @@ export const AddOffer = () => {
   const [offerInput, setOfferInput] = useState(initialOfferState);
   const [offerValidation, setOfferValidation] = useState(initialOfferState);
 
-  console.log(offerInput);
-
   useEffect(() => {
     setOfferValidation(initialOfferState);
   }, [offerInput]);
@@ -92,8 +90,6 @@ export const AddOffer = () => {
 
     try {
       const response = await addOffer(offerInput).unwrap();
-
-      console.log(response);
 
       if (response.success) {
         toast.success(response.message, { duration: 1500 });

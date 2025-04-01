@@ -85,7 +85,6 @@ export const BrandList = () => {
   const tableData = isSuccess
     ? mapTableData(responseGetBrands?.data?.brands, tableHeaders)
     : [];
-  console.log(tableData);
   if (isError) {
     console.log(error);
   }

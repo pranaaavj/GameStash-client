@@ -139,7 +139,6 @@ export const OfferList = () => {
                   className='transition-colors duration-200 even:bg-primary-bg/5 hover:bg-primary-bg/20'>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {offer.name}
-                    {console.log(selectedOffer == offer._id)}
                   </TableCell>
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {offer.type}

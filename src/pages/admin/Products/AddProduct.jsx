@@ -119,7 +119,6 @@ export const AddProduct = () => {
 
   const handleImagesChange = (images) => {
     setImages(images);
-    console.log('Updated images:', images);
   };
 
   return (

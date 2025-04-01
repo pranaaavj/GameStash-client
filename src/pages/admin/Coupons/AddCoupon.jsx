@@ -44,8 +44,6 @@ export const AddCoupon = () => {
     setCouponValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
-  console.log(couponInput);
-
   const discountTypeOptions = [
     { label: 'Percentage (%)', value: 'percentage' },
     { label: 'Fixed Amount (₹)', value: 'amount' },

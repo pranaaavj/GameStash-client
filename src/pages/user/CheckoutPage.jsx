@@ -82,7 +82,6 @@ export function CheckoutPage() {
   };
 
   const handlePaymentSelect = (payment) => {
-    console.log(payment);
     setSelectedPayment(payment);
     setCompletedSections((prev) => ({ ...prev, payment: true }));
     setActiveSection('coupons');
@@ -159,8 +158,6 @@ export function CheckoutPage() {
     try {
       const response = await placeOrder(orderData).unwrap();
 
-      console.log(response);
-
       if (selectedPayment === 'Razorpay') {
         const options = {
           key: import.meta.env.VITE_RZP_KEY_ID,
@@ -208,7 +205,6 @@ export function CheckoutPage() {
           },
           modal: {
             ondismiss: async function () {
-              console.log('Payment popup closed');
               try {
                 await markPaymentAsFailed(response?.data?.orderId).unwrap();
                 navigate('/order-confirmation', {

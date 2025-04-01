@@ -51,8 +51,6 @@ export const ProductList = () => {
     'stock',
   ];
 
-  console.log(responseGetProducts);
-
   const actions = [
     ({ id: productId }) => (
       <EditButton

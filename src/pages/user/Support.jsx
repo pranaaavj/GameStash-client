@@ -122,8 +122,7 @@ export function Support() {
 
   const handleSubmitContactForm = (e) => {
     e.preventDefault();
-    // In a real app, you would send this data to your backend
-    console.log('Form submitted:', contactForm);
+
     toast.success("Your message has been sent! We'll get back to you soon.");
     setContactForm({
       name: '',

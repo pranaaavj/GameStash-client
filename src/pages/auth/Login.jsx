@@ -84,7 +84,6 @@ export const Login = () => {
         dispatch(setUser({ user: response?.data?.user }));
         dispatch(setToken({ token: response?.data?.accessToken }));
 
-        console.log(location.state);
         const redirect = location.state?.from || '/';
         navigate(redirect);
       }

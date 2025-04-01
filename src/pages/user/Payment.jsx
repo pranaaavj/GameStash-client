@@ -21,7 +21,6 @@ export default function PaymentSection({ onPaymentSelect }) {
     skip: !user?.userInfo?.id,
   });
 
-  console.log(responseCart?.data?.total);
   useEffect(() => {
     if (responseCart?.data?.total >= 2000) {
       setIsCodDisabled(true);

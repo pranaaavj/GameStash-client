@@ -9,7 +9,6 @@ const adminSlice = createSlice({
   },
   reducers: {
     setAdmin: (state, action) => {
-      console.log(action.payload);
       const { admin } = action.payload;
       state.adminInfo = admin;
       state.authStatus = admin.status;
@@ -27,7 +26,6 @@ const adminSlice = createSlice({
     },
   },
 });
-
 
 export const { logoutAdmin, setAdmin, setStatusAdmin, setTokenAdmin } =
   adminSlice.actions;

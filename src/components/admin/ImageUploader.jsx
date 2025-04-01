@@ -136,8 +136,7 @@ export const ImageUploader = ({
       try {
         // Extract public ID from the URL
         const publicId = extractPublicId(imageToRemove.url);
-        const response = await deleteProductImage(publicId).unwrap();
-        console.log(response);
+        await deleteProductImage(publicId).unwrap();
       } catch (error) {
         console.error('Failed to delete image from Cloudinary:', error);
         setErrors(['Failed to delete image. Please try again.']);

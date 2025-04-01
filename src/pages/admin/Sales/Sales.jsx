@@ -47,8 +47,6 @@ export const Sales = () => {
     setSelectedSale(null);
   }, []);
 
-  console.log(dateRange);
-
   // Fetching sales data
   const {
     data: responseSalesData,
@@ -85,7 +83,6 @@ export const Sales = () => {
   );
 
   const handleDateChange = ({ target: { name, value } }) => {
-    console.log(name, value);
     setDateRange((prevDate) => ({ ...prevDate, [name]: value }));
   };
 
