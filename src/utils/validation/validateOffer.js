@@ -32,7 +32,7 @@ export const validateOffer = (offer, isEditing = false) => {
       errors.startDate = 'Offer start date is required';
     } else {
       const startDate = new Date(offer.startDate);
-      startDate.setHours(0, 0, 0, 0);
+      // startDate.setHours(0, 0, 0, 0);
 
       if (startDate < currentDate) {
         errors.startDate = 'Offer start date must be in the future';

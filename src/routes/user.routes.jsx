@@ -52,14 +52,6 @@ export const userRoutes = [
             path: '/order-confirmation',
             element: <OrderConfirmationWrapper />,
           },
-          {
-            path: '/about',
-            element: <About />,
-          },
-          {
-            path: '/support',
-            element: <Support />,
-          },
         ],
       },
       {
@@ -74,6 +66,14 @@ export const userRoutes = [
       {
         path: 'games/:productId',
         element: <GameDetails />,
+      },
+      {
+        path: '/about',
+        element: <About />,
+      },
+      {
+        path: '/support',
+        element: <Support />,
       },
     ],
   },
