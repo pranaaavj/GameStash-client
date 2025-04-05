@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useGetProductsQuery } from '@/redux/api/user/productApi';
-import {
-  GameCarousal,
-  RecommendedGames,
-  ReferralModal,
-  GameListing,
-} from '@/components/user';
+import { GameCarousal, ReferralModal, GameListing } from '@/components/user';
 import { useUsers } from '@/hooks';
 import { useApplyReferralMutation } from '@/redux/api/user/referralApi';
 import { useGetRecommendedGamesQuery } from '@/redux/api/user/recommendationApi';
@@ -124,8 +119,7 @@ export const Home = () => {
     type: 'discounted',
   });
 
-  const { data: responseRecommended, isSuccess: isRecommendedSuccess } =
-    useGetRecommendedGamesQuery({ limit: 5 });
+  const recommendedGamesQuery = useGetRecommendedGamesQuery({ limit: 5 });
 
   const handleCloseReferralModal = () => {
     setIsReferralModalOpen(false);
@@ -199,15 +193,22 @@ export const Home = () => {
             onRetry={discountedGamesQuery.refetch}
           />
         </div>
-      </div>
 
-      <div className='my-10'>
-        {isRecommendedSuccess && (
-          <RecommendedGames
+        <div className='my-10'>
+          <GameListing
             title='Recommended'
-            games={responseRecommended?.data}
+            games={recommendedGamesQuery.data?.data?.products}
+            currentPage={pageState.discountedGames}
+            totalPage={recommendedGamesQuery.data?.data?.totalPages}
+            onPageChange={(page) =>
+              setPageState((prev) => ({ ...prev, discountedGames: page }))
+            }
+            isLoading={recommendedGamesQuery.isLoading}
+            isFetching={recommendedGamesQuery.isFetching}
+            isError={recommendedGamesQuery.isError}
+            onRetry={recommendedGamesQuery.refetch}
           />
-        )}
+        </div>
       </div>
 
       <ReferralModal

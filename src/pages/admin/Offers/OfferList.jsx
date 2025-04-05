@@ -185,7 +185,10 @@ export const OfferList = () => {
                           variant='outline'
                           size='icon'
                           onClick={() => handleListingModal(offer._id)}
-                          disabled={isToggleLoading}
+                          disabled={
+                            new Date(offer.endDate).getTime() <
+                              new Date().getTime() || isToggleLoading
+                          }
                           className='bg-accent-red border-none h-8 w-8 px-5 py-5 text-primary-text hover:bg-accent-red/90 transition'>
                           {offer.isActive ? (
                             <X className='h-4 w-4' />
