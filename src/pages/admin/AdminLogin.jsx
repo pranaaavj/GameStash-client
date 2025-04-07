@@ -117,7 +117,7 @@ export const AdminLogin = () => {
         <p className='text-xs sm:text-sm md:text-base lg:text-lg text-gray-400 mt-3 sm:mt-4 text-center'>
           Not an admin ?
           <Link
-            to={'/auth/login'}
+            to={'/login'}
             className='text-red-500 hover:underline ml-1 sm:ml-2'>
             Click here to login
           </Link>

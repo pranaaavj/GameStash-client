@@ -6,7 +6,7 @@ export const GameDetailsError = ({ error }) => {
   const navigate = useNavigate();
 
   return (
-    <div className='mt-20 bg-primary-bg text-primary-text font-sans flex items-center justify-center p-4'>
+    <div className='mt-20 bg-primary-bg/50 text-primary-text font-sans flex items-center justify-center p-4'>
       <div className='max-w-md w-full bg-secondary-bg/30 rounded-xl p-6 sm:p-8 shadow-lg'>
         <div className='flex flex-col items-center text-center'>
           <div className='bg-accent-red/10 p-3 rounded-full mb-4'>

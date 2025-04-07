@@ -58,7 +58,7 @@ export const Register = () => {
         dispatch(resetAuthState());
         setUserInput(initialInput);
 
-        navigate('/auth/login');
+        navigate('/login');
       }
     } catch (err) {
       handleApiError(err);
@@ -133,7 +133,7 @@ export const Register = () => {
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Already have an account?
           <Link
-            to='/auth/login'
+            to='/login'
             className='text-red-500 hover:underline ml-2 font-sans'>
             Login now
           </Link>

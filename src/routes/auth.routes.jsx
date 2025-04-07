@@ -13,9 +13,10 @@ import { UnauthorizedRoute, ProtectOtp } from './ProtectedRoutes';
 
 export const authRoutes = [
   {
-    path: 'auth',
+    path: '',
     element: <UserLayout />,
     errorElement: <NotFound />,
+    meta: { breadcrumb: 'Home' },
     children: [
       {
         path: '',
@@ -24,6 +25,7 @@ export const authRoutes = [
           {
             path: 'login',
             element: <Login />,
+            meta: { breadcrumb: 'Login' },
           },
           {
             path: 'register',
@@ -32,6 +34,22 @@ export const authRoutes = [
                 <Register />
               </ProtectOtp>
             ),
+            meta: { breadcrumb: 'Register' },
+          },
+          {
+            path: 'send-otp',
+            element: <SendOtpEmail />,
+            meta: { breadcrumb: 'Send OTP' },
+          },
+          {
+            path: 'verify-email',
+            element: <VerifyOtpEmail />,
+            meta: { breadcrumb: 'Verify Email' },
+          },
+          {
+            path: 'verify-pass',
+            element: <VerifyOtpPassword />,
+            meta: { breadcrumb: 'Verify Password' },
           },
           {
             path: 'reset-pass',
@@ -40,29 +58,14 @@ export const authRoutes = [
                 <ResetPassword />
               </ProtectOtp>
             ),
-          },
-          {
-            path: 'otp',
-            children: [
-              {
-                path: 'send',
-                element: <SendOtpEmail />,
-              },
-              {
-                path: 'verify-email',
-                element: <VerifyOtpEmail />,
-              },
-              {
-                path: 'verify-pass',
-                element: <VerifyOtpPassword />,
-              },
-            ],
+            meta: { breadcrumb: 'Reset Password' },
           },
         ],
       },
       {
         path: 'unauthorized',
         element: <Unauthorized />,
+        meta: { breadcrumb: 'Unauthorized' },
       },
     ],
   },

@@ -32,7 +32,7 @@ export const VerifyOtpPassword = () => {
 
   useEffect(() => {
     if (otpStatus !== 'pending' && otpType !== 'forgotPassword') {
-      navigate('/auth/login');
+      navigate('/login');
     }
   }, [otpStatus, otpType, navigate]);
 
@@ -69,7 +69,7 @@ export const VerifyOtpPassword = () => {
       if (response?.success) {
         dispatch(setOtpStatus({ status: 'verified' }));
         showToast.success(response.message);
-        navigate('/auth/reset-pass');
+        navigate('/reset-pass');
         setOtpInput('');
       }
     } catch (err) {

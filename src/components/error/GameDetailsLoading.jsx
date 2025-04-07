@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/shadcn/components/ui/card';
 
 export const GameDetailsLoading = () => {
   return (
-    <div className='min-h-screen bg-primary-bg text-primary-text font-sans select-none'>
+    <div className='min-h-screen bg-primary-bg/50 text-primary-text font-sans select-none'>
       <div className='container mx-auto py-6 sm:py-8'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10'>
           {/* Left Column */}

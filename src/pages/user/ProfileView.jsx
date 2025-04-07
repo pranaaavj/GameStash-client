@@ -92,10 +92,9 @@ export const ProfileView = () => {
   };
 
   return (
-    <Card className='bg-secondary-bg border-none shadow-xl overflow-hidden rounded-xl text-primary-text p-4 sm:p-6 md:p-8'>
+    <Card className='bg-secondary-bg/20 border-none shadow-xl overflow-hidden rounded-xl text-primary-text p-4 sm:p-6 md:p-8'>
       <CardContent className='p-0'>
         <div className='relative'>
-          <div className='absolute inset-0'></div>
           <div className='relative z-10 p-6 sm:p-8 md:p-10'>
             <div className='flex flex-col sm:flex-row items-center sm:items-start gap-6'>
               <div className='relative'>
@@ -183,13 +182,13 @@ export const ProfileView = () => {
                         variant='outline'
                         type='button'
                         onClick={handleEditModeToggle}
-                        className='bg-primary-bg text-primary-text hover:bg-secondary-bg'>
+                        className='bg-accent-red border-none text-primary-text hover:text-primary-text hover:bg-hover-red'>
                         Cancel
                       </Button>
                       <Button
                         type='submit'
                         disabled={isSaving}
-                        className='bg-accent-blue hover:bg-accent-blue/90 text-white'>
+                        className='bg-accent-blue border-none hover:bg-hover-blue text-white'>
                         {isSaving ? 'Saving...' : 'Save Changes'}
                       </Button>
                     </div>

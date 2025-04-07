@@ -217,7 +217,7 @@ export const GameDetails = () => {
   return (
     <PageTransition>
       {isProductsSuccess && (
-        <div className='min-h-screen bg-primary-bg text-primary-text font-sans select-none'>
+        <div className='min-h-screen bg-transparent text-primary-text font-sans select-none'>
           <div className='container mx-auto px-4 py-6 sm:py-8'>
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10'>
               {/* Left Column */}
@@ -651,6 +651,7 @@ export const GameDetails = () => {
                     relatedGames: page,
                   }))
                 }
+                isFetching={relatedQuery.isFetching}
                 isLoading={relatedQuery.isLoading}
                 isError={relatedQuery.isError}
                 onRetry={relatedQuery.refetch}

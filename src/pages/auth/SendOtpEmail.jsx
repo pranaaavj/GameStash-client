@@ -45,7 +45,7 @@ export const SendOtpEmail = () => {
           dispatch(setAuthEmail({ email: userEmail, type: 'registration' }));
           dispatch(setOtpStatus({ status: 'pending' }));
           showToast.success(response.message);
-          navigate('/auth/otp/verify-email');
+          navigate('/verify-email');
         }
       } catch (err) {
         handleApiError(err);
@@ -93,7 +93,7 @@ export const SendOtpEmail = () => {
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Already have an account ?
           <Link
-            to='/auth/login'
+            to='/login'
             className='text-red-500 hover:underline ml-1 sm:ml-2'>
             Login now
           </Link>

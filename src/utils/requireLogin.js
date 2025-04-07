@@ -1,10 +1,10 @@
-import { toast } from 'sonner';
+import { showToast } from '.';
 
 export const requireLogin = (user, navigate, location) => {
   if (!user.userInfo) {
-    toast.error('Please login to continue.');
+    showToast.error('Please login to continue.');
 
-    navigate('/auth/login', { state: { from: location.pathname } });
+    navigate('/login', { state: { from: location.pathname } });
     return false;
   }
 

@@ -62,7 +62,7 @@ export const ResetPassword = () => {
       if (response?.success) {
         showToast.success(response.message);
         dispatch(resetAuthState());
-        navigate('/auth/login');
+        navigate('/login');
       }
     } catch (err) {
       handleApiError(err);

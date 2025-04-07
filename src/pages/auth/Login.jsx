@@ -94,7 +94,7 @@ export const Login = () => {
         dispatch(setOtpStatus({ status: 'pending' }));
 
         showToast.success(response.message, { duration: 1500 });
-        navigate('/auth/otp/verify-pass');
+        navigate('/verify-pass');
       }
     } catch (err) {
       handleApiError(err);
@@ -261,7 +261,7 @@ export const Login = () => {
           <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
             Don&#39;t have an Account?
             <Link
-              to='/auth/otp/send'
+              to='/send-otp'
               className='text-red-500 hover:underline ml-1 sm:ml-2'>
               Create one here
             </Link>

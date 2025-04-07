@@ -37,7 +37,7 @@ import {
   HelpCircle,
   Info,
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { showToast } from '@/utils';
 
 export const Navbar = ({ onCartClick }) => {
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ export const Navbar = ({ onCartClick }) => {
     await logoutUser();
     dispatch(logout());
     persistor.purge();
-    toast.success('You have been successfully logged out');
+    showToast.success('You have been successfully logged out');
   };
 
   // Check if a nav link is active
@@ -180,7 +180,7 @@ export const Navbar = ({ onCartClick }) => {
               {user?.userInfo ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <motion.div className='flex items-center space-x-2 cursor-pointer border-none ring-0'>
+                    <motion.div className='flex items-center space-x-2 cursor-pointer border-non ring-0'>
                       <Avatar className='w-8 h-8 transition-all duration-200'>
                         <AvatarImage
                           src={user.userInfo.profilePicture}
@@ -197,7 +197,7 @@ export const Navbar = ({ onCartClick }) => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align='end'
-                    className='bg-secondary-bg border-primary-bg/20 shadow-lg border'
+                    className='bg-secondary-bg border-primary-bg/20 shadow-lg border w-full'
                     sideOffset={8}>
                     <DropdownMenuLabel className='text-primary-text '>
                       My Account
@@ -237,12 +237,12 @@ export const Navbar = ({ onCartClick }) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link to='/auth/login'>
+                <Link to='/login'>
                   <motion.div>
                     <Button
                       variant='outline'
                       size='sm'
-                      className='bg-accent-red text-primary-text border-none hover:bg-accent-red/90 text-sm w-full'>
+                      className='bg-accent-red text-primary-text hover:scale-105 transition-all hover:text-white border-none hover:bg-accent-red/90 text-sm w-full'>
                       <User className='w-4 h-4 mr-2' />
                       Sign In
                     </Button>
@@ -268,13 +268,15 @@ export const Navbar = ({ onCartClick }) => {
             <motion.div
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}>
-              <Button
-                variant='ghost'
-                size='icon'
-                onClick={onCartClick}
-                className='text-primary-text hover:text-accent-red hover:bg-primary-bg/10'>
-                <ShoppingCart className='h-6 w-6' />
-              </Button>
+              <Link to='/cart'>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  onClick={onCartClick}
+                  className='text-primary-text hover:text-accent-red hover:bg-primary-bg/10'>
+                  <ShoppingCart className='h-6 w-6' />
+                </Button>
+              </Link>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.1 }}
@@ -337,7 +339,7 @@ export const Navbar = ({ onCartClick }) => {
                 </div>
               ) : (
                 <div className='py-2 border-b border-primary-bg/10 mb-4'>
-                  <Link to='/auth/login'>
+                  <Link to='/login'>
                     <Button
                       variant='outline'
                       className='bg-accent-red text-primary-text border-none hover:bg-accent-red/90 text-sm w-full'>

@@ -41,7 +41,7 @@ export const GameCarousal = ({
 
   return (
     <div
-      className='w-full bg-[#121212] text-white overflow-hidden rounded-xl py-3'
+      className='w-full text-white overflow-hidden rounded-xl py-3'
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       <div className='flex flex-col lg:flex-row'>
@@ -81,11 +81,11 @@ export const GameCarousal = ({
                       </div>
                       <div className='flex flex-col sm:flex-row gap-3 pt-2'>
                         <Link to={`/game/${activeGame.id}`}>
-                          <button className='bg-white hover:bg-gray-200 text-black text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6 rounded-md font-medium flex items-center justify-center transition-colors'>
+                          <button className='bg-accent-blue hover:bg-hover-blue text-white text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6 rounded-md font-medium flex items-center justify-center transition-colors'>
                             Buy Now
                           </button>
                         </Link>
-                        <button className='border border-white/30 hover:border-white text-white text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6 rounded-md font-medium flex items-center justify-center transition-colors'>
+                        <button className='bg-accent-blue hover:bg-hover-blue text-white text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6 rounded-md font-medium flex items-center justify-center transition-colors'>
                           <Plus className='mr-2 h-4 w-4' />
                           Add to Wishlist
                         </button>

@@ -16,11 +16,12 @@ import {
 import { ChevronRight } from 'lucide-react';
 
 import { InputField } from '@/components/common';
-
-import { useChangeUserPassMutation } from '@/redux/api/user/profileApi';
 import { useUsers } from '@/hooks';
 
-import { validateChangePassword, showToast, handleApiError } from '@/utils';
+import { useChangeUserPassMutation } from '@/redux/api/user/profileApi';
+import { validateChangePassword } from '@/utils/validation/validateChangePassword';
+import { showToast } from '@/utils/showToast';
+import { handleApiError } from '@/utils/handleApiError';
 
 export const ChangePassword = () => {
   const user = useUsers();
@@ -71,7 +72,7 @@ export const ChangePassword = () => {
   };
 
   return (
-    <Card className='bg-secondary-bg border-none text-primary-text shadow-lg'>
+    <Card className='bg-secondary-bg/20 shadow-xl border-none text-primary-text'>
       <CardHeader>
         <CardTitle className='text-2xl'>Security Settings</CardTitle>
         <CardDescription>
@@ -137,8 +138,8 @@ export const ChangePassword = () => {
               <div className='flex justify-end'>
                 <Button
                   type='submit'
-                  className='bg-accent-blue hover:bg-hover-blue text-white'
-                  disabled={isLoading}>
+                  disabled={isLoading}
+                  className='bg-accent-blue hover:bg-hover-blue text-white'>
                   {isLoading ? 'Updating...' : 'Update Password'}
                 </Button>
               </div>

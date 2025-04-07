@@ -20,7 +20,7 @@ import { Input } from '@/shadcn/components/ui/input';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { Badge } from '@/shadcn/components/ui/badge';
-import { toast } from 'sonner';
+import { showToast } from '@/utils';
 
 export const Support = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -123,7 +123,9 @@ export const Support = () => {
   const handleSubmitContactForm = (e) => {
     e.preventDefault();
 
-    toast.success("Your message has been sent! We'll get back to you soon.");
+    showToast.success(
+      "Your message has been sent! We'll get back to you soon."
+    );
     setContactForm({
       name: '',
       email: '',
@@ -139,7 +141,7 @@ export const Support = () => {
   );
 
   return (
-    <div className='min-h-screen bg-primary-bg text-primary-text font-sans select-none'>
+    <div className='min-h-screen bg-transparent text-primary-text font-sans select-none'>
       <div className='container mx-auto px-4 py-6 sm:py-8'>
         {/* Hero Section */}
         <motion.div
@@ -198,7 +200,7 @@ export const Support = () => {
                       <category.icon className='h-6 w-6 text-accent-blue' />
                     </div>
                     <div>
-                      <h3 className='text-xl font-bold mb-2'>
+                      <h3 className='text-xl text-secondary-text font-bold mb-2'>
                         {category.title}
                       </h3>
                       <p className='text-secondary-text'>

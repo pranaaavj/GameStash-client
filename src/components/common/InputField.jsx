@@ -37,8 +37,8 @@ export const InputField = ({
           borderColor: '#c0c0c0',
         }}
         _focus={{
-          border: '1px',
-          borderColor: '#f2f2f2',
+          border: '1px solid #f2f2f2',
+          boxShadow: 'none',
         }}
         bgColor={'#262626'}
         border={'1px solid transparent'}

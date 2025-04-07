@@ -142,7 +142,7 @@ export const Home = () => {
 
   return (
     <PageTransition>
-      <div className='min-h-screen bg-primary-bg text-primary-text font-sans'>
+      <div className='min-h-screen text-primary-text font-sans'>
         <GameCarousal
           games={FEATURED_GAMES}
           autoSwitchInterval={4000}
