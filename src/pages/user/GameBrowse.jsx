@@ -75,7 +75,7 @@ export const GameBrowse = () => {
   return (
     <PageTransition>
       <div className='bg-transparent min-h-screen'>
-        <div className='max-w-7xl mx-auto px-4 py-6'>
+        <div className='max-w-7xl mx-auto'>
           {/* Mobile filter toggle */}
           <div className='lg:hidden mb-4'>
             <Button

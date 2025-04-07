@@ -15,7 +15,7 @@ export const UserLayout = () => {
 
       <Navbar />
       <ScrollToTop />
-      <div className='pt-16 px-4 sm:px-8 md:px-12 lg:px-20 relative z-10'>
+      <div className='pt-16 sm:px-8 md:px-12 lg:px-20 relative z-10'>
         <Breadcrumbs />
       </div>
       {navigation.state === 'loading' && <Loading />}

@@ -41,7 +41,7 @@ export const GameCarousal = ({
 
   return (
     <div
-      className='w-full text-white overflow-hidden rounded-xl py-3'
+      className='w-full text-white overflow-hidden rounded-xl'
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       <div className='flex flex-col lg:flex-row'>
