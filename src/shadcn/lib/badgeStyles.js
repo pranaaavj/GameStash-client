@@ -1,17 +1,15 @@
 import { cva } from 'class-variance-authority';
 
 export const badgeVariants = cva(
-  'inline-flex items-center rounded-md border border-gray-200 px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 dark:border-gray-800 dark:focus:ring-gray-300',
+  'inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none',
   {
     variants: {
       variant: {
-        default:
-          'border-transparent bg-gray-900 text-gray-50 shadow hover:bg-gray-900/80 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/80',
-        secondary:
-          'border-transparent bg-gray-100 text-gray-900 hover:bg-gray-100/80 dark:bg-gray-800 dark:text-gray-50 dark:hover:bg-gray-800/80',
-        destructive:
-          'border-transparent bg-red-500 text-gray-50 shadow hover:bg-red-500/80 dark:bg-red-900 dark:text-gray-50 dark:hover:bg-red-900/80',
-        outline: 'text-gray-950 dark:text-gray-50',
+        default: 'bg-primary text-primary-foreground',
+
+        success: 'bg-accent-green text-black',
+        secondary: 'bg-accent-blue text-black',
+        destructive: 'bg-accent-red text-white',
       },
     },
     defaultVariants: {

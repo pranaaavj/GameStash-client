@@ -19,21 +19,13 @@ import { Loading } from '@/components/error';
 import { useUsers } from '@/hooks';
 import { PageTransition } from '@/components/common';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  lazy,
-  Suspense,
-} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReviewOrder } from './ReviewOrder';
 import { motion, AnimatePresence } from 'framer-motion';
 import { handleApiError, showToast } from '@/utils';
-
-const Address = lazy(() => import('@/components/user/Address'));
-const ReviewOrder = lazy(() => import('./ReviewOrder'));
-const PaymentSection = lazy(() => import('./Payment'));
-const CouponsSection = lazy(() => import('./Coupons'));
+import { Coupons } from './Coupons';
+import { Payment } from './Payment';
+import { Address } from '@/components/user/Address';
 
 export const CheckoutPage = () => {
   const user = useUsers();
@@ -397,33 +389,19 @@ export const CheckoutPage = () => {
                           transition={{ duration: 0.2 }}>
                           <div className='p-4 border-t border-primary-bg/20'>
                             {section.id === 'address' && (
-                              <Suspense fallback={null}>
-                                <Address
-                                  onAddressSelect={handleAddressSelect}
-                                />
-                              </Suspense>
+                              <Address onAddressSelect={handleAddressSelect} />
                             )}
                             {section.id === 'payment' && (
-                              <Suspense fallback={null}>
-                                <PaymentSection
-                                  onPaymentSelect={handlePaymentSelect}
-                                />
-                              </Suspense>
+                              <Payment onPaymentSelect={handlePaymentSelect} />
                             )}
                             {section.id === 'coupons' && (
-                              <Suspense fallback={null}>
-                                <CouponsSection
-                                  onCouponSelect={handleCouponSelect}
-                                />
-                              </Suspense>
+                              <Coupons onCouponSelect={handleCouponSelect} />
                             )}
                             {section.id === 'review' && (
-                              <Suspense fallback={null}>
-                                <ReviewOrder
-                                  onDeliverySelect={handleDeliverySelect}
-                                  cartItems={cartItems || []}
-                                />
-                              </Suspense>
+                              <ReviewOrder
+                                onDeliverySelect={handleDeliverySelect}
+                                cartItems={cartItems || []}
+                              />
                             )}
                           </div>
                         </motion.div>

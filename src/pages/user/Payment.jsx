@@ -1,22 +1,25 @@
 import { useEffect, useState } from 'react';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { Label } from '@/shadcn/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shadcn/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
 import { Wallet, Smartphone, AlertCircle, Info } from 'lucide-react';
-import { useUsers } from '@/hooks';
-import { useGetCartQuery } from '@/redux/api/user/cartApi';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/shadcn/components/ui/tooltip';
 
-export default function PaymentSection({ onPaymentSelect }) {
+import { useUsers } from '@/hooks';
+import { useGetCartQuery } from '@/redux/api/user/cartApi';
+
+export const Payment = ({ onPaymentSelect }) => {
   const user = useUsers();
 
   const [selectedMethod, setSelectedMethod] = useState('');
   const [isCodDisabled, setIsCodDisabled] = useState(false);
+
   const { data: responseCart } = useGetCartQuery(user?.userInfo?.id, {
     skip: !user?.userInfo?.id,
   });
@@ -125,14 +128,13 @@ export default function PaymentSection({ onPaymentSelect }) {
                   </div>
                 </div>
 
-                {/* Show Info Icon when COD is disabled */}
                 {isCodDisabled && <Info className='w-5 h-5 text-gray-400' />}
               </Label>
             </TooltipTrigger>
-            {/* Show reason for disabling COD */}
+
             {isCodDisabled && (
               <TooltipContent className='bg-accent-red/70 text-white p-2 text-sm rounded-md'>
-                {'Cash on delivery is not available for orders above Rs 2000.'}
+                Cash on delivery is not available for orders above Rs 2000.
               </TooltipContent>
             )}
           </Tooltip>
@@ -149,4 +151,4 @@ export default function PaymentSection({ onPaymentSelect }) {
       </Alert>
     </div>
   );
-}
+};

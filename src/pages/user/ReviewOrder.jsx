@@ -4,7 +4,7 @@ import { Label } from '@/shadcn/components/ui/label';
 import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
 import { Truck, Package, AlertCircle } from 'lucide-react';
 
-export default function ReviewOrder({ onDeliverySelect, cartItems }) {
+export const ReviewOrder = ({ onDeliverySelect, cartItems }) => {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
 
   const handleDeliverySelection = (value) => {
@@ -12,7 +12,7 @@ export default function ReviewOrder({ onDeliverySelect, cartItems }) {
       (option) => option.id === value
     );
     setSelectedDelivery(value);
-    onDeliverySelect(selectedOption); // Pass selected delivery option to parent
+    onDeliverySelect(selectedOption);
   };
 
   const deliveryOptions = [
@@ -47,6 +47,7 @@ export default function ReviewOrder({ onDeliverySelect, cartItems }) {
           <Truck className='w-5 h-5 text-accent-red' />
           <h3 className='font-medium'>Choose your delivery option</h3>
         </div>
+
         <RadioGroup
           value={selectedDelivery}
           onValueChange={handleDeliverySelection}>
@@ -94,7 +95,7 @@ export default function ReviewOrder({ onDeliverySelect, cartItems }) {
                 className='w-16 h-16 object-cover rounded-md'
               />
               <div className='flex-1'>
-                <h4 className='font-medium'>{item?.product?.name}</h4>
+                <h4 className='font-medium'>{item?.product.name}</h4>
                 <p className='text-sm text-secondary-text'>
                   Quantity: {item?.quantity}
                 </p>
@@ -118,4 +119,4 @@ export default function ReviewOrder({ onDeliverySelect, cartItems }) {
       </Alert>
     </div>
   );
-}
+};
