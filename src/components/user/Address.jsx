@@ -1,22 +1,26 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/shadcn/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/shadcn/components/ui/card';
-import { ConfirmationModal, InputField } from '@/components/common';
-import { MapPin, Plus, Trash2, Edit2, Save, Loader2 } from 'lucide-react';
-import {
-  useGetAllAddressesQuery,
   useAddAddressMutation,
   useEditAddressMutation,
+  useGetAllAddressesQuery,
   useDeleteAddressMutation,
 } from '@/redux/api/user/addressApi';
-import { toast } from 'sonner';
-import { validateAddress } from '@/utils/validation/validateAddress';
+
+import { useState, useEffect } from 'react';
+import { MapPin, Plus, Trash2, Edit2, Save, Loader2 } from 'lucide-react';
+
+import { showToast } from '@/utils/showToast';
+import { handleApiError } from '@/utils/handleApiError';
+
+import {
+  Card,
+  CardTitle,
+  CardHeader,
+  CardContent,
+} from '@/shadcn/components/ui/card';
+import { Button } from '@/shadcn/components/ui/button';
 import { AddressLoading } from '@/components/error';
+import { validateAddress } from '@/utils/validation/validateAddress';
+import { ConfirmationModal, InputField } from '@/components/common';
 
 const initialAddressState = {
   addressName: '',
@@ -29,7 +33,7 @@ const initialAddressState = {
   isDefault: false,
 };
 
-export default function Address({ onAddressSelect }) {
+export const Address = ({ onAddressSelect }) => {
   const [addresses, setAddresses] = useState([]);
   const [addressForm, setAddressForm] = useState(initialAddressState);
   const [editingId, setEditingId] = useState(null);
@@ -38,14 +42,12 @@ export default function Address({ onAddressSelect }) {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // API Hooks
   const { data: responseAddresses, isLoading: isAddressLoading } =
     useGetAllAddressesQuery();
   const [addAddress, { isLoading: isAdding }] = useAddAddressMutation();
   const [editAddress, { isLoading: isEditing }] = useEditAddressMutation();
   const [deleteAddress, { isLoading: isDeleting }] = useDeleteAddressMutation();
 
-  // Load addresses when response data changes
   useEffect(() => {
     if (responseAddresses) {
       setAddresses(responseAddresses.data);
@@ -54,10 +56,9 @@ export default function Address({ onAddressSelect }) {
 
   const handleAddressClick = (address) => {
     setSelectedAddress(address);
-    onAddressSelect && onAddressSelect(address);
+    onAddressSelect?.(address);
   };
 
-  // Handle input changes for the form
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setAddressForm((prev) => ({
@@ -67,10 +68,8 @@ export default function Address({ onAddressSelect }) {
     setValidation((prev) => ({ ...prev, [name]: '' }));
   };
 
-  // Add a new address
   const handleAddAddress = async (e) => {
     e.preventDefault();
-
     const validation = validateAddress(addressForm);
     setValidation(validation);
     if (Object.keys(validation).length) return;
@@ -78,20 +77,17 @@ export default function Address({ onAddressSelect }) {
     try {
       const response = await addAddress(addressForm).unwrap();
       if (response.success) {
-        toast.success('Address added successfully!');
+        showToast.success('Address added successfully!');
+        setAddressForm(initialAddressState);
+        setIsAddingNew(false);
       }
-      setAddressForm(initialAddressState);
-      setIsAddingNew(false);
     } catch (error) {
-      console.log(error);
-      toast.error('Failed to add address');
+      handleApiError(error);
     }
   };
 
-  // Edit an address
   const handleEditAddress = async (e) => {
     e.preventDefault();
-
     const validation = validateAddress(addressForm);
     setValidation(validation);
     if (Object.keys(validation).length) return;
@@ -106,31 +102,27 @@ export default function Address({ onAddressSelect }) {
         setAddresses((prev) =>
           prev.map((addr) => (addr.id === editingId ? response.data : addr))
         );
-        toast.success('Address updated successfully!');
+        showToast.success('Address updated successfully!');
+        setAddressForm(initialAddressState);
+        setEditingId(null);
       }
-      setAddressForm(initialAddressState);
-      setEditingId(null);
     } catch (error) {
-      console.log(error);
-      toast.error('Failed to update address');
+      handleApiError(error);
     }
   };
 
-  // Delete an address
   const handleDeleteAddress = async (id) => {
     try {
       const response = await deleteAddress(id).unwrap();
       if (response.success) {
-        toast.success('Address deleted successfully!');
+        showToast.success('Address deleted successfully!');
         setAddresses((prev) => prev.filter((addr) => addr.id !== id));
       }
     } catch (error) {
-      console.log(error);
-      toast.error('Failed to delete address');
+      handleApiError(error);
     }
   };
 
-  // Toggle edit mode and load selected address for editing
   const toggleEdit = (id) => {
     const address = addresses.find((addr) => addr.id === id);
     setAddressForm(address);
@@ -138,9 +130,7 @@ export default function Address({ onAddressSelect }) {
     setIsAddingNew(false);
   };
 
-  if (isAddressLoading) {
-    return <AddressLoading />;
-  }
+  if (isAddressLoading) return <AddressLoading />;
 
   return (
     <Card className='bg-secondary-bg border-none text-primary-text overflow-hidden'>
@@ -150,6 +140,7 @@ export default function Address({ onAddressSelect }) {
           Your Addresses
         </CardTitle>
       </CardHeader>
+
       <CardContent className='p-4 sm:p-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         {addresses.map((address) => (
           <Card
@@ -184,7 +175,7 @@ export default function Address({ onAddressSelect }) {
                     isInvalid={!!validation.addressLine}
                     errorMessage={validation.addressLine}
                   />
-                  {/* Default Address Checkbox */}
+
                   <label className='flex items-center'>
                     <input
                       type='checkbox'
@@ -218,6 +209,7 @@ export default function Address({ onAddressSelect }) {
                       errorMessage={validation.state}
                     />
                   </div>
+
                   <div className='grid grid-cols-2 gap-2'>
                     <InputField
                       label='ZIP/Postal Code'
@@ -240,6 +232,7 @@ export default function Address({ onAddressSelect }) {
                       errorMessage={validation.country}
                     />
                   </div>
+
                   <div className='flex justify-end'>
                     <Button
                       type='submit'
@@ -250,7 +243,7 @@ export default function Address({ onAddressSelect }) {
                         <Loader2 className='w-4 h-4 animate-spin mr-2' />
                       ) : (
                         <Save className='w-4 h-4 mr-2' />
-                      )}{' '}
+                      )}
                       Save
                     </Button>
                   </div>
@@ -277,6 +270,7 @@ export default function Address({ onAddressSelect }) {
                         {address.country}
                       </p>
                     </div>
+
                     <div className='flex space-x-2'>
                       <Button
                         size='icon'
@@ -286,6 +280,7 @@ export default function Address({ onAddressSelect }) {
                         <Edit2 className='w-4 h-4' />
                         <span className='sr-only'>Edit</span>
                       </Button>
+
                       <Button
                         size='icon'
                         variant='ghost'
@@ -297,10 +292,10 @@ export default function Address({ onAddressSelect }) {
                           <Trash2 className='w-4 h-4' />
                         )}
                       </Button>
+
                       <ConfirmationModal
                         isOpen={isModalOpen}
                         onClose={() => {
-                          setIsAddingNew(false);
                           setIsModalOpen(false);
                         }}
                         onConfirm={() => {
@@ -312,6 +307,7 @@ export default function Address({ onAddressSelect }) {
                       />
                     </div>
                   </div>
+
                   <div>
                     {address.isDefault && !onAddressSelect && (
                       <span className='text-xs bg-accent-red/10 text-accent-red px-2 py-1 rounded'>
@@ -334,22 +330,33 @@ export default function Address({ onAddressSelect }) {
           </Card>
         ))}
 
-        {/* Button to Show New Address Form */}
         <Card
           className='bg-primary-bg/30 border-2 border-dashed border-accent-blue/30 flex items-center justify-center p-6 cursor-pointer hover:bg-primary-bg/50 transition-colors duration-300'
           onClick={() => {
-            setIsAddingNew(true);
-            setEditingId(null);
-            setAddressForm(initialAddressState);
+            if (isAddingNew) {
+              setIsAddingNew(false);
+            } else {
+              setIsAddingNew(true);
+              setEditingId(null);
+              setAddressForm(initialAddressState);
+            }
           }}>
           <div className='text-center'>
-            <Plus className='w-12 h-12 mx-auto text-accent-blue mb-2' />
-            <p className='font-medium text-accent-blue'>Add New Address</p>
+            <Plus
+              className={`w-12 h-12 mx-auto ${
+                isAddingNew ? 'text-accent-red' : 'text-accent-blue'
+              } mb-2`}
+            />
+            <p
+              className={`font-medium ${
+                isAddingNew ? 'text-accent-red' : 'text-accent-blue'
+              }`}>
+              {isAddingNew ? 'Cancel' : 'Add New Address'}
+            </p>
           </div>
         </Card>
       </CardContent>
 
-      {/* New Address Form */}
       {isAddingNew && (
         <CardContent className='p-4'>
           <form
@@ -400,6 +407,7 @@ export default function Address({ onAddressSelect }) {
                 errorMessage={validation.state}
               />
             </div>
+
             <div className='grid grid-cols-2 gap-2'>
               <InputField
                 label='ZIP/Postal Code'
@@ -422,7 +430,7 @@ export default function Address({ onAddressSelect }) {
                 errorMessage={validation.country}
               />
             </div>
-            {/* Default Address Checkbox */}
+
             <label className='flex items-center'>
               <input
                 type='checkbox'
@@ -433,6 +441,7 @@ export default function Address({ onAddressSelect }) {
               />
               Set as default address
             </label>
+
             <div className='flex justify-end'>
               <Button
                 type='submit'
@@ -443,8 +452,8 @@ export default function Address({ onAddressSelect }) {
                   <Loader2 className='w-4 h-4 animate-spin mr-2' />
                 ) : (
                   <Save className='w-4 h-4 mr-2' />
-                )}{' '}
-                Save Address
+                )}
+                {isAdding ? 'Saving...' : 'Save Address'}
               </Button>
             </div>
           </form>
@@ -452,4 +461,4 @@ export default function Address({ onAddressSelect }) {
       )}
     </Card>
   );
-}
+};

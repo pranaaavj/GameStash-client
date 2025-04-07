@@ -21,5 +21,7 @@ export { HomeLoading } from './HomeLoading';
 
 export { AddressLoading } from './AddressLoading';
 
+export { OrderDetailsLoading } from './OrderDetailsLoading';
+
 export { ShimmerCard } from './ShimmerCard';
 export { RelatedGamesFallback } from './RelatedGamesFallback';

@@ -6,11 +6,13 @@ import {
   useVerifyRazorpayMutation,
   useDownloadInvoicePDFMutation,
 } from '@/redux/api/user/ordersApi';
-import { toast } from 'sonner';
+import { showToast } from '@/utils';
+import { handleApiError } from '@/utils';
 import { useState } from 'react';
 import { Alert, StatusBadge } from '@/components/common';
 import { ConfirmationModal } from '@/components/common';
 import { useParams, useNavigate } from 'react-router-dom';
+
 import {
   Package,
   ArrowLeft,
@@ -19,7 +21,6 @@ import {
   Calendar,
   Clock,
   ShoppingBag,
-  AlertCircle,
   Truck,
   RotateCcw,
   CircleX,
@@ -33,7 +34,6 @@ import {
 } from '@/shadcn/components/ui/card';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Separator } from '@/shadcn/components/ui/separator';
-import { Skeleton } from '@/shadcn/components/ui/skeleton';
 import {
   Tabs,
   TabsContent,
@@ -41,6 +41,9 @@ import {
   TabsTrigger,
 } from '@/shadcn/components/ui/tabs';
 import { useUsers } from '@/hooks';
+import { OrderDetailsLoading } from '@/components/error';
+import { OrderDetailsError } from '@/components/error/OrderDetailsError';
+import { format } from 'date-fns';
 
 export const OrderDetails = () => {
   const { orderId } = useParams();
@@ -77,13 +80,12 @@ export const OrderDetails = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success(response?.message, {
+        showToast.success(response?.message, {
           duration: 1500,
         });
       }
     } catch (error) {
-      toast.error('Failed to cancel item');
-      console.log(error);
+      handleApiError(error, 'Failed to cancel item');
     } finally {
       setSelectedProduct(null);
     }
@@ -98,13 +100,12 @@ export const OrderDetails = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success(response?.message, {
+        showToast.success(response?.message, {
           duration: 1500,
         });
       }
     } catch (error) {
-      toast.error('Failed to cancel order');
-      console.log(error);
+      handleApiError(error, 'Failed to cancel order');
     }
   };
 
@@ -117,13 +118,12 @@ export const OrderDetails = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success(response?.message, {
+        showToast.success(response?.message, {
           duration: 1500,
         });
       }
     } catch (error) {
-      toast.error('Failed to return order');
-      console.log(error);
+      handleApiError(error, 'Failed to return order');
     }
     setSelectedProduct(null);
   };
@@ -146,7 +146,7 @@ export const OrderDetails = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success('Payment retry initiated!');
+        showToast.success('Payment retry initiated!');
         const options = {
           key: import.meta.env.VITE_RZP_KEY_ID,
           amount: response.data.amount,
@@ -168,10 +168,10 @@ export const OrderDetails = () => {
               ).unwrap();
 
               if (paymentResponse?.success) {
-                toast.success('Payment successful!');
+                showToast.success('Payment successful!');
               }
             } catch (error) {
-              toast.error(error?.message || 'Payment verification failed.');
+              handleApiError(error, 'Payment verification failed.');
             }
           },
           theme: { color: '#3399cc' },
@@ -189,7 +189,7 @@ export const OrderDetails = () => {
         razorpay.open();
       }
     } catch (error) {
-      toast.error(error?.message || 'Failed to retry payment.');
+      handleApiError(error, 'Failed to retry payment.');
     }
   };
 
@@ -200,63 +200,23 @@ export const OrderDetails = () => {
       const a = document.createElement('a');
       a.href = url;
       a.download = `sales-report-${orderId}.pdf`;
-
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
-      toast.success(`Report downloading as PDF`);
-    } catch {
-      toast.error('Failed to download report');
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      showToast.success(`Report downloading as PDF`);
+    } catch (error) {
+      handleApiError(error, 'Failed to download report');
     }
   };
 
   if (isLoading) {
-    return (
-      <div className='p-6 md:p-8 text-primary-text'>
-        <Button
-          variant='ghost'
-          onClick={() => navigate('/orders')}
-          className='mb-8 flex items-center gap-2 hover:bg-[#252536] text-[#E2E4F3]'>
-          <ArrowLeft className='h-4 w-4' /> Back to Orders
-        </Button>
-
-        <Card className='bg-[#1E1E2A] shadow-md rounded-xl'>
-          <CardHeader>
-            <div className='flex justify-between'>
-              <Skeleton className='h-8 w-48 bg-[#2A2A3A]' />
-              <Skeleton className='h-8 w-32 bg-[#2A2A3A]' />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className='space-y-6'>
-              <Skeleton className='h-24 w-full bg-[#2A2A3A]' />
-              <Skeleton className='h-48 w-full bg-[#2A2A3A]' />
-              <Skeleton className='h-32 w-full bg-[#2A2A3A]' />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <OrderDetailsLoading />;
   }
 
   if (isError) {
-    return (
-      <div className='p-6 md:p-8 text-primary-text'>
-        <Button
-          variant='ghost'
-          onClick={() => navigate('/orders')}
-          className='mb-8 flex items-center gap-2 hover:bg-[#252536] text-[#E2E4F3]'>
-          <ArrowLeft className='h-4 w-4' /> Back to Orders
-        </Button>
-
-        <div className='bg-[#3A1C1C] rounded-xl p-5 flex items-center gap-3'>
-          <AlertCircle className='h-5 w-5 text-red-500' />
-          <p className='text-red-500'>
-            Error loading order details. Please try again later.
-          </p>
-        </div>
-      </div>
-    );
+    return <OrderDetailsError />;
   }
 
   const order = responseOrder?.data;
@@ -280,11 +240,11 @@ export const OrderDetails = () => {
   };
 
   return (
-    <div className='p-6 md:p-8 text-[#E2E4F3]'>
+    <div className='p-6 md:p-8 text-primary-text'>
       <Button
         variant='ghost'
         onClick={() => navigate('/orders')}
-        className='mb-8 flex items-center gap-2 hover:bg-secondary text-[#E2E4F3]'>
+        className='mb-8 flex items-center gap-2 hover:bg-secondary text-primary-text'>
         <ArrowLeft className='h-4 w-4' /> Back to Orders
       </Button>
 
@@ -292,32 +252,24 @@ export const OrderDetails = () => {
         <CardHeader className='bg-secondary-bg py-6 px-6'>
           <div className='flex flex-col md:flex-row justify-between md:items-center gap-4'>
             <div className='space-y-2'>
-              <CardTitle className='text-2xl flex items-center gap-2 text-[#E2E4F3]'>
-                <Package className='h-5 w-5 text-[#6366F1]' />
+              <CardTitle className='text-2xl flex items-center gap-2 text-secondary-text'>
+                <Package className='h-5 w-5 text-primary-text' />
                 Order #{order._id.slice(-6)}
               </CardTitle>
-              <div className='flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-[#A0A3BD]'>
+              <div className='flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-secondary-text'>
                 <div className='flex items-center gap-1.5'>
                   <Calendar className='h-3.5 w-3.5' />
                   <span>
-                    Placed on{' '}
-                    {new Date(order.placedAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                    Placed on {format(new Date(order.placedAt), 'MMMM d, yyyy')}
                   </span>
                 </div>
+
                 {order.deliveryBy && (
                   <div className='flex items-center gap-1.5'>
                     <Clock className='h-3.5 w-3.5' />
                     <span>
                       Delivery by{' '}
-                      {new Date(order.deliveryBy).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
+                      {format(new Date(order.deliveryBy), 'MMMM d, yyyy')}
                     </span>
                   </div>
                 )}
@@ -326,7 +278,7 @@ export const OrderDetails = () => {
 
             <div className='flex flex-col md:items-end gap-2'>
               <div className='flex items-center gap-3'>
-                <span className='font-bold text-xl text-[#E2E4F3]'>
+                <span className='font-bold text-xl text-primary-text'>
                   ₹{order.finalPrice.toFixed(2)}
                 </span>
                 <StatusBadge status={order.orderStatus} />
@@ -334,7 +286,7 @@ export const OrderDetails = () => {
               <div className='flex flex-wrap gap-2.5 text-sm'>
                 <Badge
                   variant='outline'
-                  className='flex items-center gap-1.5 bg-transparent text-[#A0A3BD]'>
+                  className='flex items-center gap-1.5 bg-white text-black'>
                   <CreditCard className='h-3 w-3' />
                   {order.paymentMethod}
                 </Badge>
@@ -344,16 +296,15 @@ export const OrderDetails = () => {
                       ? 'success'
                       : order.paymentStatus === 'Failed'
                       ? 'destructive'
-                      : 'outline'
-                  }
-                  className='bg-transparent'>
+                      : 'secondary'
+                  }>
                   {order.paymentStatus}
                 </Badge>
               </div>
               <Button
                 variant='ghost'
                 onClick={() => handleDownloadInvoice()}
-                className='bg-accent-blue m-2'>
+                className='bg-accent-blue m-2 hover:bg-hover-blue'>
                 Download PDF
               </Button>
             </div>
@@ -367,17 +318,17 @@ export const OrderDetails = () => {
             <TabsList className='w-full bg-secondary-bg rounded-none justify-start h-auto p-0'>
               <TabsTrigger
                 value='items'
-                className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-[#6366F1] data-[state=active]:bg-transparent py-4 px-6 text-[#A0A3BD] data-[state=active]:text-[#E2E4F3]'>
+                className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary-text data-[state=active]:bg-transparent py-4 px-6 text-secondary-text data-[state=active]:text-primary-text'>
                 Items
               </TabsTrigger>
               <TabsTrigger
                 value='shipping'
-                className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-[#6366F1] data-[state=active]:bg-transparent py-4 px-6 text-[#A0A3BD] data-[state=active]:text-[#E2E4F3]'>
+                className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary-text data-[state=active]:bg-transparent py-4 px-6 text-secondary-text data-[state=active]:text-primary-text'>
                 Shipping
               </TabsTrigger>
               <TabsTrigger
                 value='payment'
-                className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-[#6366F1] data-[state=active]:bg-transparent py-4 px-6 text-[#A0A3BD] data-[state=active]:text-[#E2E4F3]'>
+                className='rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary-text data-[state=active]:bg-transparent py-4 px-6 text-secondary-text data-[state=active]:text-primary-text'>
                 Payment
               </TabsTrigger>
             </TabsList>
@@ -391,7 +342,7 @@ export const OrderDetails = () => {
                     key={item.product._id}
                     className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 p-5 bg-primary-bg/60 rounded-xl'>
                     <div className='flex items-center gap-4'>
-                      <div className='h-20 w-20 rounded-lg bg-[#2A2A3A] overflow-hidden'>
+                      <div className='h-20 w-20 rounded-lg bg-secondary-bg overflow-hidden'>
                         <img
                           src={item.product.images?.[0] || '/placeholder.svg'}
                           alt={item.product.name}
@@ -399,10 +350,10 @@ export const OrderDetails = () => {
                         />
                       </div>
                       <div>
-                        <h3 className='font-medium mb-1.5 text-[#E2E4F3]'>
+                        <h3 className='font-medium mb-1.5 text-primary-text'>
                           {item.product.name}
                         </h3>
-                        <div className='flex flex-wrap gap-2.5 text-sm text-[#A0A3BD]'>
+                        <div className='flex flex-wrap gap-2.5 text-sm text-secondary-text'>
                           <span>Quantity: {item.quantity}</span>
                           <Badge
                             variant={
@@ -410,14 +361,14 @@ export const OrderDetails = () => {
                                 ? 'success'
                                 : item.status === 'Cancelled'
                                 ? 'destructive'
-                                : 'outline'
+                                : 'secondary'
                             }
-                            className='text-xs bg-transparent'>
+                            className='text-xs'>
                             {item.status}
                           </Badge>
                         </div>
                         <div className='mt-2'>
-                          <span className='font-medium text-[#E2E4F3]'>
+                          <span className='font-medium text-primary-text'>
                             ₹{item.price.toFixed(2)}
                           </span>
 
@@ -437,7 +388,7 @@ export const OrderDetails = () => {
                         <Button
                           variant='destructive'
                           size='sm'
-                          className='bg-[#FF6B6B] hover:bg-[#FF5252] text-white rounded-lg'
+                          className='bg-accent-red hover:bg-hover-red text-white rounded-lg'
                           onClick={() => {
                             setModalType('cancel-item');
                             setIsModalOpen(true);
@@ -453,7 +404,7 @@ export const OrderDetails = () => {
                         <Button
                           variant='outline'
                           size='sm'
-                          className='border-[#6366F1] text-[#6366F1] hover:bg-[#6366F1] hover:text-white rounded-lg'
+                          className='border-primary-textext-primary-text text-primary-text hover:bg-primary-textext-primary-text hover:text-white rounded-lg'
                           onClick={() => {
                             setModalType('return-item');
                             setIsModalOpen(true);
@@ -499,14 +450,14 @@ export const OrderDetails = () => {
               className='p-6'>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <div>
-                  <h3 className='text-lg font-medium mb-4 flex items-center gap-2 text-[#E2E4F3]'>
-                    <MapPin className='h-4 w-4 text-[#6366F1]' />
+                  <h3 className='text-lg font-medium mb-4 flex items-center gap-2 text-primary-text'>
+                    <MapPin className='h-4 w-4 text-primary-text' />
                     Shipping Address
                   </h3>
-                  <Card className='bg-[#252536] shadow-md rounded-xl'>
+                  <Card className='bg-primary-bg/60 border-none shadow-md rounded-xl'>
                     <CardContent className='p-5'>
                       {order.shippingAddress ? (
-                        <div className='space-y-2 text-[#E2E4F3]'>
+                        <div className='space-y-2 text-primary-text'>
                           <p className='font-medium'>
                             {order.shippingAddress.name}
                           </p>
@@ -522,11 +473,11 @@ export const OrderDetails = () => {
                           </p>
                           <p>{order.shippingAddress.country}</p>
                           <p className='pt-1.5'>
-                            Phone: {order.shippingAddress.phone}
+                            Phone: {order.shippingAddress.phone || 'N/A'}
                           </p>
                         </div>
                       ) : (
-                        <p className='text-[#A0A3BD]'>
+                        <p className='text-secondary-text'>
                           No shipping address available
                         </p>
                       )}
@@ -535,39 +486,43 @@ export const OrderDetails = () => {
                 </div>
 
                 <div>
-                  <h3 className='text-lg font-medium mb-4 flex items-center gap-2 text-[#E2E4F3]'>
-                    <Truck className='h-4 w-4 text-[#6366F1]' />
+                  <h3 className='text-lg font-medium mb-4 flex items-center gap-2 text-primary-text'>
+                    <Truck className='h-4 w-4 text-primary-text' />
                     Delivery Information
                   </h3>
-                  <Card className='bg-[#252536] shadow-md rounded-xl'>
+                  <Card className='bg-primary-bg/60 border-none shadow-md rounded-xl'>
                     <CardContent className='p-5 space-y-3.5'>
                       <div className='flex justify-between'>
-                        <span className='text-[#A0A3BD]'>Order Date:</span>
-                        <span className='text-[#E2E4F3]'>
-                          {new Date(order.placedAt).toLocaleDateString()}
+                        <span className='text-secondary-text'>Order Date:</span>
+                        <span className='text-primary-text'>
+                          {format(new Date(order.placedAt), 'yyyy-MM-dd')}
                         </span>
                       </div>
 
-                      {order.deliveryBy && (
+                      {order?.deliveryBy && (
                         <div className='flex justify-between'>
-                          <span className='text-[#A0A3BD]'>
+                          <span className='text-secondary-text'>
                             Expected Delivery:
                           </span>
-                          <span className='text-[#E2E4F3]'>
-                            {new Date(order.deliveryBy).toLocaleDateString()}
+                          <span className='text-primary-text'>
+                            {format(new Date(order.deliveryBy), 'yyyy-MM-dd')}
                           </span>
                         </div>
                       )}
 
                       <div className='flex justify-between'>
-                        <span className='text-[#A0A3BD]'>Order Status:</span>
+                        <span className='text-secondary-text'>
+                          Order Status:
+                        </span>
                         <StatusBadge status={order.orderStatus} />
                       </div>
 
                       {order.orderStatus === 'Delivered' && (
                         <div className='flex justify-between'>
-                          <span className='text-[#A0A3BD]'>Delivered On:</span>
-                          <span className='text-[#E2E4F3]'>
+                          <span className='text-secondary-text'>
+                            Delivered On:
+                          </span>
+                          <span className='text-primary-text'>
                             {new Date(order.updatedAt).toLocaleDateString()}
                           </span>
                         </div>
@@ -583,30 +538,33 @@ export const OrderDetails = () => {
               className='p-6'>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <div>
-                  <h3 className='text-lg font-medium mb-4 flex items-center gap-2 text-[#E2E4F3]'>
-                    <CreditCard className='h-4 w-4 text-[#6366F1]' />
+                  <h3 className='text-lg font-medium mb-4 flex items-center gap-2 text-primary-text'>
+                    <CreditCard className='h-4 w-4 text-primary-text' />
                     Payment Information
                   </h3>
-                  <Card className='bg-[#252536] shadow-md rounded-xl'>
+                  <Card className='bg-primary-bg/60 border-none shadow-md rounded-xl'>
                     <CardContent className='p-5 space-y-3.5'>
                       <div className='flex justify-between'>
-                        <span className='text-[#A0A3BD]'>Payment Method:</span>
-                        <span className='text-[#E2E4F3]'>
+                        <span className='text-secondary-text'>
+                          Payment Method:
+                        </span>
+                        <span className='text-primary-text'>
                           {order.paymentMethod}
                         </span>
                       </div>
 
                       <div className='flex justify-between'>
-                        <span className='text-[#A0A3BD]'>Payment Status:</span>
+                        <span className='text-secondary-text'>
+                          Payment Status:
+                        </span>
                         <Badge
                           variant={
                             order.paymentStatus === 'Paid'
                               ? 'success'
                               : order.paymentStatus === 'Failed'
                               ? 'destructive'
-                              : 'outline'
-                          }
-                          className='bg-transparent'>
+                              : 'secondary'
+                          }>
                           {order.paymentStatus}
                         </Badge>
                       </div>
@@ -615,22 +573,24 @@ export const OrderDetails = () => {
                 </div>
 
                 <div>
-                  <h3 className='text-lg font-medium mb-4 flex items-center gap-2 text-[#E2E4F3]'>
-                    <ShoppingBag className='h-4 w-4 text-[#6366F1]' />
+                  <h3 className='text-lg font-medium mb-4 flex items-center gap-2 text-primary-text'>
+                    <ShoppingBag className='h-4 w-4 text-primary-text' />
                     Order Summary
                   </h3>
-                  <Card className='bg-[#252536] shadow-md rounded-xl'>
+                  <Card className='bg-primary-bg/60 border-none shadow-md rounded-xl'>
                     <CardContent className='p-5 space-y-3.5'>
                       <div className='flex justify-between'>
-                        <span className='text-[#A0A3BD]'>Subtotal:</span>
-                        <span className='text-[#E2E4F3]'>
+                        <span className='text-secondary-text'>Subtotal:</span>
+                        <span className='text-primary-text'>
                           ₹{order.totalAmount.toFixed(2)}
                         </span>
                       </div>
 
                       {order.totalDiscount > 0 && (
                         <div className='flex justify-between'>
-                          <span className='text-[#A0A3BD]'>Item Discount:</span>
+                          <span className='text-secondary-text'>
+                            Item Discount:
+                          </span>
                           <span className='text-[#FF6B6B]'>
                             -₹{order.totalDiscount.toFixed(2)}
                           </span>
@@ -639,7 +599,7 @@ export const OrderDetails = () => {
 
                       {order.couponCode && (
                         <div className='flex justify-between'>
-                          <span className='text-[#A0A3BD]'>
+                          <span className='text-secondary-text'>
                             Coupon Discount ({order.couponCode}):
                           </span>
                           <span className='text-[#FF6B6B]'>
@@ -650,7 +610,7 @@ export const OrderDetails = () => {
 
                       {order.refundedAmount > 0 && (
                         <div className='flex justify-between'>
-                          <span className='text-[#A0A3BD]'>
+                          <span className='text-secondary-text'>
                             Refunded Amount:
                           </span>
                           <span className='text-[#4CAF50]'>
@@ -659,11 +619,11 @@ export const OrderDetails = () => {
                         </div>
                       )}
 
-                      <Separator className='my-2 bg-[#2A2A3A]' />
+                      <Separator className='my-2 bg-secondary-bg' />
 
                       <div className='flex justify-between font-bold'>
-                        <span className='text-[#E2E4F3]'>Total:</span>
-                        <span className='text-[#E2E4F3]'>
+                        <span className='text-primary-text'>Total:</span>
+                        <span className='text-primary-text'>
                           ₹{order.finalPrice.toFixed(2)}
                         </span>
                       </div>

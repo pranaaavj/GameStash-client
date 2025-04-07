@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { Label } from '@/shadcn/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shadcn/components/ui/radio-group';
@@ -6,17 +7,19 @@ import { Alert, AlertDescription } from '@/shadcn/components/ui/alert';
 import { Percent, AlertCircle, Check, Copy, X } from 'lucide-react';
 import { useGetEligibleCouponsQuery } from '@/redux/api/user/couponApi';
 import { Input } from '@/shadcn/components/ui/input';
-import { toast } from 'sonner';
 
-export default function CouponsSection({ onCouponSelect }) {
+import { showToast, handleApiError } from '@/utils';
+
+export const Coupons = ({ onCouponSelect }) => {
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [manualCode, setManualCode] = useState('');
   const [validationError, setValidationError] = useState('');
   const [validationSuccess, setValidationSuccess] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
-  const inputRef = useRef(null);
 
+  const inputRef = useRef(null);
   const { data: couponsData, isLoading } = useGetEligibleCouponsQuery();
+
   const coupons = couponsData?.data || [];
 
   const handleCouponSelection = (coupon) => {
@@ -68,7 +71,7 @@ export default function CouponsSection({ onCouponSelect }) {
     if (selectedCoupon) {
       setAppliedCoupon(selectedCoupon);
       onCouponSelect(selectedCoupon);
-      toast.success(`Coupon ${selectedCoupon.code} applied successfully!`);
+      showToast.success(`Coupon ${selectedCoupon.code} applied successfully!`);
     }
   };
 
@@ -84,12 +87,12 @@ export default function CouponsSection({ onCouponSelect }) {
   const copyToClipboard = (code) => {
     navigator.clipboard.writeText(code).then(
       () => {
-        toast.success('Coupon code copied to clipboard!');
+        showToast.success('Coupon code copied to clipboard!');
         setManualCode(code);
         inputRef.current?.focus();
       },
       () => {
-        toast.error('Failed to copy coupon code');
+        handleApiError(new Error('Failed to copy coupon code'));
       }
     );
   };
@@ -101,7 +104,7 @@ export default function CouponsSection({ onCouponSelect }) {
     setValidationError('');
     setValidationSuccess('');
     onCouponSelect(null);
-    toast.info('Proceeding without a coupon');
+    showToast.info('Proceeding without a coupon');
   };
 
   return (
@@ -112,6 +115,7 @@ export default function CouponsSection({ onCouponSelect }) {
           <Percent className='w-5 h-5 text-accent-red' />
           <h3 className='font-medium'>Enter Coupon Code</h3>
         </div>
+
         <div className='flex flex-col space-y-3'>
           <div className='flex space-x-2'>
             <Input
@@ -122,6 +126,7 @@ export default function CouponsSection({ onCouponSelect }) {
               onChange={handleManualCodeChange}
               className='bg-secondary-bg text-primary-text'
             />
+
             <Button
               onClick={validateCouponCode}
               className='bg-accent-blue hover:bg-hover-blue whitespace-nowrap'>
@@ -131,13 +136,15 @@ export default function CouponsSection({ onCouponSelect }) {
 
           {validationError && (
             <p className='text-accent-red text-sm flex items-center'>
-              <X className='h-4 w-4 mr-1' /> {validationError}
+              <X className='h-4 w-4 mr-1' />
+              {validationError}
             </p>
           )}
 
           {validationSuccess && (
             <p className='text-green-500 text-sm flex items-center'>
-              <Check className='h-4 w-4 mr-1' /> {validationSuccess}
+              <Check className='h-4 w-4 mr-1' />
+              {validationSuccess}
             </p>
           )}
 
@@ -161,7 +168,7 @@ export default function CouponsSection({ onCouponSelect }) {
             <Button
               onClick={proceedWithoutCoupon}
               variant='outline'
-              className='bg-accent-blue border-none hover:bg-hover-blue hover:text-white '>
+              className='bg-accent-blue border-none hover:bg-hover-blue hover:text-white'>
               No Coupon
             </Button>
           </div>
@@ -174,6 +181,7 @@ export default function CouponsSection({ onCouponSelect }) {
           <Percent className='w-5 h-5 text-accent-red' />
           <h3 className='font-medium'>Available Coupons</h3>
         </div>
+
         {isLoading ? (
           <p>Loading coupons...</p>
         ) : (
@@ -203,6 +211,7 @@ export default function CouponsSection({ onCouponSelect }) {
                       (Min Order: ₹{coupon.minOrderAmount})
                     </p>
                   </div>
+
                   <Button
                     type='button'
                     variant='ghost'
@@ -244,4 +253,4 @@ export default function CouponsSection({ onCouponSelect }) {
       </Alert>
     </div>
   );
-}
+};

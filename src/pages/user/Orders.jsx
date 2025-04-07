@@ -148,7 +148,7 @@ export const Orders = () => {
                             order?.paymentStatus === 'Paid'
                               ? 'success'
                               : order?.paymentStatus === 'Pending'
-                              ? 'warning'
+                              ? 'secondary'
                               : 'destructive'
                           }
                           className='ml-1'>
@@ -188,7 +188,7 @@ export const Orders = () => {
                                       ? 'success'
                                       : item?.status === 'Cancelled'
                                       ? 'destructive'
-                                      : 'outline'
+                                      : 'secondary'
                                   }
                                   className='text-xs'>
                                   {item?.status}
@@ -246,7 +246,7 @@ export const Orders = () => {
                       order.orderStatus === 'Shipped') && (
                       <Button
                         variant='destructive'
-                        className='bg-[#FF6B6B] hover:bg-[#FF5252] text-white rounded-lg'
+                        className='bg-accent-red hover:bg-hover-red text-white rounded-lg'
                         onClick={() => {
                           setSelectedOrderId(order._id);
                           setIsModalOpen(true);
