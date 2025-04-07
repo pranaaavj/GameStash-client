@@ -5,7 +5,6 @@ import {
   Input,
   FormControl,
 } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
 
 export const InputField = ({
   name,
@@ -54,17 +53,4 @@ export const InputField = ({
       )}
     </FormControl>
   );
-};
-
-InputField.propTypes = {
-  name: PropTypes.string,
-  type: PropTypes.string.isRequired,
-  value: PropTypes.any.isRequired,
-  label: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  isInvalid: PropTypes.bool,
-  helperText: PropTypes.string,
-  errorMessage: PropTypes.string,
-  props: PropTypes.any,
-  placeHolder: PropTypes.string,
 };

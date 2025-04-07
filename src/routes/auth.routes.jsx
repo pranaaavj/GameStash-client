@@ -1,6 +1,5 @@
 import {
   Login,
-  Blocked,
   Register,
   SendOtpEmail,
   Unauthorized,
@@ -60,10 +59,6 @@ export const authRoutes = [
             ],
           },
         ],
-      },
-      {
-        path: 'blocked',
-        element: <Blocked />,
       },
       {
         path: 'unauthorized',

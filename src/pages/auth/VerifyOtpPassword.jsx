@@ -1,54 +1,50 @@
-import {
-  useResetOtpUserMutation,
-  useVerifyOtpUserMutation,
-} from '@/redux/api/user/authApi';
-import { toast } from 'sonner';
-import { Alert } from '../../components/common';
-import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
-import { useTimer } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
-import { setOtpReset, setOtpStatus } from '@/redux/slices/authSlice';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { Button } from '@/shadcn/components/ui/button';
+import { useTimer } from '@/hooks';
+import { showToast, handleApiError } from '@/utils';
+import { setOtpReset, setOtpStatus } from '@/redux/slices/authSlice';
+import {
+  useVerifyOtpUserMutation,
+  useResetOtpUserMutation,
+} from '@/redux/api/user/authApi';
+
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
 
 export const VerifyOtpPassword = () => {
-  // Redux authorization slice
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { authEmail, otpStatus, otpType, otpReset } = useSelector(
     (state) => state.auth
   );
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   const [otpInput, setOtpInput] = useState('');
   const [otpInputValid, setOtpInputValid] = useState('');
 
-  // Rtk query hook for verifying otp for password reset
-  const [verifyOtpPassUser, { isError, error, isLoading, reset }] =
-    useVerifyOtpUserMutation();
-  const [
-    resetOtp,
-    { isError: isResetError, error: resetError, reset: resetResetOtp },
-  ] = useResetOtpUserMutation();
+  const [verifyOtpPassUser, { isLoading }] = useVerifyOtpUserMutation();
+  const [resetOtp, { isLoading: isResetOtpLoading }] =
+    useResetOtpUserMutation();
 
   const otpTimer = useTimer(60, isLoading);
 
   useEffect(() => {
-    // Checking for users who did not request for Otp
     if (otpStatus !== 'pending' && otpType !== 'forgotPassword') {
       navigate('/auth/login');
     }
   }, [otpStatus, otpType, navigate]);
 
   useEffect(() => {
-    // Resetting validation when user types
     setOtpInputValid('');
-    if (isError) reset();
-    if (isResetError) resetResetOtp();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otpInput]);
+
+  useEffect(() => {
+    if (otpInputValid) {
+      showToast.error(otpInputValid);
+    }
+  }, [otpInputValid]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,13 +52,14 @@ export const VerifyOtpPassword = () => {
     if (!otpInput.trim()) {
       setOtpInputValid('Please enter your OTP');
       return;
-    } else if (otpInput.length < 6) {
+    }
+
+    if (otpInput.length < 6) {
       setOtpInputValid('OTP needs to be exactly 6 digits.');
       return;
     }
 
     try {
-      // Api request for verifying the otp
       const response = await verifyOtpPassUser({
         otp: otpInput,
         email: authEmail,
@@ -71,19 +68,12 @@ export const VerifyOtpPassword = () => {
 
       if (response?.success) {
         dispatch(setOtpStatus({ status: 'verified' }));
-
-        toast.success(response?.message, {
-          duration: 1500,
-        });
-
-        setTimeout(() => navigate('/auth/reset-pass'), 1500);
+        showToast.success(response.message);
+        navigate('/auth/reset-pass');
         setOtpInput('');
       }
-    } catch (error) {
-      toast.error('Something went wrong! Please try again.', {
-        duration: 1400,
-      });
-      console.log('Error from verifyOtpUser: ', error);
+    } catch (err) {
+      handleApiError(err);
     }
   };
 
@@ -96,13 +86,10 @@ export const VerifyOtpPassword = () => {
 
       if (response?.success) {
         dispatch(setOtpReset({ reset: true }));
-
-        toast.success(response?.message, {
-          duration: 1500,
-        });
+        showToast.success(response.message);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      handleApiError(err);
     }
   };
 
@@ -112,6 +99,7 @@ export const VerifyOtpPassword = () => {
         <h1 className='text-xl sm:text-2xl font-semibold text-white text-center font-poppins'>
           OTP Verification for Password Reset
         </h1>
+
         <p className='text-center font-sans font-light text-sm sm:text-md text-secondary-text'>
           Enter the OTP sent to your email.
         </p>
@@ -141,35 +129,12 @@ export const VerifyOtpPassword = () => {
 
           <Button
             className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-sm sm:text-md font-semibold uppercase font-sans'
-            type='submit'>
-            Verify
+            type='submit'
+            disabled={isLoading || isResetOtpLoading}>
+            {isLoading ? 'Verifying...' : 'Verify'}
           </Button>
         </form>
-        {/* API call errors */}
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={error?.data?.message}
-          />
-        )}
-        {isResetError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={resetError?.data?.message}
-          />
-        )}
 
-        {/* Otp input validation error */}
-        {otpInputValid && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={otpInputValid}
-          />
-        )}
-        {/* Run the timer when the OTP is sent */}
         {!otpReset && (
           <p className='font-mont text-sm text-center text-primary-text'>
             Didn&#39;t receive OTP?{' '}
@@ -182,8 +147,9 @@ export const VerifyOtpPassword = () => {
                 className={`${
                   otpTimer > 0 && 'text-muted-text'
                 }hover:text-accent-red text-accent-red cursor-pointer transition-colors duration-200 ease-in-out`}
+                disabled={isResetOtpLoading}
                 onClick={handleResetPass}>
-                Resend OTP
+                {isResetOtpLoading ? 'Resending...' : 'Resend OTP'}
               </span>
             )}
           </p>

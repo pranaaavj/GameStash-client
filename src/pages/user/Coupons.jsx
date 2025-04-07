@@ -161,7 +161,7 @@ export default function CouponsSection({ onCouponSelect }) {
             <Button
               onClick={proceedWithoutCoupon}
               variant='outline'
-              className='text-secondary-text hover:text-primary-text'>
+              className='bg-accent-blue border-none hover:bg-hover-blue hover:text-white '>
               No Coupon
             </Button>
           </div>

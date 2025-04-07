@@ -33,7 +33,7 @@ const emptyProfileInput = {
   profilePicture: '',
 };
 
-export default function ProfileView() {
+export const ProfileView = () => {
   const user = useUsers();
   const [isEditMode, setIsEditMode] = useState(false);
   const [profileData, setProfileData] = useState(emptyProfileInput);
@@ -296,4 +296,4 @@ export default function ProfileView() {
       )}
     </div>
   );
-}
+};
