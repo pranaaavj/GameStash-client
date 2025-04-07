@@ -3,6 +3,7 @@ import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAddToWishlistMutation } from '@/redux/api/user/wishlistApi';
 import { toast } from 'sonner';
+import { showToast } from '@/utils';
 
 export const RecommendedGameCard = ({ game }) => {
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
@@ -14,7 +15,7 @@ export const RecommendedGameCard = ({ game }) => {
 
     try {
       await addToWishlist({ productId: game._id }).unwrap();
-      toast.success('Added to wishlist');
+      showToast.success('Added to wishlist');
     } catch (error) {
       toast.error(error?.data?.message || 'Failed to add to wishlist');
     }

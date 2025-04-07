@@ -31,7 +31,7 @@ export const VerifyOtpEmail = () => {
 
   useEffect(() => {
     if (otpStatus !== 'pending' && otpType !== 'registration') {
-      navigate('/auth/login');
+      navigate('/login');
     }
   }, [otpStatus, otpType, navigate]);
 
@@ -66,7 +66,7 @@ export const VerifyOtpEmail = () => {
       if (response?.success) {
         dispatch(setOtpStatus({ status: 'verified' }));
         showToast.success(response?.message);
-        navigate('/auth/register');
+        navigate('/register');
         setOtpInput('');
       }
     } catch (error) {

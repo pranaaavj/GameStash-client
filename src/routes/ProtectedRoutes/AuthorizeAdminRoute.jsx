@@ -17,5 +17,5 @@ export const AuthorizeAdminRoute = () => {
 
   if (admin?.adminInfo?.role === 'admin') return <Outlet />;
 
-  return <Navigate to='/auth/unauthorized' />;
+  return <Navigate to='/unauthorized' />;
 };

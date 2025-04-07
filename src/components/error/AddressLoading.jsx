@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/shadcn/components/ui/card';
 
 export const AddressLoading = () => {
   return (
-    <div className='bg-secondary-bg grid gap-4 sm:grid-cols-2 lg:grid-cols-3 p-4 sm:p-6'>
+    <div className='bg-secondary-bg/50 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 p-4 sm:p-6'>
       {Array.from({ length: 3 }).map((_, i) => (
         <Card
           key={i}

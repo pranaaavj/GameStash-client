@@ -535,7 +535,7 @@ export const Cart = () => {
               className='px-4 py-2 bg-accent-blue text-white rounded-lg font-medium text-lg hover:bg-hover-blue transition duration-300 shadow-sm hover:shadow-md'
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/auth/login')}>
+              onClick={() => navigate('/login')}>
               Log In
             </motion.button>
           </motion.div>

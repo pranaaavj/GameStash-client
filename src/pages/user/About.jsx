@@ -44,7 +44,7 @@ export const About = () => {
   ];
 
   return (
-    <div className='min-h-screen bg-primary-bg text-primary-text font-sans select-none'>
+    <div className='min-h-screen bg-transparent text-primary-text font-sans select-none'>
       <div className='container mx-auto px-4 py-6 sm:py-8'>
         {/* Hero Section */}
         <motion.div

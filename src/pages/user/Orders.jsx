@@ -71,7 +71,7 @@ export const Orders = () => {
 
   return (
     <PageTransition>
-      <div className='p-6 md:p-8 text-primary-text'>
+      <div className='text-primary-text'>
         <h1 className='text-3xl font-bold mb-8'>Your Orders</h1>
 
         {!hasOrders ? (

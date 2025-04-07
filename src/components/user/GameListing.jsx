@@ -43,7 +43,7 @@ export const GameListing = memo(
     if (!games || games.length === 0) return null;
 
     return (
-      <div className='bg-[#121212]'>
+      <div className='bg-transparent'>
         <div className='max-w-7xl mx-auto'>
           {/* Title and Pagination */}
           <div className='flex flex-wrap justify-between items-center gap-y-3 mb-6 sm:mb-8'>

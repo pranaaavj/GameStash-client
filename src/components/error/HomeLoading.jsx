@@ -2,7 +2,7 @@ import { Skeleton } from '@/shadcn/components/ui/skeleton';
 
 export function HomeLoading() {
   return (
-    <div className='min-h-screen bg-primary-bg text-primary-text font-sans animate-pulse'>
+    <div className='min-h-screen bg-primary-bg/50 text-primary-text font-sans animate-pulse'>
       {/* Hero Section */}
       <div className='flex flex-col lg:flex-row gap-6 my-10 px-4 lg:px-10'>
         {/* Main Banner */}

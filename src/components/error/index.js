@@ -17,6 +17,9 @@ export { OrdersListError } from './OrdersListError';
 export { GameDetailsLoading } from './GameDetailsLoading';
 export { GameDetailsError } from './GameDetailsError';
 
+export { WishlistError } from './WishlistError';
+export { WishlistLoading } from './WishlistLoading';
+
 export { HomeLoading } from './HomeLoading';
 
 export { AddressLoading } from './AddressLoading';

@@ -6,7 +6,7 @@ import {
 } from '@/redux/api/user/addressApi';
 
 import { useState, useEffect } from 'react';
-import { MapPin, Plus, Trash2, Edit2, Save, Loader2 } from 'lucide-react';
+import { MapPin, Plus, Trash2, Edit2, Save, Loader2, X } from 'lucide-react';
 
 import { showToast } from '@/utils/showToast';
 import { handleApiError } from '@/utils/handleApiError';
@@ -133,8 +133,8 @@ export const Address = ({ onAddressSelect }) => {
   if (isAddressLoading) return <AddressLoading />;
 
   return (
-    <Card className='bg-secondary-bg border-none text-primary-text overflow-hidden'>
-      <CardHeader className='bg-secondary-bg'>
+    <Card className='bg-secondary-bg/20 shadow-xl border-none text-primary-text overflow-hidden'>
+      <CardHeader className='bg-secondary-bg/20'>
         <CardTitle className='text-3xl font-bold flex items-center'>
           <MapPin className='w-8 h-8 mr-2 text-primary-text' />
           Your Addresses
@@ -342,11 +342,12 @@ export const Address = ({ onAddressSelect }) => {
             }
           }}>
           <div className='text-center'>
-            <Plus
-              className={`w-12 h-12 mx-auto ${
-                isAddingNew ? 'text-accent-red' : 'text-accent-blue'
-              } mb-2`}
-            />
+            {isAddingNew ? (
+              <X className='w-12 h-12 text-accent-red mx-auto mb-2' />
+            ) : (
+              <Plus className='w-12 h-12 text-accent-blue mx-auto mb-2' />
+            )}
+
             <p
               className={`font-medium ${
                 isAddingNew ? 'text-accent-red' : 'text-accent-blue'

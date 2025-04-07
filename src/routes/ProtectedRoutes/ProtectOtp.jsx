@@ -12,21 +12,21 @@ export const ProtectOtp = ({ children, requiredOtpType }) => {
   if (otpType === 'forgotPassword') {
     return (
       <Navigate
-        to={`/auth/otp/verify-pass`}
+        to={`/verify-pass`}
         replace
       />
     );
   } else if (otpType === 'registration') {
     return (
       <Navigate
-        to={`/auth/otp/verify-email`}
+        to={`/verify-email`}
         replace
       />
     );
   } else {
     return (
       <Navigate
-        to='/auth/login'
+        to='/login'
         replace
       />
     );

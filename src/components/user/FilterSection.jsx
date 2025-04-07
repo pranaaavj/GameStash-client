@@ -134,7 +134,7 @@ export const FilterSection = ({ onApplyFilters }) => {
   };
 
   return (
-    <div className='bg-secondary-bg rounded-xl text-primary-text p-5 md:p-6 shadow-md sticky top-20'>
+    <div className='bg-secondary-bg/40 rounded-xl text-primary-text p-5 md:p-6 shadow-md sticky top-20'>
       <div className='flex justify-between items-center mb-4'>
         <h2 className='text-lg font-bold'>Filters</h2>
         {activeFiltersCount > 0 && (

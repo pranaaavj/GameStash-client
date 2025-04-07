@@ -1,24 +1,29 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, Plus, ArrowDownLeft, ArrowUpRight, X } from 'lucide-react';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { Input } from '@/shadcn/components/ui/input';
-import { toast } from 'sonner';
+
 import {
   useGetWalletQuery,
   useAddMoneyToWalletMutation,
   useVerifyAddMoneyMutation,
 } from '@/redux/api/user/walletApi';
 
+import { showToast } from '@/utils/showToast';
+import { handleApiError } from '@/utils/handleApiError';
+
 export const ModernWallet = () => {
   const { data: responseWallet } = useGetWalletQuery();
-  const [addMoneyToWallet] = useAddMoneyToWalletMutation();
+
+  const [addMoneyToWallet, { isLoading: isAdding }] =
+    useAddMoneyToWalletMutation();
   const [verifyAddMoney] = useVerifyAddMoneyMutation();
 
   const [walletData, setWalletData] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [amount, setAmount] = useState('');
-  const [isAddingMoney, setIsAddingMoney] = useState(false);
   const [showAddMoney, setShowAddMoney] = useState(false);
 
   useEffect(() => {
@@ -30,11 +35,10 @@ export const ModernWallet = () => {
 
   const handleAddMoney = async () => {
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
-      toast.error('Enter a valid amount');
+      showToast.error('Enter a valid amount');
       return;
     }
 
-    setIsAddingMoney(true);
     try {
       const response = await addMoneyToWallet(amount).unwrap();
 
@@ -47,15 +51,21 @@ export const ModernWallet = () => {
           description: 'Add Money',
           order_id: response.data.razorpayOrderId,
           handler: async function (razorpayResponse) {
-            const paymentData = {
-              razorpayOrderId: razorpayResponse?.razorpay_order_id,
-              paymentId: razorpayResponse?.razorpay_payment_id,
-              signature: razorpayResponse?.razorpay_signature,
-            };
+            try {
+              const paymentData = {
+                razorpayOrderId: razorpayResponse?.razorpay_order_id,
+                paymentId: razorpayResponse?.razorpay_payment_id,
+                signature: razorpayResponse?.razorpay_signature,
+              };
 
-            const paymentResponse = await verifyAddMoney(paymentData).unwrap();
-            if (paymentResponse?.success) {
-              toast.success('Money added successfully');
+              const paymentResponse = await verifyAddMoney(
+                paymentData
+              ).unwrap();
+              if (paymentResponse?.success) {
+                showToast.success('Money added successfully');
+              }
+            } catch (err) {
+              handleApiError(err);
             }
           },
           theme: { color: '#3399cc' },
@@ -64,19 +74,17 @@ export const ModernWallet = () => {
         const razorpay = new window.Razorpay(options);
         razorpay.open();
       }
-    } catch (error) {
-      console.error(error);
-      toast.error('Transaction failed');
+    } catch (err) {
+      handleApiError(err);
     } finally {
-      setIsAddingMoney(false);
       setShowAddMoney(false);
     }
   };
 
   return (
-    <div className='w-full mx-auto bg-secondary-bg rounded-xl overflow-hidden shadow-lg'>
+    <div className='w-full mx-auto bg-secondary-bg/20 rounded-xl overflow-hidden shadow-lg'>
       {/* Header */}
-      <div className='bg-secondary-bg p-4 text-white flex items-center justify-between'>
+      <div className='bg-secondary-bg/20 p-4 text-white flex items-center justify-between'>
         <h1 className='text-xl font-bold flex items-center'>
           <Wallet className='mr-2 h-5 w-5' /> My Wallet
         </h1>
@@ -116,25 +124,24 @@ export const ModernWallet = () => {
             className='p-4 bg-primary-bg/50 border-0 rounded-lg mx-4'>
             <h3 className='text-primary-text font-medium mb-3'>Add Money</h3>
             <div className='space-y-4'>
-              <div>
-                <div className='flex items-center'>
-                  <span className='bg-secondary-bg border-0 border-input px-3 py-2 text-sm rounded-l-md'>
-                    ₹
-                  </span>
-                  <Input
-                    type='number'
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder='Enter amount'
-                    className='rounded-l-none border-0 focus:ring-0'
-                  />
-                </div>
+              <div className='flex items-center'>
+                <span className='bg-secondary-bg border-0 border-input px-3 py-2 text-sm rounded-l-md'>
+                  ₹
+                </span>
+                <Input
+                  type='number'
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder='Enter amount'
+                  onWheel={(e) => e.target.blur()} // Disable scroll change
+                  className='bg-secondary-bg rounded-none text-sm border border-transparent focus:border-[#f2f2f2] focus:outline-none focus:ring-0 hover:border-[#c0c0c0] px-3 py-2 text-white'
+                />
               </div>
               <Button
                 onClick={handleAddMoney}
-                disabled={isAddingMoney}
+                disabled={isAdding}
                 className='w-full bg-accent-blue text-white hover:bg-accent-blue/90'>
-                {isAddingMoney ? 'Processing...' : 'Add Money'}
+                {isAdding ? 'Processing...' : 'Add Money'}
               </Button>
             </div>
           </motion.div>

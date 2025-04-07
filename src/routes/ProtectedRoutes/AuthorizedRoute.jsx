@@ -11,7 +11,7 @@ export const AuthorizedRoute = () => {
   if (!user?.token)
     return (
       <Navigate
-        to='/auth/login'
+        to='/login'
         replace
       />
     );
@@ -20,7 +20,7 @@ export const AuthorizedRoute = () => {
     // User logged out or blocked
     return (
       <Navigate
-        to='/auth/blocked'
+        to='/blocked'
         replace
       />
     );
@@ -28,7 +28,7 @@ export const AuthorizedRoute = () => {
   return user?.userInfo?.role === 'user' || user?.userInfo?.role === 'admin' ? (
     <Outlet />
   ) : (
-    <Navigate to='/auth/unauthorized' />
+    <Navigate to='/unauthorized' />
   );
 };
 
