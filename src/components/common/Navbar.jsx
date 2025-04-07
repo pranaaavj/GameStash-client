@@ -180,9 +180,7 @@ export const Navbar = ({ onCartClick }) => {
               {user?.userInfo ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <motion.div
-                      className='flex items-center space-x-2 cursor-pointer border-none ring-0'
-                      whileTap={{ scale: 0.95 }}>
+                    <motion.div className='flex items-center space-x-2 cursor-pointer border-none ring-0'>
                       <Avatar className='w-8 h-8 transition-all duration-200'>
                         <AvatarImage
                           src={user.userInfo.profilePicture}

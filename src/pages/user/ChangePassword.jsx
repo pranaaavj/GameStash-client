@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+
 import {
   Card,
   CardContent,
@@ -12,15 +13,18 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from '@/shadcn/components/ui/collapsible';
-import { ChevronRight, CircleX } from 'lucide-react';
-import { Alert, InputField } from '@/components/common';
+import { ChevronRight } from 'lucide-react';
+
+import { InputField } from '@/components/common';
+
 import { useChangeUserPassMutation } from '@/redux/api/user/profileApi';
-import { toast } from 'sonner';
-import { validateChangePassword } from '@/utils';
 import { useUsers } from '@/hooks';
+
+import { validateChangePassword, showToast, handleApiError } from '@/utils';
 
 export const ChangePassword = () => {
   const user = useUsers();
+
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -28,21 +32,20 @@ export const ChangePassword = () => {
     confirmNewPassword: '',
   });
   const [validationErrors, setValidationErrors] = useState({});
-  const [changeUserPass, { isLoading, isError, error }] =
-    useChangeUserPassMutation();
 
-  const handleChange = (e) => {
+  const [changeUserPass, { isLoading }] = useChangeUserPassMutation();
+
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setPasswordData((prev) => ({ ...prev, [name]: value }));
     setValidationErrors((prev) => ({ ...prev, [name]: '' }));
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const errors = validateChangePassword(passwordData);
     setValidationErrors(errors);
-
     if (Object.keys(errors).length > 0) return;
 
     try {
@@ -55,15 +58,15 @@ export const ChangePassword = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success('Password updated successfully');
+        showToast.success('Password updated successfully');
         setPasswordData({
           currentPassword: '',
           newPassword: '',
           confirmNewPassword: '',
         });
       }
-    } catch (error) {
-      console.error('Error updating password', error);
+    } catch (err) {
+      handleApiError(err);
     }
   };
 
@@ -75,6 +78,7 @@ export const ChangePassword = () => {
           Manage your password and security preferences
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <Collapsible
           open={isPasswordOpen}
@@ -92,6 +96,7 @@ export const ChangePassword = () => {
               />
             </Button>
           </CollapsibleTrigger>
+
           <CollapsibleContent>
             <form
               onSubmit={handleSubmit}
@@ -106,6 +111,7 @@ export const ChangePassword = () => {
                 errorMessage={validationErrors.currentPassword}
                 placeHolder='Enter your current password'
               />
+
               <InputField
                 label='New Password'
                 type='password'
@@ -116,6 +122,7 @@ export const ChangePassword = () => {
                 errorMessage={validationErrors.newPassword}
                 placeHolder='Enter your new password'
               />
+
               <InputField
                 label='Confirm New Password'
                 type='password'
@@ -126,15 +133,7 @@ export const ChangePassword = () => {
                 errorMessage={validationErrors.confirmNewPassword}
                 placeHolder='Confirm your new password'
               />
-              {isError && (
-                <Alert
-                  Icon={CircleX}
-                  variant='destructive'
-                  description={
-                    error?.data?.message || 'Error editing profile profile'
-                  }
-                />
-              )}
+
               <div className='flex justify-end'>
                 <Button
                   type='submit'

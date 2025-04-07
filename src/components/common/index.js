@@ -17,3 +17,5 @@ export { ScrollToTop } from './ScrollToTop';
 export { StatusBadge } from './StatusBadge';
 export { DatePicker } from './DatePicker';
 export { EmptyState } from './EmptyState';
+
+export { PageTransition } from './PageTransition';

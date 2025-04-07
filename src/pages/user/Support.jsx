@@ -22,7 +22,7 @@ import { Card, CardContent } from '@/shadcn/components/ui/card';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { toast } from 'sonner';
 
-export function Support() {
+export const Support = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [contactForm, setContactForm] = useState({
@@ -460,4 +460,4 @@ export function Support() {
       </div>
     </div>
   );
-}
+};

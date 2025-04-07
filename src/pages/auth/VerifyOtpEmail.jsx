@@ -1,16 +1,16 @@
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { Button } from '@/shadcn/components/ui/button';
+import { useTimer } from '@/hooks';
+import { handleApiError, showToast } from '@/utils';
+import { setOtpStatus, setOtpReset } from '@/redux/slices/authSlice';
 import {
   useVerifyOtpUserMutation,
   useResetOtpUserMutation,
 } from '@/redux/api/user/authApi';
-import { Alert } from '../../components/common';
-import { toast } from 'sonner';
-import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
-import { useTimer } from '@/hooks';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setOtpStatus, setOtpReset } from '@/redux/slices/authSlice';
+
 import { HStack, PinInput, PinInputField } from '@chakra-ui/react';
 
 export const VerifyOtpEmail = () => {
@@ -24,12 +24,8 @@ export const VerifyOtpEmail = () => {
   const [otpInput, setOtpInput] = useState('');
   const [otpInputValid, setOtpInputValid] = useState('');
 
-  const [verifyOtpUser, { isError, error, reset, isLoading }] =
-    useVerifyOtpUserMutation();
-  const [
-    resetOtp,
-    { isError: isResetError, error: resetError, reset: resetResetOtp },
-  ] = useResetOtpUserMutation();
+  const [verifyOtpUser, { isLoading }] = useVerifyOtpUserMutation();
+  const [resetOtp] = useResetOtpUserMutation();
 
   const timer = useTimer(60, isLoading);
 
@@ -37,16 +33,17 @@ export const VerifyOtpEmail = () => {
     if (otpStatus !== 'pending' && otpType !== 'registration') {
       navigate('/auth/login');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [otpStatus, navigate, otpInput]);
+  }, [otpStatus, otpType, navigate]);
 
   useEffect(() => {
-    // Resetting validations and errors
     setOtpInputValid('');
-    if (isError) reset();
-    if (isResetError) resetResetOtp();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otpInput]);
+
+  useEffect(() => {
+    if (otpInputValid) {
+      showToast.error(otpInputValid);
+    }
+  }, [otpInputValid]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,19 +65,12 @@ export const VerifyOtpEmail = () => {
 
       if (response?.success) {
         dispatch(setOtpStatus({ status: 'verified' }));
-
-        toast.success(response?.message, {
-          duration: 1500,
-        });
-
-        setTimeout(() => navigate('/auth/register'), 1500);
+        showToast.success(response?.message);
+        navigate('/auth/register');
         setOtpInput('');
       }
     } catch (error) {
-      toast.error(error?.data?.message, {
-        duration: 1400,
-      });
-      console.log('Error from verifyOtpUser: ', error);
+      handleApiError(error);
     }
   };
 
@@ -93,23 +83,20 @@ export const VerifyOtpEmail = () => {
 
       if (response?.success) {
         dispatch(setOtpReset({ reset: true }));
-
-        toast.success(response?.message, {
-          duration: 1500,
-        });
+        showToast.success(response?.message);
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error);
     }
   };
 
   return (
     <div className='flex flex-col md:flex-row pt-20 w-full items-center justify-center'>
       <div className='flex flex-col space-y-8 w-full max-w-sm sm:max-w-md lg:max-w-lg px-6 sm:px-8 md:px-12 lg:px-20 py-6 text-primary-text'>
-        <h1 className='text-2xl sm:text-3xl font-semibold text-white text-center font-poppins'>
+        <h1 className='text-xl sm:text-2xl font-semibold text-white text-center font-poppins'>
           Verify Your Email with OTP
         </h1>
-        <p className='text-center font-sans font-light text-md sm:text-lg text-secondary-text'>
+        <p className='text-center font-sans font-light text-sm sm:text-md text-secondary-text'>
           Enter the OTP sent to your email.
         </p>
 
@@ -138,34 +125,13 @@ export const VerifyOtpEmail = () => {
           </div>
 
           <Button
-            className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-md sm:text-lg font-semibold uppercase font-sans'
-            type='submit'>
-            Verify
+            className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-sm sm:text-md font-semibold uppercase font-sans'
+            type='submit'
+            disabled={isLoading}>
+            {isLoading ? 'Verifying...' : 'Verify'}
           </Button>
         </form>
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={error?.data?.message}
-          />
-        )}
-        {isResetError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={resetError?.data?.message}
-          />
-        )}
 
-        {otpInputValid && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={otpInputValid}
-          />
-        )}
-        {/* Run the timer when the OTP is sent */}
         {!otpReset && (
           <p className='font-mont text-sm text-center text-primary-text'>
             Didn&#39;t receive OTP?{' '}
@@ -175,9 +141,7 @@ export const VerifyOtpEmail = () => {
               </span>
             ) : (
               <span
-                className={`${
-                  timer > 0 && 'text-muted-text'
-                }hover:text-accent-red text-accent-red cursor-pointer transition-colors duration-200 ease-in-out`}
+                className='text-accent-red cursor-pointer hover:underline'
                 onClick={handleResetPass}>
                 Resend OTP
               </span>

@@ -1,62 +1,58 @@
-import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
-import { toast } from 'sonner';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { InputField, Alert } from '../../components/common';
-import { useEffect, useState } from 'react';
-import { useSendOtpUserMutation } from '@/redux/api/user/authApi';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { Button } from '@/shadcn/components/ui/button';
+import { InputField } from '../../components/common';
+import { useSendOtpUserMutation } from '@/redux/api/user/authApi';
 import { setAuthEmail, setOtpStatus } from '@/redux/slices/authSlice';
+import { handleApiError, showToast } from '@/utils';
 
 export const SendOtpEmail = () => {
   const { otpStatus } = useSelector((state) => state.auth);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [userEmail, setUserEmail] = useState('');
   const [validationEmail, setValidationEmail] = useState('');
-  const [sendOtpUser, { isError, error, reset }] = useSendOtpUserMutation();
+  const [sendOtpUser, { isLoading }] = useSendOtpUserMutation();
 
   useEffect(() => {
     setValidationEmail('');
-    if (isError) reset();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userEmail, otpStatus]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!userEmail.trim()) {
-      setValidationEmail('Email cannot be empty.');
-      return;
-    } else if (!emailRegex.test(userEmail)) {
-      setValidationEmail('Please enter a valid email address.');
-      return;
-    }
-
-    try {
-      const response = await sendOtpUser({
-        email: userEmail,
-        type: 'registration',
-      }).unwrap();
-
-      if (response?.success) {
-        dispatch(setAuthEmail({ email: userEmail, type: 'registration' }));
-        dispatch(setOtpStatus({ status: 'pending' }));
-
-        toast.success(response?.message, {
-          duration: 1500,
-        });
-
-        setTimeout(() => navigate('/auth/otp/verify-email'), 1500);
+      if (!userEmail.trim()) {
+        setValidationEmail('Email cannot be empty.');
+        return;
+      } else if (!emailRegex.test(userEmail)) {
+        setValidationEmail('Please enter a valid email address.');
+        return;
       }
-    } catch (error) {
-      console.log('Error from sentOtpUser: ', error);
-    }
-  };
+
+      try {
+        const response = await sendOtpUser({
+          email: userEmail,
+          type: 'registration',
+        }).unwrap();
+
+        if (response?.success) {
+          dispatch(setAuthEmail({ email: userEmail, type: 'registration' }));
+          dispatch(setOtpStatus({ status: 'pending' }));
+          showToast.success(response.message);
+          navigate('/auth/otp/verify-email');
+        }
+      } catch (err) {
+        handleApiError(err);
+      }
+    },
+    [userEmail, sendOtpUser, dispatch, navigate]
+  );
 
   return (
     <div className='flex flex-col md:flex-row pt-20 h-min-screen w-full items-center justify-center'>
@@ -87,23 +83,18 @@ export const SendOtpEmail = () => {
             />
           </div>
 
-          <Button className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-md sm:text-lg font-semibold uppercase font-sans'>
-            Send OTP
+          <Button
+            className='bg-accent-red hover:bg-hover-red mt-8 sm:mt-10 text-md sm:text-lg font-semibold uppercase font-sans'
+            disabled={isLoading}>
+            {isLoading ? 'Sending OTP...' : 'Send OTP'}
           </Button>
         </form>
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={error?.data?.message}
-          />
-        )}
 
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Already have an account ?
           <Link
-            to={'/auth/login'}
-            className='text-red-500 hover:underline ml-1 sm:ml-2 '>
+            to='/auth/login'
+            className='text-red-500 hover:underline ml-1 sm:ml-2'>
             Login now
           </Link>
         </p>

@@ -1,15 +1,16 @@
-import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
-import { toast } from 'sonner';
-import { validateRegister } from '@/utils';
-import { Alert, InputField } from '../../components/common';
-import { useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { Button } from '@/shadcn/components/ui/button';
+import { InputField } from '../../components/common';
+
 import { useRegisterUserMutation } from '@/redux/api/user/authApi';
 import { resetAuthState } from '@/redux/slices/authSlice';
-import { useSelector, useDispatch } from 'react-redux';
 
-const emptyInput = {
+import { validateRegister, showToast, handleApiError } from '@/utils';
+
+const initialInput = {
   name: '',
   phoneNumber: '',
   password: '',
@@ -18,18 +19,21 @@ const emptyInput = {
 
 export const Register = () => {
   const { authEmail } = useSelector((state) => state.auth);
-
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [userInput, setUserInput] = useState(emptyInput);
-  const [validation, setValidation] = useState(emptyInput);
+  const [userInput, setUserInput] = useState(initialInput);
+  const [validation, setValidation] = useState(initialInput);
 
-  const [registerUser, { isError, error }] = useRegisterUserMutation();
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
 
   useEffect(() => {
-    setValidation(emptyInput);
+    setValidation(initialInput);
   }, [userInput]);
+
+  const handleChange = ({ target: { name, value } }) => {
+    setUserInput((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,6 +44,7 @@ export const Register = () => {
       return;
     }
 
+    //TODO: Replace this with destructuring in prod
     delete userInput.cPassword;
 
     try {
@@ -48,23 +53,16 @@ export const Register = () => {
         email: authEmail,
       }).unwrap();
 
-      if (response.success) {
-        setUserInput(emptyInput);
+      if (response?.success) {
+        showToast.success(response.message);
         dispatch(resetAuthState());
+        setUserInput(initialInput);
 
-        toast.success(response?.message, {
-          duration: 1500,
-        });
-
-        setTimeout(() => navigate('/auth/login'), 1500);
+        navigate('/auth/login');
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      handleApiError(err);
     }
-  };
-
-  const handleChange = ({ target: { value, name } }) => {
-    setUserInput((prevState) => ({ ...prevState, [name]: value }));
   };
 
   return (
@@ -75,8 +73,8 @@ export const Register = () => {
         </h1>
 
         <form
-          className='flex flex-col'
-          onSubmit={handleSubmit}>
+          onSubmit={handleSubmit}
+          className='flex flex-col'>
           <div className='space-y-4 sm:space-y-5 font-poppins'>
             <InputField
               type='text'
@@ -92,7 +90,7 @@ export const Register = () => {
               type='number'
               value={userInput.phoneNumber}
               onChange={handleChange}
-              label='Phone number'
+              label='Phone Number'
               name='phoneNumber'
               placeHolder='+91 9876543210'
               isInvalid={!!validation.phoneNumber}
@@ -104,12 +102,12 @@ export const Register = () => {
               onChange={handleChange}
               label='Password'
               name='password'
-              placeHolder=' Your Password'
+              placeHolder='Your Password'
               isInvalid={!!validation.password}
               errorMessage={validation.password}
               helperText={
                 !validation.password
-                  ? 'Password must be at least 6 characters long and include at least one letter and one number'
+                  ? 'Password must be at least 6 characters and include at least one letter and one number.'
                   : null
               }
             />
@@ -125,21 +123,17 @@ export const Register = () => {
             />
           </div>
 
-          <Button className='bg-accent-red hover:bg-accent-blue mt-8 sm:mt-10 text-white py-2 rounded-lg text-md sm:text-lg font-semibold uppercase'>
-            Register
+          <Button
+            className='bg-accent-red hover:bg-accent-blue mt-8 sm:mt-10 text-white py-2 rounded-lg text-md sm:text-lg font-semibold uppercase'
+            disabled={isLoading}>
+            {isLoading ? 'Registering...' : 'Register'}
           </Button>
         </form>
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={error?.data?.message}
-          />
-        )}
+
         <p className='text-xs sm:text-sm text-gray-400 mt-4 text-center'>
           Already have an account?
           <Link
-            to={'/auth/login'}
+            to='/auth/login'
             className='text-red-500 hover:underline ml-2 font-sans'>
             Login now
           </Link>

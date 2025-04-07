@@ -29,7 +29,7 @@ const initialAddressState = {
   isDefault: false,
 };
 
-export function Address({ onAddressSelect }) {
+export default function Address({ onAddressSelect }) {
   const [addresses, setAddresses] = useState([]);
   const [addressForm, setAddressForm] = useState(initialAddressState);
   const [editingId, setEditingId] = useState(null);
