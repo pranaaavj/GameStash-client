@@ -9,13 +9,12 @@ import {
   useToggleProductListMutation,
 } from '@/redux/api/admin/productsApi';
 import { toast } from 'sonner';
-import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { Link, useNavigate } from 'react-router-dom';
 import { Alert, ConfirmationModal, EmptyState } from '@/components/common';
-import { Check, CircleX, Plus, Search, ShoppingCart, X } from 'lucide-react';
+import { Check, CircleX, Plus, ShoppingCart, X } from 'lucide-react';
 
 export const ProductList = () => {
   const navigate = useNavigate();
@@ -110,14 +109,6 @@ export const ProductList = () => {
       </div>
       <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
         {/* Search Input */}
-        <div className='relative w-full sm:w-64'>
-          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text h-4 w-4' />
-          <Input
-            type='text'
-            placeholder='Search...'
-            className='pl-10 pr-4 py-2 rounded-full bg-secondary-bg text-primary-text border-accent-blue focus:border-accent-blue focus:ring focus:ring-accent-blue focus:ring-opacity-50 w-full'
-          />
-        </div>
 
         {/* Add Product Button */}
         <Link to='/admin/products/add'>

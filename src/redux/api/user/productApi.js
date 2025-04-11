@@ -27,6 +27,13 @@ const productApi = userBaseApi.injectEndpoints({
       }),
     }),
 
+    getRelatedProducts: builder.query({
+      query: ({ page = 1, limit = 5, productId }) => ({
+        url: `/user/product/related/${productId}`,
+        params: { page, limit },
+      }),
+    }),
+
     getProduct: builder.query({
       query: (productId) => ({
         url: `/user/product/${productId}`,
@@ -68,6 +75,7 @@ export const {
   useGetProductsQuery,
   useGetProductsByGenreQuery,
   useGetReviewByProductQuery,
+  useGetRelatedProductsQuery,
   useGetAllGenresQuery,
   useGetAllBrandsQuery,
   useSearchProductsQuery,

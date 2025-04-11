@@ -14,6 +14,7 @@ export const UserLayout = () => {
       <div className='fixed inset-0 opacity-5 bg-[radial-gradient(#5a9bf5_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none z-0'></div>
 
       <Navbar />
+
       <ScrollToTop />
       <div className='pt-16 sm:px-8 md:px-12 lg:px-20 relative z-10'>
         <Breadcrumbs />

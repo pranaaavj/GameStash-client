@@ -169,7 +169,7 @@ export const Coupons = ({ onCouponSelect }) => {
               onClick={proceedWithoutCoupon}
               variant='outline'
               className='bg-accent-blue border-none hover:bg-hover-blue hover:text-white'>
-              No Coupon
+              Proceed without coupon
             </Button>
           </div>
         </div>

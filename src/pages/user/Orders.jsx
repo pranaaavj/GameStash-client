@@ -69,6 +69,8 @@ export const Orders = () => {
 
   const hasOrders = responseOrders?.data?.orders?.length > 0;
 
+  console.log(responseOrders);
+
   return (
     <PageTransition>
       <div className='text-primary-text'>
@@ -198,27 +200,28 @@ export const Orders = () => {
                           </div>
                         </div>
                         <div className='text-right'>
-                          {item?.product?.discountedPrice &&
-                          item?.product?.discountedPrice <
-                            item?.product?.price ? (
+                          {/* Display price information */}
+                          {item?.price !== item?.totalPrice / item?.quantity ? (
                             <>
+                              {/* If there's a discount */}
+                              <p className='text-xs text-[#FF6B6B] line-through'>
+                                ₹{(item.price * item.quantity).toFixed(2)}
+                              </p>
                               <p className='text-xs text-[#FF6B6B]'>
-                                -₹
+                                Saved ₹
                                 {(
-                                  item.product.price -
-                                  item.product.discountedPrice
+                                  item.price * item.quantity -
+                                  item.totalPrice
                                 ).toFixed(2)}
                               </p>
                               <p className='font-medium text-[#E2E4F3]'>
-                                ₹
-                                {(
-                                  item.product.discountedPrice * item.quantity
-                                ).toFixed(2)}
+                                ₹{item.totalPrice.toFixed(2)}
                               </p>
                             </>
                           ) : (
+                            /* If there's no discount */
                             <p className='font-medium text-[#E2E4F3]'>
-                              ₹{(item.product.price * item.quantity).toFixed(2)}
+                              ₹{item.totalPrice.toFixed(2)}
                             </p>
                           )}
                         </div>

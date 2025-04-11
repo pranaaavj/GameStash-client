@@ -369,16 +369,41 @@ export const OrderDetails = () => {
                               {item.status}
                             </Badge>
                           </div>
-                          <div className='mt-2'>
-                            <span className='font-medium text-primary-text'>
-                              ₹{item.price.toFixed(2)}
-                            </span>
-
-                            {item.discount > 0 && (
-                              <span className='text-xs text-[#FF6B6B] ml-2'>
-                                -₹{item.discount.toFixed(2)} discount
+                          <div className='mt-2 flex flex-wrap items-center gap-2'>
+                            {/* Show original price per unit if there's a discount */}
+                            {item.totalPrice / item.quantity < item.price ? (
+                              <>
+                                <span className='line-through text-secondary-text'>
+                                  ₹{item.price.toFixed(2)}
+                                </span>
+                                <span className='font-medium text-primary-text'>
+                                  ₹
+                                  {(item.totalPrice / item.quantity).toFixed(2)}{' '}
+                                  per item
+                                </span>
+                              </>
+                            ) : (
+                              <span className='font-medium text-primary-text'>
+                                ₹{item.price.toFixed(2)}
                               </span>
                             )}
+                          </div>
+
+                          {/* Show total savings and final price */}
+                          <div className='mt-1'>
+                            {item.totalPrice < item.price * item.quantity && (
+                              <span className='text-xs text-[#FF6B6B]'>
+                                Saved ₹
+                                {(
+                                  item.price * item.quantity -
+                                  item.totalPrice
+                                ).toFixed(2)}{' '}
+                                on this item
+                              </span>
+                            )}
+                            <div className='mt-1 font-medium text-primary-text'>
+                              Total: ₹{item.totalPrice.toFixed(2)}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -406,7 +431,7 @@ export const OrderDetails = () => {
                           <Button
                             variant='outline'
                             size='sm'
-                            className='border-primary-textext-primary-text text-primary-text hover:bg-primary-textext-primary-text hover:text-white rounded-lg'
+                            className='bg-accent-blue border-none text-primary-text hover:bg-hover-blue hover:scale-105 transition-all hover:text-primary-text rounded-lg'
                             onClick={() => {
                               setModalType('return-item');
                               setIsModalOpen(true);
@@ -590,17 +615,6 @@ export const OrderDetails = () => {
                           </span>
                         </div>
 
-                        {order.totalDiscount > 0 && (
-                          <div className='flex justify-between'>
-                            <span className='text-secondary-text'>
-                              Item Discount:
-                            </span>
-                            <span className='text-[#FF6B6B]'>
-                              -₹{order.totalDiscount.toFixed(2)}
-                            </span>
-                          </div>
-                        )}
-
                         {order.couponCode && (
                           <div className='flex justify-between'>
                             <span className='text-secondary-text'>
@@ -608,6 +622,17 @@ export const OrderDetails = () => {
                             </span>
                             <span className='text-[#FF6B6B]'>
                               -₹{order.couponDiscount.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
+
+                        {order.totalDiscount > 0 && (
+                          <div className='flex justify-between'>
+                            <span className='text-secondary-text'>
+                              Total Discount:
+                            </span>
+                            <span className='text-[#FF6B6B]'>
+                              -₹{order.totalDiscount.toFixed(2)}
                             </span>
                           </div>
                         )}

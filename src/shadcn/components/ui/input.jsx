@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { cn } from '@/shadcn/lib/utils';
-/* eslint-disable */
+
 const Input = React.forwardRef(({ className, type, ...props }, ref) => {
   return (
     <input

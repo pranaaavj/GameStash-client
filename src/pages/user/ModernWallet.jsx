@@ -26,6 +26,8 @@ export const ModernWallet = () => {
   const [amount, setAmount] = useState('');
   const [showAddMoney, setShowAddMoney] = useState(false);
 
+  console.log(transactions);
+
   useEffect(() => {
     if (responseWallet?.success) {
       setWalletData(responseWallet.data);
@@ -133,7 +135,7 @@ export const ModernWallet = () => {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder='Enter amount'
-                  onWheel={(e) => e.target.blur()} // Disable scroll change
+                  onWheel={(e) => e.target.blur()}
                   className='bg-secondary-bg rounded-none text-sm border border-transparent focus:border-[#f2f2f2] focus:outline-none focus:ring-0 hover:border-[#c0c0c0] px-3 py-2 text-white'
                 />
               </div>
@@ -157,46 +159,49 @@ export const ModernWallet = () => {
           <p className='text-secondary-text text-center'>No transactions yet</p>
         ) : (
           <div className='space-y-3'>
-            {transactions.map((transaction) => (
-              <motion.div
-                key={transaction._id}
-                whileHover={{ scale: 1.02 }}
-                className='flex items-center justify-between p-3 bg-primary-bg/5 rounded-lg'>
-                <div className='flex items-center'>
-                  <div
-                    className={`p-2 rounded-full mr-3 ${
-                      transaction.type === 'credit'
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-red-100 text-red-600'
-                    }`}>
-                    {transaction.type === 'credit' ? (
-                      <ArrowDownLeft className='h-4 w-4' />
-                    ) : (
-                      <ArrowUpRight className='h-4 w-4' />
-                    )}
-                  </div>
-                  <div>
-                    <p className='font-medium text-primary-text'>
-                      {transaction.description || 'Wallet Transaction'}
-                    </p>
-                    <p className='text-xs text-secondary-text'>
-                      {new Date(transaction.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <p
-                    className={`font-medium ${
-                      transaction.type === 'credit'
-                        ? 'text-green-600'
-                        : 'text-red-600'
-                    }`}>
-                    {transaction.type === 'credit' ? '+' : '-'}₹
-                    {transaction.amount}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+            {transactions.map(
+              (transaction) =>
+                transaction?.status === 'completed' && (
+                  <motion.div
+                    key={transaction._id}
+                    whileHover={{ scale: 1.02 }}
+                    className='flex items-center justify-between p-3 bg-primary-bg/5 rounded-lg'>
+                    <div className='flex items-center'>
+                      <div
+                        className={`p-2 rounded-full mr-3 ${
+                          transaction.type === 'credit'
+                            ? 'bg-green-100 text-green-600'
+                            : 'bg-red-100 text-red-600'
+                        }`}>
+                        {transaction.type === 'credit' ? (
+                          <ArrowDownLeft className='h-4 w-4' />
+                        ) : (
+                          <ArrowUpRight className='h-4 w-4' />
+                        )}
+                      </div>
+                      <div>
+                        <p className='font-medium text-primary-text'>
+                          {transaction.description || 'Wallet Transaction'}
+                        </p>
+                        <p className='text-xs text-secondary-text'>
+                          {new Date(transaction.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className='text-right'>
+                      <p
+                        className={`font-medium ${
+                          transaction.type === 'credit'
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }`}>
+                        {transaction.type === 'credit' ? '+' : '-'}₹
+                        {transaction.amount}
+                      </p>
+                    </div>
+                  </motion.div>
+                )
+            )}
           </div>
         )}
       </div>

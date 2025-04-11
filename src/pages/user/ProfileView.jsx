@@ -8,15 +8,7 @@ import {
 import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 
-import {
-  User,
-  Mail,
-  Phone,
-  Edit2,
-  ShoppingCart,
-  CreditCard,
-  Star,
-} from 'lucide-react';
+import { User, Mail, Phone, Edit2 } from 'lucide-react';
 
 import { InputField } from '@/components/common';
 import { useUsers } from '@/hooks';
@@ -116,7 +108,7 @@ export const ProfileView = () => {
                 <p className='text-secondary-text mb-4'>
                   @{responseUserDetails?.data?.username || 'username'}
                 </p>
-                <div className='flex flex-wrap justify-center sm:justify-start gap-4 mb-6 text-primary-text'>
+                {/* <div className='flex flex-wrap justify-center sm:justify-start gap-4 mb-6 text-primary-text'>
                   <div className='flex items-center gap-2 bg-primary-bg/50 rounded-full px-4 py-2'>
                     <ShoppingCart className='text-accent-blue h-5 w-5' />
                     <span className='text-sm'>12 Orders</span>
@@ -129,7 +121,7 @@ export const ProfileView = () => {
                     <Star className='text-yellow-400 h-5 w-5' />
                     <span className='text-sm'>Gold Member</span>
                   </div>
-                </div>
+                </div> */}
                 {!isEditMode && (
                   <Button
                     size='sm'
@@ -226,7 +218,7 @@ export const ProfileView = () => {
                         </p>
                       </div>
                     </div>
-                    <div className='space-y-4'>
+                    {/* <div className='space-y-4'>
                       <div className='bg-primary-bg/30 p-4 rounded-lg'>
                         <h4 className='text-lg font-semibold mb-2 text-accent-blue'>
                           Recent Purchases
@@ -246,9 +238,9 @@ export const ProfileView = () => {
                           </li>
                         </ul>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
-                  <div className='bg-primary-bg/30 rounded-lg p-4'>
+                  {/* <div className='bg-primary-bg/30 rounded-lg p-4'>
                     <h3 className='text-lg font-semibold mb-2 text-accent-blue'>
                       Your Gaming Interests
                     </h3>
@@ -263,7 +255,7 @@ export const ProfileView = () => {
                         )
                       )}
                     </div>
-                  </div>
+                  </div> */}
                 </motion.div>
               )}
             </AnimatePresence>

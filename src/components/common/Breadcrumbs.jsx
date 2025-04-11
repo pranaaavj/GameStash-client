@@ -136,7 +136,7 @@ export const Breadcrumbs = () => {
   return (
     <nav
       aria-label='Breadcrumb'
-      className='relative py-4 sm:px-10'>
+      className='relative py-4 px-2 sm:px-10'>
       {/* Subtle background pattern */}
 
       <div className='max-w-7xl mx-auto'>

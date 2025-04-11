@@ -14,6 +14,8 @@ export const OrderConfirmationWrapper = () => {
       params.get('status') || location.state?.paymentStatus || 'success';
     const orderId = params.get('orderId') || location.state?.orderId;
 
+    console.log('location state:', location.state);
+
     if (!orderId) {
       navigate('/orders');
     }

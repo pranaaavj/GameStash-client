@@ -190,6 +190,10 @@ export const CouponList = () => {
                           variant='outline'
                           size='icon'
                           onClick={() => handleListingModal(coupon._id)}
+                          disabled={
+                            new Date(coupon.endDate).getTime() <
+                            new Date().getTime()
+                          }
                           className='bg-accent-red border-none h-8 w-8 px-5 py-5 text-primary-text hover:bg-accent-red/90 transition'>
                           {coupon.isActive ? (
                             <X className='h-4 w-4' />

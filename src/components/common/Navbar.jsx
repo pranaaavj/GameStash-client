@@ -87,7 +87,7 @@ export const Navbar = ({ onCartClick }) => {
 
   return (
     <nav
-      className={`bg-secondary-bg z-20 font-poppins fixed left-0 right-0 w-full transition-all duration-300 ${
+      className={`z-50 bg-secondary-bg font-poppins fixed left-0 right-0 w-full transition-all duration-300 ${
         scrolled ? 'shadow-lg navbar-scrolled' : 'shadow-md'
       }`}>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>

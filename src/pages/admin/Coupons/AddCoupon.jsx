@@ -115,6 +115,37 @@ export const AddCoupon = () => {
               errorMessage={couponValidation.discountValue}
             />
           </div>
+          <div className='flex space-x-4'>
+            <DatePicker
+              value={couponInput.startDate}
+              onChange={handleChange}
+              label='Start Date'
+              name='startDate'
+              placeHolder='Select start date'
+              isInvalid={!!couponValidation.startDate}
+              errorMessage={couponValidation.startDate}
+              helperText={
+                !couponValidation.startDate
+                  ? 'Select when this coupon should start'
+                  : null
+              }
+            />
+
+            <DatePicker
+              value={couponInput.endDate}
+              onChange={handleChange}
+              label='End Date'
+              name='endDate'
+              placeHolder='Select end date'
+              isInvalid={!!couponValidation.endDate}
+              errorMessage={couponValidation.endDate}
+              helperText={
+                !couponValidation.endDate
+                  ? 'Select when this coupon expires'
+                  : null
+              }
+            />
+          </div>
 
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             <InputField
@@ -179,38 +210,6 @@ export const AddCoupon = () => {
               helperText={
                 !couponValidation.perUserLimit
                   ? 'Maximum times a single user can use this coupon'
-                  : null
-              }
-            />
-          </div>
-
-          <div className='flex space-x-4'>
-            <DatePicker
-              value={couponInput.startDate}
-              onChange={handleChange}
-              label='Start Date'
-              name='startDate'
-              placeHolder='Select start date'
-              isInvalid={!!couponValidation.startDate}
-              errorMessage={couponValidation.startDate}
-              helperText={
-                !couponValidation.startDate
-                  ? 'Select when this coupon should start'
-                  : null
-              }
-            />
-
-            <DatePicker
-              value={couponInput.endDate}
-              onChange={handleChange}
-              label='End Date'
-              name='endDate'
-              placeHolder='Select end date'
-              isInvalid={!!couponValidation.endDate}
-              errorMessage={couponValidation.endDate}
-              helperText={
-                !couponValidation.endDate
-                  ? 'Select when this coupon expires'
                   : null
               }
             />

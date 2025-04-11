@@ -29,7 +29,6 @@ export const AdminLogin = () => {
 
     setValidation(emptyInput);
     if (isError) reset();
-    // eslint-disable-next-line
   }, [adminInput, admin]);
 
   const handleChange = ({ target: { value, name } }) => {

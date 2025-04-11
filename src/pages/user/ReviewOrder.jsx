@@ -17,20 +17,6 @@ export const ReviewOrder = ({ onDeliverySelect, cartItems }) => {
 
   const deliveryOptions = [
     {
-      id: 'express',
-      label: 'Express Delivery',
-      price: 9.99,
-      date: 'Tomorrow, Nov 10',
-      time: 'by 8 PM',
-    },
-    {
-      id: 'standard',
-      label: 'Standard Delivery',
-      price: 4.99,
-      date: 'Monday, Nov 13',
-      time: 'by 8 PM',
-    },
-    {
       id: 'free',
       label: 'Free Delivery',
       price: 0,
@@ -65,13 +51,13 @@ export const ReviewOrder = ({ onDeliverySelect, cartItems }) => {
                 className='flex items-center justify-between p-4 bg-secondary-bg/50 rounded-lg cursor-pointer border border-transparent peer-data-[state=checked]:border-accent-red'>
                 <div className='flex-1'>
                   <p className='font-medium'>{option.label}</p>
-                  <p className='text-sm text-secondary-text'>
+                  {/* <p className='text-sm text-secondary-text'>
                     {option.date} {option.time}
-                  </p>
+                  </p> */}
                 </div>
-                <span className='text-accent-red font-semibold ml-4'>
+                {/* <span className='text-accent-red font-semibold ml-4'>
                   {option.price === 0 ? 'FREE' : `₹${option.price.toFixed(2)}`}
-                </span>
+                </span> */}
               </Label>
             </div>
           ))}

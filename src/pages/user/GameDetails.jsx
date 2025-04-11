@@ -29,8 +29,8 @@ import { GameDetailsError, GameDetailsLoading } from '@/components/error';
 
 import {
   useGetProductQuery,
+  useGetRelatedProductsQuery,
   useGetReviewByProductQuery,
-  useGetProductsByGenreQuery,
 } from '@/redux/api/user/productApi';
 import {
   useAddItemToCartMutation,
@@ -75,13 +75,13 @@ export const GameDetails = () => {
 
   const { data: responseReviews } = useGetReviewByProductQuery(productId);
 
-  const relatedQuery = useGetProductsByGenreQuery(
+  const relatedQuery = useGetRelatedProductsQuery(
     {
       page: pageState.relatedGames,
       limit: 4,
-      genre: responseProduct?.data?.genre?.name,
+      productId: responseProduct?.data?._id,
     },
-    { skip: !responseProduct?.data?.genre?.name }
+    { skip: !responseProduct?.data?._id }
   );
 
   // API mutations
@@ -203,8 +203,6 @@ export const GameDetails = () => {
   const totalReviewPages = responseReviews?.data
     ? Math.ceil(responseReviews.data.length / reviewsPerPage)
     : 0;
-
-  // Loading and error states
 
   if (isProductLoading) {
     return <GameDetailsLoading />;
@@ -450,8 +448,8 @@ export const GameDetails = () => {
                     : ''}
                 </span>
 
-                <div className='space-y-3'>
-                  <Button
+                <div className='space-y-3 lg:pt-10'>
+                  {/* <Button
                     className={`w-full font-semibold py-5 text-white transition-all duration-200 ${
                       responseProduct?.data?.stock >= 1 && !isOutOfStock
                         ? 'bg-accent-blue hover:bg-hover-blue'
@@ -459,14 +457,12 @@ export const GameDetails = () => {
                     }`}
                     disabled={isOutOfStock || responseProduct?.data?.stock < 1}
                     onClick={() => requireLogin(user, navigate, location)}>
-                    {responseProduct?.data?.stock >= 1 && !isOutOfStock
-                      ? 'Buy Now'
-                      : 'No Stocks Left'}
-                  </Button>
+                    Buy Now
+                  </Button> */}
 
                   <Button
                     variant='secondary'
-                    className='w-full bg-[#2A2A2A] hover:bg-[#353535] text-white py-5'
+                    className='w-full bg-accent-blue hover:bg-hover-blue transition-colors text-white py-5'
                     disabled={
                       isOutOfStock ||
                       responseProduct?.data?.stock < 1 ||
@@ -476,8 +472,6 @@ export const GameDetails = () => {
                     <ShoppingCart className='w-4 h-4 mr-2' />
                     {addItemToCartMeta.isLoading
                       ? 'Adding to Cart...'
-                      : isOutOfStock || responseProduct?.data?.stock < 1
-                      ? 'No Stocks Left'
                       : 'Add To Cart'}
                   </Button>
 

@@ -111,12 +111,33 @@ export const Cart = () => {
 
   const handleUpdateQuantity = useCallback(
     (productId, quantity) => {
-      if (quantity > 5 || quantity < 1)
-        return showToast.error('Quantity limit reached.');
-
       const item = cartItems.find((item) => item.product._id === productId);
-      if (item?.product.stock < quantity)
-        return showToast.error('Insufficient stock.');
+      if (!item) return;
+
+      if (quantity > 5) {
+        showToast.error('Maximum quantity allowed is 5.');
+        return;
+      }
+
+      if (quantity < 1) {
+        showToast.error('Minimum quantity allowed is 1.');
+        return;
+      }
+
+      if (quantity > item.product.stock) {
+        showToast.error(`Only ${item.product.stock} items available in stock.`);
+
+        setCartItems((prev) =>
+          prev.map((cartItem) =>
+            cartItem.product._id === productId
+              ? { ...cartItem, quantity: item.product.stock }
+              : cartItem
+          )
+        );
+
+        debouncedUpdateQuantity(productId, item.product.stock);
+        return;
+      }
 
       setCartItems((prev) =>
         prev.map((item) =>
@@ -364,25 +385,28 @@ export const Cart = () => {
                                     <div className='flex flex-col sm:flex-row items-center gap-1'>
                                       <span className='text-xs text-secondary-text line-through'>
                                         ₹
-                                        {(
+                                        {/* {(
                                           item.product.price * item.quantity
-                                        ).toFixed(2)}
+                                        ).toFixed(2)} */}
+                                        {item.product.price}
                                       </span>
                                       <span className='text-sm font-bold text-accent-green'>
                                         ₹
-                                        {(
+                                        {/* {(
                                           item.product.discountedPrice *
                                           item.quantity
-                                        ).toFixed(2)}
+                                        ).toFixed(2)} */}
+                                        {item.product.discountedPrice}
                                       </span>
                                     </div>
                                   </div>
                                 ) : (
                                   <p className='text-sm font-bold text-primary-text'>
                                     ₹
-                                    {(
+                                    {/* {(
                                       item.product.price * item.quantity
-                                    ).toFixed(2)}
+                                    ).toFixed(2)} */}
+                                    {item.product.price}
                                   </p>
                                 )}
                               </div>

@@ -202,30 +202,6 @@ export const EditOffer = () => {
             />
           )}
 
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-            <SelectField
-              value={offerInput.discountType}
-              onChange={handleChange}
-              label='Discount Type'
-              name='discountType'
-              options={filteredDiscountTypeOptions}
-              placeholder='Select Discount Type'
-              isInvalid={!!offerValidation.discountType}
-              errorMessage={offerValidation.discountType}
-            />
-
-            <InputField
-              type='number'
-              value={offerInput.discountValue}
-              onChange={handleChange}
-              label='Discount Value'
-              name='discountValue'
-              placeHolder='Enter discount value'
-              isInvalid={!!offerValidation.discountValue}
-              errorMessage={offerValidation.discountValue}
-            />
-          </div>
-
           <div className='flex space-x-4'>
             <DatePicker
               value={offerInput.startDate}
@@ -247,6 +223,30 @@ export const EditOffer = () => {
               isInvalid={!!offerValidation.endDate}
               errorMessage={offerValidation.endDate}
               helperText='Select when this discount expires'
+            />
+          </div>
+
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+            <SelectField
+              value={offerInput.discountType}
+              onChange={handleChange}
+              label='Discount Type'
+              name='discountType'
+              options={filteredDiscountTypeOptions}
+              placeholder='Select Discount Type'
+              isInvalid={!!offerValidation.discountType}
+              errorMessage={offerValidation.discountType}
+            />
+
+            <InputField
+              type='number'
+              value={offerInput.discountValue}
+              onChange={handleChange}
+              label='Discount Value'
+              name='discountValue'
+              placeHolder='Enter discount value'
+              isInvalid={!!offerValidation.discountValue}
+              errorMessage={offerValidation.discountValue}
             />
           </div>
 

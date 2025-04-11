@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { GameCard } from '../../components/user';

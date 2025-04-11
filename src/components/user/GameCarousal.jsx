@@ -1,5 +1,5 @@
-import { Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+// import { Plus } from 'lucide-react';
+// import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 
@@ -24,7 +24,6 @@ export const GameCarousal = ({
   useEffect(() => {
     startRotation();
     return () => clearInterval(intervalRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPaused, autoSwitchInterval, games.length]);
 
   const handleGameSelect = (index) => {
@@ -79,7 +78,7 @@ export const GameCarousal = ({
                           ? `₹${activeGame.price.toLocaleString('en-IN')}`
                           : 'Free'}
                       </div>
-                      <div className='flex flex-col sm:flex-row gap-3 pt-2'>
+                      {/* <div className='flex flex-col sm:flex-row gap-3 pt-2'>
                         <Link to={`/game/${activeGame.id}`}>
                           <button className='bg-accent-blue hover:bg-hover-blue text-white text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6 rounded-md font-medium flex items-center justify-center transition-colors'>
                             Buy Now
@@ -89,7 +88,7 @@ export const GameCarousal = ({
                           <Plus className='mr-2 h-4 w-4' />
                           Add to Wishlist
                         </button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

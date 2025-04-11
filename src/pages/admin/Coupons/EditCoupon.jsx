@@ -49,7 +49,6 @@ export const EditCoupon = () => {
   const [editCoupon, { isError: isEditCouponError, error: editCouponError }] =
     useEditCouponMutation();
 
-  // Coupon state
   const [couponInput, setCouponInput] = useState(initialCouponState);
   const [couponValidation, setCouponValidation] = useState(initialCouponState);
 
@@ -62,8 +61,8 @@ export const EditCoupon = () => {
         discountValue: responseCoupon.data.discountValue,
         minOrderAmount: responseCoupon.data.minOrderAmount,
         maxDiscountAmount: responseCoupon.data.maxDiscountAmount,
-        usageLimit: responseCoupon.data.usageLimit, // ✅ Added missing field
-        perUserLimit: responseCoupon.data.perUserLimit, // ✅ Added missing field
+        usageLimit: responseCoupon.data.usageLimit,
+        perUserLimit: responseCoupon.data.perUserLimit,
         startDate: new Date(responseCoupon.data.startDate),
         endDate: new Date(responseCoupon.data.endDate),
       }));
@@ -155,6 +154,38 @@ export const EditCoupon = () => {
             />
           </div>
 
+          <div className='flex space-x-4'>
+            <DatePicker
+              value={couponInput.startDate}
+              onChange={handleChange}
+              label='Start Date'
+              name='startDate'
+              placeHolder='Select start date'
+              isInvalid={!!couponValidation.startDate}
+              errorMessage={couponValidation.startDate}
+              helperText={
+                !couponValidation.startDate
+                  ? 'Select when this coupon should start'
+                  : null
+              }
+            />
+
+            <DatePicker
+              value={couponInput.endDate}
+              onChange={handleChange}
+              label='End Date'
+              name='endDate'
+              placeHolder='Select end date'
+              isInvalid={!!couponValidation.endDate}
+              errorMessage={couponValidation.endDate}
+              helperText={
+                !couponValidation.endDate
+                  ? 'Select when this coupon expires'
+                  : null
+              }
+            />
+          </div>
+
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             <InputField
               type='number'
@@ -218,38 +249,6 @@ export const EditCoupon = () => {
               helperText={
                 !couponValidation.perUserLimit
                   ? 'Maximum times a single user can use this coupon'
-                  : null
-              }
-            />
-          </div>
-
-          <div className='flex space-x-4'>
-            <DatePicker
-              value={couponInput.startDate}
-              onChange={handleChange}
-              label='Start Date'
-              name='startDate'
-              placeHolder='Select start date'
-              isInvalid={!!couponValidation.startDate}
-              errorMessage={couponValidation.startDate}
-              helperText={
-                !couponValidation.startDate
-                  ? 'Select when this coupon should start'
-                  : null
-              }
-            />
-
-            <DatePicker
-              value={couponInput.endDate}
-              onChange={handleChange}
-              label='End Date'
-              name='endDate'
-              placeHolder='Select end date'
-              isInvalid={!!couponValidation.endDate}
-              errorMessage={couponValidation.endDate}
-              helperText={
-                !couponValidation.endDate
-                  ? 'Select when this coupon expires'
                   : null
               }
             />

@@ -125,6 +125,8 @@ export const EditProduct = () => {
     const productValidation = validateProduct(productInput);
     const imageValidation = validateImages(images);
 
+    console.log(productValidation, imageValidation);
+
     if (Object.keys(productValidation).length > 0 || imageValidation) {
       setProductValidation(productValidation);
       setImageValidation(imageValidation);
@@ -247,6 +249,11 @@ export const EditProduct = () => {
               className='w-full bg-[#262626] hover:border border-transparent text-primary-text rounded-md'
               rows={4}
             />
+            {validateProduct?.description && (
+              <span className='text-red-500 text-sm mt-0'>
+                {validateProduct?.description}
+              </span>
+            )}
           </div>
 
           {/* System Requirements Section */}

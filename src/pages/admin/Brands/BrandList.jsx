@@ -10,13 +10,12 @@ import {
 } from '@/redux/api/admin/brandsApi';
 import { toast } from 'sonner';
 import { Alert, EmptyState } from '@/components/common';
-import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
 import { mapTableData } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
-import { CircleX, Plus, Search, Check, X, Tags } from 'lucide-react';
+import { CircleX, Plus, Check, X, Tags } from 'lucide-react';
 
 export const BrandList = () => {
   const navigate = useNavigate();
@@ -97,16 +96,6 @@ export const BrandList = () => {
         </h1>
       </div>
       <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
-        {/* Search Input */}
-        <div className='relative w-full sm:w-64'>
-          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text h-4 w-4' />
-          <Input
-            type='text'
-            placeholder='Search...'
-            className='pl-10 pr-4 py-2 rounded-full bg-secondary-bg text-primary-text border-accent-blue focus:border-accent-blue focus:ring focus:ring-accent-blue focus:ring-opacity-50 w-full'
-          />
-        </div>
-
         {/* Add Brand Button */}
         <Link to='/admin/brands/add'>
           <Button className='w-full sm:w-auto bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>

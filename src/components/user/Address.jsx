@@ -133,7 +133,7 @@ export const Address = ({ onAddressSelect }) => {
   if (isAddressLoading) return <AddressLoading />;
 
   return (
-    <Card className='bg-secondary-bg/20 shadow-xl border-none text-primary-text overflow-hidden'>
+    <Card className='bg-secondary-bg/20 border-none text-primary-text overflow-hidden'>
       <CardHeader className='bg-secondary-bg/20'>
         <CardTitle className='text-3xl font-bold flex items-center'>
           <MapPin className='w-8 h-8 mr-2 text-primary-text' />
@@ -141,7 +141,7 @@ export const Address = ({ onAddressSelect }) => {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className='p-4 sm:p-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+      <CardContent className='p-4 sm:p-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-2'>
         {addresses.map((address) => (
           <Card
             key={address.id}
@@ -252,7 +252,7 @@ export const Address = ({ onAddressSelect }) => {
                 <>
                   <div className='flex justify-between items-start'>
                     <div>
-                      <h3 className='font-bold text-lg text-accent-blue'>
+                      <h3 className='font-bold text-lg text-accent-blue truncate max-w-[70px]'>
                         {address.addressName || 'Unnamed Location'}
                       </h3>
                       <p className='text-sm text-secondary-text'>
@@ -271,7 +271,7 @@ export const Address = ({ onAddressSelect }) => {
                       </p>
                     </div>
 
-                    <div className='flex space-x-2'>
+                    <div className='flex flex-wrap gap-2 justify-end'>
                       <Button
                         size='icon'
                         variant='ghost'

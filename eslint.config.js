@@ -40,6 +40,7 @@ export default [
       'no-unused-vars': 'error',
       'react/prop-types': 'off',
       'react-hooks/exhaustive-deps': 'off',
+      'react/display-name': 'off',
     },
   },
 ];

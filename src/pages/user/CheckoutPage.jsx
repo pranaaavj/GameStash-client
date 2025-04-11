@@ -173,6 +173,8 @@ export const CheckoutPage = () => {
     try {
       const response = await placeOrder(orderData).unwrap();
 
+      console.log(response);
+
       if (selectedPayment === 'Razorpay') {
         const options = {
           key: import.meta.env.VITE_RZP_KEY_ID,
@@ -252,7 +254,7 @@ export const CheckoutPage = () => {
         });
       } else if (response?.success) {
         navigate('/order-confirmation', {
-          state: { orderId: response.data.orderId, paymentStatus: 'success' },
+          state: { orderId: response.data._id, paymentStatus: 'success' },
         });
       }
     } catch (error) {
@@ -364,7 +366,7 @@ export const CheckoutPage = () => {
                             <div className='flex items-center space-x-2'>
                               <TooltipContent
                                 side='right'
-                                className='text-xs bg-accent-red text-white p-2 rounded-md shadow-lg'>
+                                className='text-xs bg-accent-red text-white p-2 z-20 rounded-md shadow-lg'>
                                 <span className='font-semibold'>Required</span>
                               </TooltipContent>
                               <ChevronDown
