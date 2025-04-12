@@ -8,12 +8,5 @@ export const validateBrand = (brandInput) => {
     validation.name = 'Brand name must be at least 3 characters long.';
   }
 
-  // Validation for description
-  if (brandInput.description === '') {
-    validation.description = 'Description cannot be empty.';
-  } else if (brandInput.description.length < 10) {
-    validation.description = 'Description must be at least 10 characters long.';
-  }
-
   return validation;
 };

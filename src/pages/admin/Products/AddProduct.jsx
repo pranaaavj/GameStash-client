@@ -7,7 +7,7 @@ import {
 import { useAddProductMutation } from '@/redux/api/admin/productsApi';
 import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
@@ -15,7 +15,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ImageUploader } from '@/components/admin';
 import { Alert, InputField, SelectField } from '@/components/common';
-import { validateProduct, mapOptionsData, validateImages } from '@/utils';
+import {
+  validateProduct,
+  mapOptionsData,
+  validateImages,
+  showToast,
+  handleApiError,
+} from '@/utils';
 import {
   useUploadProductImageMutation,
   useDeleteProductImageMutation,
@@ -109,11 +115,11 @@ export const AddProduct = () => {
       const response = await addProduct({ ...productInput, images }).unwrap();
 
       if (response.success) {
-        toast.success(response.message, { duration: 1500 });
+        showToast.success(response.message);
         navigate('/admin/products');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error);
     }
   };
 

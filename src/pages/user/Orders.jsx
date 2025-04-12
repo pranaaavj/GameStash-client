@@ -16,7 +16,7 @@ import {
   useGetOrdersQuery,
   useCancelOrderMutation,
 } from '@/redux/api/user/ordersApi';
-import { toast } from 'sonner';
+
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
@@ -25,6 +25,7 @@ import { PageTransition, StatusBadge } from '@/components/common';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '@/components/common';
 import { OrdersListError, OrdersListLoading } from '@/components/error';
+import { handleApiError, showToast } from '@/utils';
 
 export const Orders = () => {
   const navigate = useNavigate();
@@ -44,11 +45,10 @@ export const Orders = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success(response?.message, { duration: 1500 });
+        showToast.success(response?.message);
       }
     } catch (error) {
-      toast.error('Failed to cancel order');
-      console.log(error);
+      handleApiError(error, 'Failed to cancel order');
     } finally {
       setIsModalOpen(false);
       setSelectedOrderId(null);
@@ -68,8 +68,6 @@ export const Orders = () => {
   }
 
   const hasOrders = responseOrders?.data?.orders?.length > 0;
-
-  console.log(responseOrders);
 
   return (
     <PageTransition>

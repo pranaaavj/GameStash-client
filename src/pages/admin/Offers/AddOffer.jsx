@@ -7,7 +7,7 @@ import {
 import { useAddOfferMutation } from '@/redux/api/admin/offersApi';
 import { useGetAllProductsQuery } from '@/redux/api/admin/productsApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -18,7 +18,12 @@ import {
   SelectField,
   DatePicker,
 } from '@/components/common';
-import { validateOffer, mapOptionsData } from '@/utils';
+import {
+  validateOffer,
+  mapOptionsData,
+  showToast,
+  handleApiError,
+} from '@/utils';
 
 const initialOfferState = {
   name: '',
@@ -38,7 +43,7 @@ export const AddOffer = () => {
     useGetAllProductsQuery({ limit: 10000 });
 
   const { data: responseBrands, isSuccess: brandsSuccess } =
-    useGetAllBrandsQuery({});
+    useGetAllBrandsQuery({ limit: 10000 });
 
   const [addOffer, { isError, error, isLoading: isAddOfferLoading }] =
     useAddOfferMutation();
@@ -92,11 +97,11 @@ export const AddOffer = () => {
       const response = await addOffer(offerInput).unwrap();
 
       if (response.success) {
-        toast.success(response.message, { duration: 1500 });
+        showToast.success(response.message);
         navigate('/admin/offers');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error while adding offer');
     }
   };
 

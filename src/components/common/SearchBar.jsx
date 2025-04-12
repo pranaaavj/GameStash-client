@@ -22,10 +22,10 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
   const [triggerSearchProducts] = useLazySearchProductsQuery();
   const searchRef = useRef(null);
   const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     if (transcript) {
-      console.log(transcript);
       setSearchTerm(transcript);
       handleSearch(transcript);
     }
@@ -44,16 +44,14 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
       if (
         searchRef.current &&
         !searchRef.current.contains(event.target) &&
-        !event.target.closest('.mic-button') // Prevent closing when clicking mic button
+        !event.target.closest('.mic-button')
       ) {
         handleBlur();
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleSearch = async (query) => {
@@ -67,7 +65,6 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
       const response = await triggerSearchProducts({
         queryOptions: { search: query },
       }).unwrap();
-      console.log(response);
 
       if (response?.success) {
         setSearchResults(response?.data?.products || []);
@@ -76,6 +73,8 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
         setSearchResults([]);
         setIsDropdownVisible(true); // Still show dropdown for "no results"
       }
+
+      setIsDropdownVisible(true);
     } catch (error) {
       console.error('Error fetching search results:', error);
       setSearchResults([]);
@@ -84,9 +83,7 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
   };
 
   const debouncedSearch = useCallback(
-    debounce((query) => {
-      handleSearch(query);
-    }, 300),
+    debounce((query) => handleSearch(query), 300),
     []
   );
 
@@ -165,11 +162,11 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
         {isSearchVisible && (
           <motion.div
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: '400px', opacity: 1 }}
+            animate={{ width: '200px', opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-            className='absolute right-0 top-1/2 -translate-y-1/2 overflow-visible'>
-            <motion.div className='flex items-center bg-primary-bg text-primary-text rounded-full px-4 py-2'>
+            className='absolute right-0 top-1/2 -translate-y-1/2'>
+            <motion.div className='flex items-center bg-primary-bg text-primary-text rounded-full px-4 py-2 w-full'>
               <input
                 ref={inputRef}
                 type='text'
@@ -202,25 +199,25 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
                   )}
                 </button>
 
-                {/* Tooltip below the mic button */}
                 {showTooltip && (
                   <div className='absolute top-full left-1/2 -translate-x-1/2 mt-2 w-36 bg-secondary-bg text-primary-text text-xs rounded-md p-2 shadow-lg z-50'>
                     Hold to use voice search
-                    <div className='absolute -top-1 left-1/2 -translate-x-1/2 transform -translate-y-1/2 rotate-45 w-2 h-2 bg-secondary-bg'></div>
+                    <div className='absolute -top-1 left-1/2 -translate-x-1/2 transform -translate-y-1/2 rotate-45 w-2 h-2 bg-secondary-bg' />
                   </div>
                 )}
               </div>
             </motion.div>
 
-            {/* Search Results Dropdown */}
             <AnimatePresence>
               {isDropdownVisible && (
                 <motion.div
+                  ref={dropdownRef}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className='absolute top-full left-0 right-0 mt-2 bg-secondary-bg rounded-md shadow-lg overflow-hidden z-50 border border-primary-bg/20'>
+                  className='absolute top-full right-0 mt-2 bg-secondary-bg rounded-md shadow-lg overflow-hidden z-50 border border-primary-bg/20'
+                  style={{ width: '400px' }}>
                   {searchResults.length > 0 ? (
                     searchResults.map((result) => (
                       <motion.div
@@ -229,7 +226,7 @@ export const SearchBar = ({ isSearchVisible, setIsSearchVisible }) => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className='p-3 hover:bg-primary-bg/10 cursor-pointer transition-colors duration-150 ease-in-out border-b border-primary-bg/10 last:border-b-0'
+                        className='p-3 hover:bg-primary-bg/10 cursor-pointer transition-colors duration-150 border-b border-primary-bg/10 last:border-b-0'
                         onClick={() => handleResultClick(result._id)}>
                         <div className='flex items-center space-x-3'>
                           <div className='relative w-12 h-12 flex-shrink-0'>

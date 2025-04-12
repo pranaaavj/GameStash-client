@@ -6,8 +6,7 @@ import {
   SelectContent,
 } from '@/shadcn/components/ui/select';
 import { Button } from '@/shadcn/components/ui/button';
-import { Slider } from '@/shadcn/components/ui/slider';
-import { Switch } from '@/shadcn/components/ui/switch';
+
 import { useEffect, useState } from 'react';
 import { Checkbox } from '@/shadcn/components/ui/checkbox';
 import { ChevronDown, AlertCircle } from 'lucide-react';
@@ -22,7 +21,7 @@ const Filters = ({ title, children, defaultOpen = true }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className='mb-6 border-b border-primary-bg/20 pb-4'>
+    <div className='mb-6 border-b border-primary-bg/20'>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className='flex items-center justify-between w-full py-2 text-sm font-semibold hover:text-accent-blue transition-colors'>
@@ -71,8 +70,6 @@ export const FilterSection = ({ onApplyFilters }) => {
   const [brands, setBrands] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 3000]);
-  const [offers, setOffers] = useState({ discounted: false, bundle: false });
   const [sortingOption, setSortingOption] = useState('popularity:desc');
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
 
@@ -98,22 +95,15 @@ export const FilterSection = ({ onApplyFilters }) => {
     let count = 0;
     if (selectedGenres.length > 0) count++;
     if (selectedBrands.length > 0) count++;
-    if (priceRange[0] > 0 || priceRange[1] < 3000) count++;
-    if (offers.discounted) count++;
-    if (offers.bundle) count++;
     if (sortingOption !== 'popularity:desc') count++;
     setActiveFiltersCount(count);
-  }, [selectedGenres, selectedBrands, priceRange, offers, sortingOption]);
+  }, [selectedGenres, selectedBrands, sortingOption]);
 
   const handleApplyFilters = () => {
     onApplyFilters({
       genres: selectedGenres,
       brands: selectedBrands,
-      priceRange: priceRange.join('-'),
-      offers: {
-        discounted: offers.discounted.toString(),
-        bundle: offers.bundle.toString(),
-      },
+
       sort: sortingOption,
     });
   };
@@ -121,14 +111,10 @@ export const FilterSection = ({ onApplyFilters }) => {
   const handleClearFilters = () => {
     setSelectedGenres([]);
     setSelectedBrands([]);
-    setPriceRange([0, 3000]);
-    setOffers({ discounted: false, bundle: false });
     setSortingOption('popularity:desc');
     onApplyFilters({
       genres: [],
       brands: [],
-      priceRange: '0-3000',
-      offers: { discounted: 'false', bundle: 'false' },
       sort: 'popularity:desc',
     });
   };
@@ -173,7 +159,7 @@ export const FilterSection = ({ onApplyFilters }) => {
         {isGenresLoading ? (
           <FilterSkeleton />
         ) : isGenresError ? (
-          <div className='flex items-center text-accent-red text-sm py-2'>
+          <div className='flex items-center text-accent-red text-sm'>
             <AlertCircle className='h-4 w-4 mr-2' />
             Failed to load genres
           </div>
@@ -182,7 +168,7 @@ export const FilterSection = ({ onApplyFilters }) => {
             {genres.map((genre) => (
               <div
                 key={genre._id}
-                className='flex items-center space-x-2 mb-3 hover:bg-primary-bg/10 p-1 rounded transition-colors'>
+                className='flex items-center space-x-2 hover:bg-primary-bg/10 p-1 rounded transition-colors'>
                 <Checkbox
                   id={`genre-${genre._id}`}
                   checked={selectedGenres.includes(genre._id)}
@@ -224,7 +210,7 @@ export const FilterSection = ({ onApplyFilters }) => {
             {brands.map((brand) => (
               <div
                 key={brand._id}
-                className='flex items-center space-x-2 mb-3 hover:bg-primary-bg/10 p-1 rounded transition-colors'>
+                className='flex items-center space-x-2 hover:bg-primary-bg/10 p-1 rounded transition-colors'>
                 <Checkbox
                   id={`brand-${brand._id}`}
                   checked={selectedBrands.includes(brand._id)}
@@ -252,74 +238,17 @@ export const FilterSection = ({ onApplyFilters }) => {
         )}
       </Filters>
 
-      {/* Price range */}
-      <Filters title='Price'>
-        <Slider
-          min={0}
-          max={3000}
-          step={50}
-          value={priceRange}
-          onValueChange={(value) => setPriceRange(value)}
-          className='mb-4'
-        />
-        <div className='flex justify-between items-center'>
-          <div className='bg-primary-bg/30 px-3 py-1.5 rounded text-sm'>
-            ₹{priceRange[0]}
-          </div>
-          <div className='text-xs text-secondary-text'>to</div>
-          <div className='bg-primary-bg/30 px-3 py-1.5 rounded text-sm'>
-            ₹{priceRange[1]}
-          </div>
-        </div>
-      </Filters>
-
-      {/* Offers */}
-      <Filters title='Offers'>
-        <div className='space-y-4'>
-          <div className='flex items-center justify-between'>
-            <label
-              htmlFor='discounted'
-              className='text-sm font-medium cursor-pointer'>
-              Discounted Games
-            </label>
-            <Switch
-              id='discounted'
-              checked={offers.discounted}
-              onCheckedChange={() =>
-                setOffers((prev) => ({ ...prev, discounted: !prev.discounted }))
-              }
-              className='data-[state=checked]:bg-accent-blue'
-            />
-          </div>
-          <div className='flex items-center justify-between'>
-            <label
-              htmlFor='bundle'
-              className='text-sm font-medium cursor-pointer'>
-              Bundle Deals
-            </label>
-            <Switch
-              id='bundle'
-              checked={offers.bundle}
-              onCheckedChange={() =>
-                setOffers((prev) => ({ ...prev, bundle: !prev.bundle }))
-              }
-              className='data-[state=checked]:bg-accent-blue'
-            />
-          </div>
-        </div>
-      </Filters>
-
       {/* Clear and apply filters */}
       <div className='flex flex-col mt-6 space-y-3'>
         <Button
           onClick={handleApplyFilters}
-          className='w-full bg-accent-blue hover:bg-hover-blue text-white py-5'>
+          className='w-full bg-accent-blue hover:bg-hover-blue border-none text-white'>
           Apply Filters
         </Button>
         <Button
           variant='outline'
           onClick={handleClearFilters}
-          className='w-full border-accent-blue/30 text-accent-blue hover:bg-accent-blue/10 hover:text-accent-blue'>
+          className='w-full bg-accent-red hover:bg-hover-red border-none hover:text-primary-text'>
           Clear All Filters
         </Button>
       </div>

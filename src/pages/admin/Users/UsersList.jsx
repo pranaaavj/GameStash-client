@@ -7,10 +7,10 @@ import {
   useGetAllUsersQuery,
   useToggleBlockUserMutation,
 } from '@/redux/api/admin/usersApi';
-import { toast } from 'sonner';
+
 import { Alert, EmptyState } from '@/components/common';
 import { useState } from 'react';
-import { mapTableData } from '@/utils';
+import { handleApiError, mapTableData, showToast } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
 import { CircleX, Users } from 'lucide-react';
 
@@ -52,15 +52,15 @@ export const UsersList = () => {
 
   const handleConfirmBlockUnblock = async () => {
     try {
-      const responseToggleBlock = await toggleBlockUser(selectedUser);
+      const responseToggleBlock = await toggleBlockUser(selectedUser).unwrap();
 
       if (responseToggleBlock.success) {
-        toast.success(responseToggleBlock.message, { duration: 1500 });
+        showToast.success(responseToggleBlock.message);
       }
 
       setIsModalOpen(false);
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error blocking user');
     }
   };
 

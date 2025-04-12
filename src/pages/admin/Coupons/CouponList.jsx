@@ -15,11 +15,12 @@ import { Alert, ConfirmationModal, EmptyState } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
+
 import {
   useGetAllCouponsQuery,
   useToggleCouponListMutation,
 } from '@/redux/api/admin/couponsApi';
+import { handleApiError, showToast } from '@/utils';
 
 export const CouponList = () => {
   const navigate = useNavigate();
@@ -72,12 +73,10 @@ export const CouponList = () => {
       ).unwrap();
 
       if (responseToggleCoupon.success) {
-        toast.success(responseToggleCoupon.message, {
-          duration: 1500,
-        });
+        showToast.success(responseToggleCoupon.message);
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error listing coupon');
     }
   };
 

@@ -8,10 +8,10 @@ import {
   useGetAllProductsQuery,
   useToggleProductListMutation,
 } from '@/redux/api/admin/productsApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
-import { mapTableData } from '@/utils';
+import { handleApiError, mapTableData, showToast } from '@/utils';
 import { Link, useNavigate } from 'react-router-dom';
 import { Alert, ConfirmationModal, EmptyState } from '@/components/common';
 import { Check, CircleX, Plus, ShoppingCart, X } from 'lucide-react';
@@ -78,12 +78,10 @@ export const ProductList = () => {
       ).unwrap();
 
       if (responseProductList?.success) {
-        toast.success(responseProductList?.message, {
-          duration: 1500,
-        });
+        showToast.success(responseProductList?.message);
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error listing product');
     }
   };
 

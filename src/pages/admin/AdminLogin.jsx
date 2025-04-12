@@ -1,8 +1,7 @@
-import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { useAdmins } from '@/hooks';
 import { useDispatch } from 'react-redux';
-import { validateLogin } from '@/utils';
+import { handleApiError, showToast, validateLogin } from '@/utils';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert, InputField } from '../../components/common';
 import { useEffect, useState } from 'react';
@@ -50,13 +49,13 @@ export const AdminLogin = () => {
         dispatch(setAdmin({ admin: response?.data?.user }));
         dispatch(setTokenAdmin({ token: response?.data?.accessToken }));
 
-        toast.success('Login successful', {
+        showToast.success('Login successful', {
           duration: 1000,
         });
         navigate('/admin/dashboard');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'Login failed, please try again.');
     }
   };
 

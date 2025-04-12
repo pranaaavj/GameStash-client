@@ -151,7 +151,7 @@ export const ModernWallet = () => {
       </AnimatePresence>
 
       {/* Transactions Section */}
-      <div className='p-6 overflow-y-auto h-96'>
+      <div className='p-6 overflow-y-auto h-96 no-scrollbar'>
         <h3 className='text-primary-text font-medium mb-4'>
           Transaction History
         </h3>

@@ -12,7 +12,7 @@ import {
 } from '@/redux/api/admin/productsApi';
 import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
@@ -20,7 +20,13 @@ import { ImageUploader } from '@/components/admin';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, InputField, SelectField } from '@/components/common';
-import { validateProduct, mapOptionsData, validateImages } from '@/utils';
+import {
+  validateProduct,
+  mapOptionsData,
+  validateImages,
+  showToast,
+  handleApiError,
+} from '@/utils';
 import { Loading } from '@/components/error';
 
 const initialProductState = {
@@ -141,13 +147,11 @@ export const EditProduct = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success(response.message, {
-          duration: 1500,
-        });
-        setTimeout(() => navigate('/admin/products'), 1500);
+        showToast.success(response.message);
+        navigate('/admin/products');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error editing product');
     }
   };
 

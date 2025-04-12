@@ -8,11 +8,11 @@ import {
   useGetAllGenresQuery,
   useToggleGenreListMutation,
 } from '@/redux/api/admin/genresApi';
-import { toast } from 'sonner';
+
 import { Alert, EmptyState } from '@/components/common';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
-import { mapTableData } from '@/utils';
+import { handleApiError, mapTableData, showToast } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
 import { Check, CircleX, Plus, X } from 'lucide-react';
@@ -66,13 +66,11 @@ export const GenreList = () => {
       const responseGenreList = await toggleGenreList(selectedGenre).unwrap();
 
       if (responseGenreList.success) {
-        toast.success(responseGenreList.message, {
-          duration: 1500,
-        });
-        setTimeout(() => navigate('/admin/genres'), 1500);
+        showToast.success(responseGenreList.message);
+        () => navigate('/admin/genres');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error while listing genre');
     }
   };
 

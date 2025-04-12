@@ -5,14 +5,14 @@ import {
   CardContent,
 } from '@/shadcn/components/ui/card';
 import { useAddGenreMutation } from '@/redux/api/admin/genresApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, InputField } from '@/components/common';
-// import { validateGenre } from '@/utils';
+import { handleApiError, showToast, validateGenre } from '@/utils';
 
 const initialGenreState = {
   name: '',
@@ -21,7 +21,7 @@ const initialGenreState = {
 
 export const AddGenre = () => {
   const navigate = useNavigate();
-  const [addGenre, { isError, error }] = useAddGenreMutation();
+  const [addGenre, { isError, error, isLoading }] = useAddGenreMutation();
 
   // Genre state
   const [genreInput, setGenreInput] = useState(initialGenreState);
@@ -36,23 +36,21 @@ export const AddGenre = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // const genreValidation = validateGenre(genreInput);
-    // if (Object.keys(genreValidation).length > 0) {
-    //   setGenreValidation(genreValidation);
-    //   return;
-    // }
+    const genreValidation = validateGenre(genreInput);
+    if (Object.keys(genreValidation).length > 0) {
+      setGenreValidation(genreValidation);
+      return;
+    }
 
     try {
       const response = await addGenre(genreInput).unwrap();
 
       if (response.success) {
-        toast.success(response.message, {
-          duration: 1500,
-        });
+        showToast.success(response.message);
         navigate('/admin/genres');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error adding genres.');
     }
   };
 
@@ -96,6 +94,7 @@ export const AddGenre = () => {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
             Add Genre
           </Button>

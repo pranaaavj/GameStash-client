@@ -15,11 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/shadcn/components/ui/table';
-import { toast } from 'sonner';
+
 import {
   useGetAllOffersQuery,
   useToggleOfferListMutation,
 } from '@/redux/api/admin/offersApi';
+import { handleApiError, showToast } from '@/utils';
 
 export const OfferList = () => {
   const navigate = useNavigate();
@@ -72,15 +73,13 @@ export const OfferList = () => {
       const responseToggleOffer = await toggleOfferList(selectedOffer).unwrap();
 
       if (responseToggleOffer.success) {
-        toast.success(responseToggleOffer.message, {
-          duration: 1500,
-        });
+        showToast.success(responseToggleOffer.message);
       }
 
       setIsModalOpen(false);
       setSelectedOffer(null);
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was an error showing offers');
     }
   };
 

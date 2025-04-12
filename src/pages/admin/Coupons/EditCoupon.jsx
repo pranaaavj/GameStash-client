@@ -8,7 +8,7 @@ import {
   useGetOneCouponQuery,
   useEditCouponMutation,
 } from '@/redux/api/admin/couponsApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -19,7 +19,7 @@ import {
   InputField,
   SelectField,
 } from '@/components/common';
-import { validateCoupon } from '@/utils';
+import { handleApiError, showToast, validateCoupon } from '@/utils';
 import { Loading } from '@/components/error';
 
 const initialCouponState = {
@@ -46,8 +46,10 @@ export const EditCoupon = () => {
     isLoading: isCouponLoading,
   } = useGetOneCouponQuery(couponId);
 
-  const [editCoupon, { isError: isEditCouponError, error: editCouponError }] =
-    useEditCouponMutation();
+  const [
+    editCoupon,
+    { isError: isEditCouponError, error: editCouponError, isLoading },
+  ] = useEditCouponMutation();
 
   const [couponInput, setCouponInput] = useState(initialCouponState);
   const [couponValidation, setCouponValidation] = useState(initialCouponState);
@@ -96,11 +98,11 @@ export const EditCoupon = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success(response.message, { duration: 1500 });
-        setTimeout(() => navigate('/admin/coupons'), 1500);
+        showToast.success(response.message);
+        navigate('/admin/coupons');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error editing coupon');
     }
   };
 
@@ -256,8 +258,9 @@ export const EditCoupon = () => {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
-            Update Coupon
+            {isLoading ? 'Updating...' : 'Update Coupon'}
           </Button>
         </form>
 

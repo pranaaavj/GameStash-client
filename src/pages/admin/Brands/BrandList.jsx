@@ -8,11 +8,11 @@ import {
   useGetAllBrandsQuery,
   useToggleBrandListMutation,
 } from '@/redux/api/admin/brandsApi';
-import { toast } from 'sonner';
+
 import { Alert, EmptyState } from '@/components/common';
 import { Button } from '@/shadcn/components/ui/button';
 import { useState } from 'react';
-import { mapTableData } from '@/utils';
+import { handleApiError, mapTableData, showToast } from '@/utils';
 import { ConfirmationModal } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
 import { CircleX, Plus, Check, X, Tags } from 'lucide-react';
@@ -66,13 +66,11 @@ export const BrandList = () => {
       const responseBrandList = await toggleBrandList(selectedBrand).unwrap();
 
       if (responseBrandList.success) {
-        toast.success(responseBrandList.message, {
-          duration: 1500,
-        });
-        setTimeout(() => navigate('/admin/brands'), 1500);
+        showToast.success(responseBrandList.message);
+        navigate('/admin/brands');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error loading brands');
     }
   };
 

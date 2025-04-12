@@ -10,7 +10,7 @@ import {
 } from '@/redux/api/admin/offersApi';
 import { useGetAllProductsQuery } from '@/redux/api/admin/productsApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -22,7 +22,12 @@ import {
   InputField,
   SelectField,
 } from '@/components/common';
-import { validateOffer, mapOptionsData } from '@/utils';
+import {
+  validateOffer,
+  mapOptionsData,
+  showToast,
+  handleApiError,
+} from '@/utils';
 import { Loading } from '@/components/error';
 
 const initialOfferState = {
@@ -49,13 +54,15 @@ export const EditOffer = () => {
 
   // Fetching products and brands
   const { data: responseProducts, isSuccess: productsSuccess } =
-    useGetAllProductsQuery({});
+    useGetAllProductsQuery({ limit: 10000 });
 
   const { data: responseBrands, isSuccess: brandsSuccess } =
-    useGetAllBrandsQuery({});
+    useGetAllBrandsQuery({ limit: 10000 });
 
-  const [editOffer, { isError: isEditOfferError, error: editOfferError }] =
-    useEditOfferMutation();
+  const [
+    editOffer,
+    { isError: isEditOfferError, error: editOfferError, isLoading },
+  ] = useEditOfferMutation();
 
   // Offer state
   const [offerInput, setOfferInput] = useState(initialOfferState);
@@ -130,11 +137,11 @@ export const EditOffer = () => {
       }).unwrap();
 
       if (response?.success) {
-        toast.success(response.message, { duration: 1500 });
-        setTimeout(() => navigate('/admin/offers'), 1500);
+        showToast.success(response.message);
+        navigate('/admin/offers');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error while editing offer');
     }
   };
 
@@ -252,6 +259,7 @@ export const EditOffer = () => {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
             Confirm Edit
           </Button>

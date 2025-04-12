@@ -4,13 +4,12 @@ import {
   CardHeader,
   CardContent,
 } from '@/shadcn/components/ui/card';
-import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { validateBrand } from '@/utils';
+import { handleApiError, showToast, validateBrand } from '@/utils';
 import { Alert, InputField } from '@/components/common';
 import { useAddBrandMutation } from '@/redux/api/admin/brandsApi';
 
@@ -46,13 +45,13 @@ export const AddBrand = () => {
       const response = await addBrand(brandInput).unwrap();
 
       if (response.success) {
-        toast.success(response.message, {
+        showToast.success(response.message, {
           duration: 1500,
         });
         navigate('/admin/brands');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error loading brands');
     }
   };
 

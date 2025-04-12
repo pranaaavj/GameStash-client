@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
 
 import { GameCard } from '@/components/user';
 import { UserPagination } from '@/components/user';
@@ -25,7 +26,7 @@ export const GameBrowse = () => {
     sortingOption: 'popularity:desc',
   });
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
 
   useEffect(() => {
@@ -54,6 +55,8 @@ export const GameBrowse = () => {
     queryOptions,
   });
 
+  console.log(responseGames);
+
   const navigate = useNavigate();
 
   const handleApplyFilters = (filters) => {
@@ -70,6 +73,19 @@ export const GameBrowse = () => {
 
   const toggleFilterVisibility = () => {
     setIsFilterVisible(!isFilterVisible);
+  };
+
+  // New function to clear search
+  const clearSearch = () => {
+    // Remove search from URL parameters
+    searchParams.delete('search');
+    setSearchParams(searchParams);
+
+    // Clear search from query options
+    setQueryOptions((prev) => ({ ...prev, search: '' }));
+
+    // Reset to first page
+    setPageState((prev) => ({ ...prev, games: 1 }));
   };
 
   return (
@@ -98,11 +114,26 @@ export const GameBrowse = () => {
             {/* Right Column - Game Listings with Pagination */}
             <div className='lg:w-3/4 w-full'>
               <div className='flex flex-col sm:flex-row justify-between items-center mb-6 gap-4'>
-                <h2 className='text-3xl text-white font-bold'>
-                  {searchQuery
-                    ? `Search Results: "${searchQuery}"`
-                    : 'Browse Games'}
-                </h2>
+                <div className='flex items-center'>
+                  <h2 className='text-3xl text-white font-bold'>
+                    {searchQuery
+                      ? `Search Results: "${searchQuery}"`
+                      : 'Browse Games'}
+                  </h2>
+
+                  {/* Clear search button */}
+                  {searchQuery && (
+                    <Button
+                      onClick={clearSearch}
+                      variant='ghost'
+                      size='sm'
+                      className='ml-3 text-accent-red hover:bg-primary-bg/20 hover:text-accent-red'>
+                      <X className='w-4 h-4 mr-1' />
+                      Clear
+                    </Button>
+                  )}
+                </div>
+
                 {responseGames?.data?.products &&
                   responseGames.data.totalPages > 1 && (
                     <UserPagination

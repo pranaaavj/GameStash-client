@@ -5,7 +5,7 @@ import {
   CardContent,
 } from '@/shadcn/components/ui/card';
 import { useAddCouponMutation } from '@/redux/api/admin/couponsApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
 import { CircleX } from 'lucide-react';
 import { useState } from 'react';
@@ -16,7 +16,7 @@ import {
   SelectField,
   DatePicker,
 } from '@/components/common';
-import { validateCoupon } from '@/utils';
+import { handleApiError, showToast, validateCoupon } from '@/utils';
 
 const initialCouponState = {
   code: '',
@@ -62,11 +62,11 @@ export const AddCoupon = () => {
       const response = await addCoupon(couponInput).unwrap();
 
       if (response.success) {
-        toast.success(response.message, { duration: 1500 });
+        showToast.success(response.message);
         navigate('/admin/coupons');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error adding coupon');
     }
   };
 

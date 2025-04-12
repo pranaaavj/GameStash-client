@@ -8,14 +8,13 @@ import {
   useGetOneGenreQuery,
   useEditGenreMutation,
 } from '@/redux/api/admin/genresApi';
-import { toast } from 'sonner';
+
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, InputField } from '@/components/common';
-import { validateGenre } from '@/utils';
+import { InputField } from '@/components/common';
+import { handleApiError, showToast, validateGenre } from '@/utils';
 
 const initialGenreState = {
   name: '',
@@ -27,10 +26,9 @@ export const EditGenre = () => {
   const { genreId } = useParams();
 
   // Fetching genre data
-  const { data: responseGenre, isError, error } = useGetOneGenreQuery(genreId);
+  const { data: responseGenre } = useGetOneGenreQuery(genreId);
 
-  const [editGenre, { isError: isEditGenreError, error: editGenreError }] =
-    useEditGenreMutation();
+  const [editGenre, { isLoading }] = useEditGenreMutation();
 
   // Genre state
   const [genreInput, setGenreInput] = useState(initialGenreState);
@@ -68,13 +66,11 @@ export const EditGenre = () => {
       }).unwrap();
 
       if (response.success) {
-        toast.success(response.message, {
-          duration: 1500,
-        });
-        setTimeout(() => navigate('/admin/genres'), 1500);
+        showToast.success(response.message);
+        navigate('/admin/genres');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error);
     }
   };
 
@@ -118,28 +114,11 @@ export const EditGenre = () => {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
             Confirm Edit
           </Button>
         </form>
-        {isError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
-          />
-        ) : isEditGenreError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              editGenreError?.data?.message ||
-              'Something went wrong! Please try again.'
-            }
-          />
-        ) : null}
       </CardContent>
     </Card>
   );

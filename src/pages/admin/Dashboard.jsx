@@ -48,7 +48,7 @@ const COLORS = {
 };
 
 export function Dashboard() {
-  const [period, setPeriod] = useState('week');
+  const [period, setPeriod] = useState('year');
   const [dateRange, setDateRange] = useState({
     startDate: '2025-03-01T00:00:00.000Z',
     endDate: '2025-03-31T23:59:59.999Z',

@@ -2,20 +2,18 @@ import { adminBaseApi } from './adminBaseApi';
 
 const brandsEndpoints = adminBaseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Brands - CRUD Operations
     getAllBrands: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/admin/brands?page=${page}&limit=${limit}`,
       }),
-      providesTags: (result) =>
-        result
-          ? [{ type: 'Brand', id: 'LIST' }]
-          : [{ type: 'Brand', id: 'LIST' }],
+      providesTags: [{ type: 'Brand', id: 'LIST' }],
     }),
 
     getOneBrand: builder.query({
       query: (brandId) => ({ url: `/admin/brands/${brandId}` }),
-      invalidatesTags: [{ type: 'Brand', id: 'LIST' }],
+      providesTags: (result, error, brandId) => [
+        { type: 'Brand', id: brandId },
+      ],
     }),
 
     addBrand: builder.mutation({
@@ -33,7 +31,10 @@ const brandsEndpoints = adminBaseApi.injectEndpoints({
         method: 'PUT',
         body: updatedBrand,
       }),
-      invalidatesTags: [{ type: 'Brand', id: 'LIST' }],
+      invalidatesTags: (result, error, { brandId }) => [
+        { type: 'Brand', id: 'LIST' },
+        { type: 'Brand', id: brandId },
+      ],
     }),
 
     toggleBrandList: builder.mutation({
@@ -48,9 +49,9 @@ const brandsEndpoints = adminBaseApi.injectEndpoints({
 });
 
 export const {
-  useGetAllBrandsQuery,
-  useGetOneBrandQuery,
   useAddBrandMutation,
   useEditBrandMutation,
+  useGetAllBrandsQuery,
+  useGetOneBrandQuery,
   useToggleBrandListMutation,
 } = brandsEndpoints;

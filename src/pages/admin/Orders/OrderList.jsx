@@ -7,7 +7,7 @@ import {
   useRequestReturnAdminMutation,
   useUpdateOrderStatusMutation,
 } from '@/redux/api/admin/ordersApi';
-import { toast } from 'sonner';
+
 import {
   DollarSign,
   Package,
@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from '@/shadcn/components/ui/select';
 import { Badge } from '@/shadcn/components/ui/badge';
+import { handleApiError, showToast } from '@/utils';
 
 export const OrderList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -103,14 +104,11 @@ export const OrderList = () => {
         status: newStatus,
       }).unwrap();
 
-      toast.success('Order status updated successfully', { duration: 1500 });
+      showToast.success('Order status updated successfully');
       setSelectedOrder(null);
       setNewStatus('');
     } catch (error) {
-      console.error('Error updating order status:', error);
-      toast.error(
-        error?.data?.message || 'Failed to change the status of the order'
-      );
+      handleApiError(error, 'There was an error showing orders');
     }
   };
 
@@ -122,17 +120,13 @@ export const OrderList = () => {
         action,
       }).unwrap();
 
-      toast.success(
+      showToast.success(
         `Return request ${
           action === 'approve' ? 'approved' : 'rejected'
-        } successfully`,
-        { duration: 1500 }
+        } successfully`
       );
     } catch (error) {
-      console.error('Error processing return request:', error);
-      toast.error(
-        error?.data?.message || 'Failed to process the return request'
-      );
+      handleApiError(error, 'Failed to process the return request');
     }
   };
 

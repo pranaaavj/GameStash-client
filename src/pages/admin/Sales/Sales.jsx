@@ -21,13 +21,14 @@ import {
 import { SalesDetails } from './SalesDetails';
 import { Button } from '@/shadcn/components/ui/button';
 import { Download, ChevronDown } from 'lucide-react';
-import { toast } from 'sonner';
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/shadcn/components/ui/popover';
 import { Tabs, TabsList, TabsTrigger } from '@/shadcn/components/ui/tabs';
+import { handleApiError, showToast } from '@/utils';
 
 export const Sales = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,9 +133,9 @@ export const Sales = () => {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      toast.success(`Report downloading as ${format.toUpperCase()}`);
-    } catch {
-      toast.error('Failed to download report');
+      showToast.success(`Report downloading as ${format.toUpperCase()}`);
+    } catch (error) {
+      handleApiError(error, 'Failed to download report');
     }
   };
 

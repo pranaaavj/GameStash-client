@@ -8,14 +8,12 @@ import {
   useGetOneBrandQuery,
   useEditBrandMutation,
 } from '@/redux/api/admin/brandsApi';
-import { toast } from 'sonner';
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, InputField } from '@/components/common';
-import { validateBrand } from '@/utils';
+import { InputField } from '@/components/common';
+import { handleApiError, showToast, validateBrand } from '@/utils';
 
 const initialBrandState = {
   name: '',
@@ -27,10 +25,9 @@ export const EditBrand = () => {
   const { brandId } = useParams();
 
   // Fetching brand data
-  const { data: responseBrand, isError, error } = useGetOneBrandQuery(brandId);
+  const { data: responseBrand } = useGetOneBrandQuery(brandId);
 
-  const [editBrand, { isError: isEditBrandError, error: editBrandError }] =
-    useEditBrandMutation();
+  const [editBrand, { isLoading }] = useEditBrandMutation();
 
   // Brand state
   const [brandInput, setBrandInput] = useState(initialBrandState);
@@ -68,13 +65,11 @@ export const EditBrand = () => {
       }).unwrap();
 
       if (response.success) {
-        toast.success(response.message, {
-          duration: 1500,
-        });
-        setTimeout(() => navigate('/admin/brands'), 1500);
+        showToast.success(response.message);
+        navigate('/admin/brands');
       }
     } catch (error) {
-      console.log(error);
+      handleApiError(error, 'There was some error editing brand');
     }
   };
 
@@ -118,28 +113,11 @@ export const EditBrand = () => {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
             Confirm Edit
           </Button>
         </form>
-        {isError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
-          />
-        ) : isEditBrandError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              editBrandError?.data?.message ||
-              'Something went wrong! Please try again.'
-            }
-          />
-        ) : null}
       </CardContent>
     </Card>
   );

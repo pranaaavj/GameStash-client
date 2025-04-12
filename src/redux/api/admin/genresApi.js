@@ -6,15 +6,14 @@ const genresEndpoints = adminBaseApi.injectEndpoints({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/admin/genres?page=${page}&limit=${limit}`,
       }),
-      providesTags: (result) =>
-        result
-          ? [{ type: 'Genre', id: 'LIST' }]
-          : [{ type: 'Genre', id: 'LIST' }],
+      providesTags: [{ type: 'Genre', id: 'LIST' }],
     }),
 
     getOneGenre: builder.query({
       query: (genreId) => ({ url: `/admin/genres/${genreId}` }),
-      invalidatesTags: [{ type: 'Genre', id: 'LIST' }],
+      providesTags: (result, error, genreId) => [
+        { type: 'Genre', id: genreId },
+      ],
     }),
 
     addGenre: builder.mutation({
@@ -32,7 +31,10 @@ const genresEndpoints = adminBaseApi.injectEndpoints({
         method: 'PUT',
         body: updatedGenre,
       }),
-      invalidatesTags: [{ type: 'Genre', id: 'LIST' }],
+      invalidatesTags: (result, error, { genreId }) => [
+        { type: 'Genre', id: 'LIST' },
+        { type: 'Genre', id: genreId },
+      ],
     }),
 
     toggleGenreList: builder.mutation({
@@ -45,7 +47,6 @@ const genresEndpoints = adminBaseApi.injectEndpoints({
     }),
   }),
 });
-
 export const {
   useAddGenreMutation,
   useEditGenreMutation,
