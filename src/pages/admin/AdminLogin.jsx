@@ -2,8 +2,9 @@ import { Button } from '@/shadcn/components/ui/button';
 import { useAdmins } from '@/hooks';
 import { useDispatch } from 'react-redux';
 import { handleApiError, showToast, validateLogin } from '@/utils';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Alert, InputField, PageTransition } from '../../components/common';
+import { Loading } from '@/components/error';
 import { useEffect, useState } from 'react';
 import { CircleX, Eye, EyeOff } from 'lucide-react';
 import { useLoginAdminMutation } from '@/redux/api/admin/adminBaseApi';
@@ -15,12 +16,24 @@ const emptyInput = { email: '', password: '' };
 export const AdminLogin = () => {
   const admin = useAdmins();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [showPass, setShowPass] = useState(false);
   const [adminInput, setAdminInput] = useState(emptyInput);
   const [validation, setValidation] = useState(emptyInput);
+  const [isLoading, setIsLoading] = useState(location.state?.fromLogout);
 
   const [loginAdmin, { isError, error, reset }] = useLoginAdminMutation();
+
+  useEffect(() => {
+    if (location.state?.fromLogout) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        window.history.replaceState({}, '');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
   useEffect(() => {
     if (admin?.adminInfo?.role === 'admin' && admin.authStatus === 'active') {
       navigate('/admin/dashboard');
@@ -58,6 +71,8 @@ export const AdminLogin = () => {
       handleApiError(error, 'Login failed, please try again.');
     }
   };
+
+  if (isLoading) return <Loading />;
 
   return (
     <PageTransition>
