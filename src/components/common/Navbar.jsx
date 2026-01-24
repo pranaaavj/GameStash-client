@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shadcn/components/ui/dropdown-menu';
 import logo from '@/assets/images/logo.svg';
-import {  useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { SearchBar } from './SearchBar';
 import { logout } from '@/redux/slices/userSlice';
 import { Button } from '@/shadcn/components/ui/button';
@@ -44,6 +44,7 @@ export const Navbar = ({ onCartClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [hoveredMobileItem, setHoveredMobileItem] = useState(null);
   const [logoutUser] = useLogoutUserMutation();
 
   useEffect(() => {
@@ -57,9 +58,6 @@ export const Navbar = ({ onCartClick }) => {
     showToast.success('You have been successfully logged out');
   };
 
-  const isActive = (path) => {
-    return location.pathname === path || location.pathname.startsWith(`${path}/`);
-  };
 
   const handleNavClick = (path) => {
     if (path === '/cart' && onCartClick) {
@@ -95,12 +93,14 @@ export const Navbar = ({ onCartClick }) => {
                 whileHover={{ rotate: 10, scale: 1.1 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               />
-              <p className='text-lg font-medium'>GameStash</p>
+              <p className='text-lg font-medium bg-primary-bg/30 px-2 py-0.5 rounded'>
+                GameStash
+              </p>
             </button>
           </motion.div>
 
           {/* Center Navigation - Pill Design */}
-          <div className='hidden md:flex items-center absolute left-1/2 transform -translate-x-1/2 '>
+          <div className='hidden md:flex items-center absolute left-1/2 transform -translate-x-1/2'>
             <motion.div className='relative bg-secondary-bg/60 backdrop-blur-md rounded-full px-2 py-2 flex items-center space-x-1'>
               {navItems.map((item) => {
                 const isItemHovered = hoveredItem === item.path;
@@ -128,7 +128,6 @@ export const Navbar = ({ onCartClick }) => {
                           initial={{ opacity: 0, scale: 1 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.85 }}
-                          
                           transition={{
                             duration: 0.15,
                             ease: 'easeOut',
@@ -155,9 +154,10 @@ export const Navbar = ({ onCartClick }) => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <motion.button
-                    className='flex items-center space-x-2 cursor-pointer'
-                    whileTap={{ scale: 0.95 }}>
-                    <Avatar className='w-8 h-8 ring-2 ring-transparent hover:ring-accent-red/30 transition-all'>
+                    className='flex items-center space-x-2 cursor-pointer outline-none'
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}>
+                    <Avatar className='w-8 h-8 ring-2 ring-accent-red/20 hover:ring-accent-red/40 transition-all'>
                       <AvatarImage
                         src={user.userInfo.profilePicture}
                         alt='User Avatar'
@@ -173,36 +173,41 @@ export const Navbar = ({ onCartClick }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align='end'
-                  className='bg-secondary-bg border-primary-bg/20 shadow-lg border'
-                  sideOffset={8}>
-                  <DropdownMenuLabel className='text-primary-text'>
-                    My Account
+                  className='bg-secondary-bg/95 backdrop-blur-md border-primary-bg/10 shadow-xl border rounded-2xl min-w-[180px] p-2'
+                  sideOffset={12}>
+                  <DropdownMenuLabel className='text-primary-text text-xs font-normal opacity-60 px-3 py-2'>
+                    {user.userInfo.email}
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className='bg-primary-bg/10 my-1' />
+                  
                   <DropdownMenuItem
                     onClick={() => navigate('/profile')}
-                    className='text-primary-text focus:text-accent-blue focus:bg-primary-bg/50 cursor-pointer'>
-                    <Settings className='h-4 w-4 mr-2' />
-                    Profile
+                    className='text-primary-text hover:text-primary-text focus:text-primary-text hover:bg-accent-red/10 focus:bg-accent-red/10 cursor-pointer rounded-lg px-3 py-2 transition-colors'>
+                    <Settings className='h-4 w-4 mr-3' />
+                    <span className='text-sm font-normal'>Profile</span>
                   </DropdownMenuItem>
+                  
                   <DropdownMenuItem
                     onClick={() => navigate('/orders')}
-                    className='text-primary-text focus:text-accent-blue focus:bg-primary-bg/50 cursor-pointer'>
-                    <Package className='h-4 w-4 mr-2' />
-                    Orders
+                    className='text-primary-text hover:text-primary-text focus:text-primary-text hover:bg-accent-red/10 focus:bg-accent-red/10 cursor-pointer rounded-lg px-3 py-2 transition-colors'>
+                    <Package className='h-4 w-4 mr-3' />
+                    <span className='text-sm font-normal'>Orders</span>
                   </DropdownMenuItem>
+                  
                   <DropdownMenuItem
                     onClick={() => navigate('/wishlist')}
-                    className='text-primary-text focus:text-accent-blue focus:bg-primary-bg/50 cursor-pointer'>
-                    <Heart className='h-4 w-4 mr-2' />
-                    Wishlist
+                    className='text-primary-text hover:text-primary-text focus:text-primary-text hover:bg-accent-red/10 focus:bg-accent-red/10 cursor-pointer rounded-lg px-3 py-2 transition-colors'>
+                    <Heart className='h-4 w-4 mr-3' />
+                    <span className='text-sm font-normal'>Wishlist</span>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuSeparator className='bg-primary-bg/10 my-1' />
+                  
                   <DropdownMenuItem
                     onClick={handleLogout}
-                    className='text-accent-red focus:text-hover-red focus:bg-primary-bg/50 cursor-pointer'>
-                    <LogOut className='h-4 w-4 mr-2' />
-                    Logout
+                    className='text-accent-red hover:text-accent-red focus:text-accent-red hover:bg-accent-red/10 focus:bg-accent-red/10 cursor-pointer rounded-lg px-3 py-2 transition-colors'>
+                    <LogOut className='h-4 w-4 mr-3' />
+                    <span className='text-sm font-normal'>Logout</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -266,12 +271,13 @@ export const Navbar = ({ onCartClick }) => {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}>
-            <div className='px-4 pt-4 pb-6 space-y-4'>
+            <div className='px-4 pt-4 pb-6 space-y-2'>
               {isSearchVisible && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}>
+                  exit={{ opacity: 0, y: -10 }}
+                  className='mb-4'>
                   <SearchBar
                     isSearchVisible={isSearchVisible}
                     setIsSearchVisible={setIsSearchVisible}
@@ -283,11 +289,11 @@ export const Navbar = ({ onCartClick }) => {
               {/* User info */}
               {user?.userInfo ? (
                 <motion.div
-                  className='flex items-center space-x-3 py-2 border-b border-primary-bg/10 mb-4'
+                  className='flex items-center space-x-3 py-3 mb-2'
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}>
-                  <Avatar className='w-10 h-10'>
+                  <Avatar className='w-10 h-10 ring-2 ring-accent-red/20'>
                     <AvatarImage
                       src={user.userInfo.profilePicture}
                       alt='User Avatar'
@@ -297,78 +303,103 @@ export const Navbar = ({ onCartClick }) => {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className='text-primary-text font-medium'>
+                    <p className='text-primary-text font-normal text-sm'>
                       {user.userInfo.name}
                     </p>
-                    <p className='text-primary-text/60 text-xs'>
+                    <p className='text-primary-text/60 text-xs font-normal'>
                       {user.userInfo.email}
                     </p>
                   </div>
                 </motion.div>
               ) : (
                 <motion.div
-                  className='py-2 border-b border-primary-bg/10 mb-4'
+                  className='mb-2'
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}>
                   <button
                     onClick={() => navigate('/login')}
-                    className='w-full px-7 py-3 rounded-full bg-accent-red text-white text-sm font-normal shadow-lg'>
+                    className='w-full px-7 py-2.5 rounded-full bg-accent-red text-white text-sm font-normal shadow-lg'>
                     Sign In
                   </button>
                 </motion.div>
               )}
 
-              {/* Mobile nav links */}
-              {[
-                { to: '/', icon: Home, label: 'Home' },
-                ...navItems.map((item) => ({
-                  to: item.path,
-                  icon: item.icon ? ShoppingCart : null,
-                  label: item.label,
-                  onClick: item.path === '/cart' ? onCartClick : undefined,
-                })),
-                ...(user?.userInfo
-                  ? [
-                      { to: '/profile', icon: Settings, label: 'Profile' },
-                      { to: '/orders', icon: Package, label: 'Orders' },
-                      { to: '/wishlist', icon: Heart, label: 'Wishlist' },
-                    ]
-                  : []),
-              ].map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <motion.div
-                    key={item.to}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + index * 0.05 }}>
-                    <button
-                      onClick={() => {
-                        if (item.onClick) item.onClick();
-                        navigate(item.to);
-                      }}
-                      className={`w-full text-primary-text hover:text-accent-red flex items-center space-x-3 py-3 px-3 rounded-lg transition-all ${
-                        isActive(item.to)
-                          ? 'bg-accent-red/10 text-accent-red shadow-sm'
-                          : 'hover:bg-secondary-bg/50'
-                      }`}>
-                      {Icon && <Icon className='h-5 w-5' />}
-                      <span className='text-base font-normal'>{item.label}</span>
-                    </button>
-                  </motion.div>
-                );
-              })}
+              {/* Mobile nav links with pill style */}
+              <div className='bg-secondary-bg/60 backdrop-blur-md rounded-2xl p-2 space-y-1'>
+                {[
+                  { to: '/', icon: Home, label: 'Home' },
+                  ...navItems.map((item) => ({
+                    to: item.path,
+                    icon: item.path === '/cart' ? ShoppingCart : null,
+                    label: item.label,
+                    onClick: item.path === '/cart' ? onCartClick : undefined,
+                  })),
+                  ...(user?.userInfo
+                    ? [
+                        { to: '/profile', icon: Settings, label: 'Profile' },
+                        { to: '/orders', icon: Package, label: 'Orders' },
+                        { to: '/wishlist', icon: Heart, label: 'Wishlist' },
+                      ]
+                    : []),
+                ].map((item, index) => {
+                  const Icon = item.icon;
+                  const isItemHovered = hoveredMobileItem === item.to;
+                  
+                  return (
+                    <motion.div
+                      key={item.to}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + index * 0.03 }}>
+                      <button
+                        onClick={() => {
+                          if (item.onClick) item.onClick();
+                          navigate(item.to);
+                        }}
+                        onMouseEnter={() => setHoveredMobileItem(item.to)}
+                        onMouseLeave={() => setHoveredMobileItem(null)}
+                        className='w-full relative'>
+                        <div
+                          className={`flex items-center space-x-3 py-2.5 px-3 rounded-xl transition-none relative z-10 ${
+                            isItemHovered ? 'text-black' : 'text-primary-text'
+                          }`}>
+                          {Icon && <Icon className='h-4 w-4' />}
+                          <span className='text-sm font-normal'>{item.label}</span>
+                        </div>
+                        
+                        {/* Hover Background */}
+                        <AnimatePresence>
+                          {isItemHovered && (
+                            <motion.div
+                              className='absolute inset-0 rounded-xl bg-accent-red/80'
+                              initial={{ opacity: 0, scale: 1 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.85 }}
+                              transition={{
+                                duration: 0.15,
+                                ease: 'easeOut',
+                              }}
+                              style={{ zIndex: 0 }}
+                            />
+                          )}
+                        </AnimatePresence>
+                      </button>
+                    </motion.div>
+                  );
+                })}
+              </div>
 
+              {/* Logout button */}
               {user?.userInfo && (
                 <motion.button
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                   onClick={handleLogout}
-                  className='text-accent-red hover:text-hover-red hover:bg-accent-red/10 flex items-center space-x-3 py-3 px-3 rounded-lg transition-all w-full mt-4 border-t border-primary-bg/10 pt-4'>
-                  <LogOut className='h-5 w-5' />
-                  <span className='text-base font-normal'>Logout</span>
+                  className='text-accent-red hover:bg-accent-red/10 flex items-center space-x-3 py-2.5 px-3 rounded-xl transition-colors w-full mt-2'>
+                  <LogOut className='h-4 w-4' />
+                  <span className='text-sm font-normal'>Logout</span>
                 </motion.button>
               )}
             </div>
