@@ -5,12 +5,11 @@ import {
   CardContent,
 } from '@/shadcn/components/ui/card';
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { handleApiError, showToast, validateBrand } from '@/utils';
-import { Alert, InputField } from '@/components/common';
+import { InputField } from '@/components/common';
 import { useAddBrandMutation } from '@/redux/api/admin/brandsApi';
 
 const initialBrandState = {
@@ -20,9 +19,8 @@ const initialBrandState = {
 
 export const AddBrand = () => {
   const navigate = useNavigate();
-  const [addBrand, { isError, error }] = useAddBrandMutation();
+  const [addBrand, { isLoading }] = useAddBrandMutation();
 
-  // Brand state
   const [brandInput, setBrandInput] = useState(initialBrandState);
   const [brandValidation, setBrandValidation] = useState(initialBrandState);
 
@@ -45,9 +43,7 @@ export const AddBrand = () => {
       const response = await addBrand(brandInput).unwrap();
 
       if (response.success) {
-        showToast.success(response.message, {
-          duration: 1500,
-        });
+        showToast.success(response.message);
         navigate('/admin/brands');
       }
     } catch (error) {
@@ -56,12 +52,13 @@ export const AddBrand = () => {
   };
 
   return (
-    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-lg text-primary-text'>
-      <CardHeader className='bg-primary-bg/10'>
+    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg border-none text-primary-text'>
+      <CardHeader className='bg-primary-bg/20 rounded-xl'>
         <CardTitle className='text-2xl font-bold text-center text-primary-text'>
           Add New Brand
         </CardTitle>
       </CardHeader>
+
       <CardContent className='pt-6'>
         <form
           onSubmit={handleSubmit}
@@ -76,6 +73,7 @@ export const AddBrand = () => {
             isInvalid={!!brandValidation.name}
             errorMessage={brandValidation.name}
           />
+
           <div className='space-y-2'>
             <label
               htmlFor='description'
@@ -95,20 +93,11 @@ export const AddBrand = () => {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
-            Add Brand
+            {isLoading ? 'Adding...' : 'Add Brand'}
           </Button>
         </form>
-
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
-          />
-        )}
       </CardContent>
     </Card>
   );

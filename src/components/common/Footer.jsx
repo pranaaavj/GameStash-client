@@ -1,3 +1,5 @@
+import { ReferralButton } from '../user/ReferralCode';
+
 export const Footer = () => {
   return (
     <footer className='bg-secondary-bg z-30 mt-12 py-8'>
@@ -23,6 +25,13 @@ export const Footer = () => {
                 href='#'
                 className='text-muted-text hover:text-primary-text'>
                 Terms of Service
+              </a>
+            </li>
+            <li>
+              <a
+                href='#'
+                className='text-muted-text hover:text-primary-text'>
+                <ReferralButton />
               </a>
             </li>
           </ul>

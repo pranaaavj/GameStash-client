@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { AdminPagination } from '@/components/admin';
 import {
@@ -8,16 +7,8 @@ import {
   useUpdateOrderStatusMutation,
 } from '@/redux/api/admin/ordersApi';
 
-import {
-  DollarSign,
-  Package,
-  Search,
-  User,
-  CircleX,
-  ShoppingBag,
-  MapPin,
-} from 'lucide-react';
-import { Alert, EmptyState } from '@/components/common';
+import { DollarSign, Package, User, ShoppingBag, MapPin } from 'lucide-react';
+import { EmptyState } from '@/components/common';
 import { motion } from 'framer-motion';
 import {
   Table,
@@ -43,52 +34,25 @@ import {
 } from '@/shadcn/components/ui/select';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { handleApiError, showToast } from '@/utils';
+import { ContainerLoading } from '@/components/error';
 
 export const OrderList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [newStatus, setNewStatus] = useState('');
 
-  const {
-    data: responseGetOrders,
-    isSuccess,
-    isError,
-    error,
-  } = useGetAllOrdersQuery({
+  const { data: responseGetOrders, isLoading } = useGetAllOrdersQuery({
     page: currentPage,
-    limit: 10,
+    limit: 8,
   });
+
+  console.log(responseGetOrders);
 
   const [requestReturnAdmin, { isLoading: isProcessingReturn }] =
     useRequestReturnAdminMutation();
 
   const [updateOrderStatus, { isLoading: isUpdating }] =
     useUpdateOrderStatusMutation();
-
-  const tableHeaders = [
-    'Order ID',
-    'User',
-    'Items',
-    'Total Amount',
-    'Payment Status',
-    'Order Status',
-    'Placed At',
-    'Actions',
-  ];
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const filteredOrders = isSuccess
-    ? responseGetOrders?.data?.orders.filter(
-        (order) =>
-          order._id.includes(searchTerm) ||
-          order.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : [];
 
   const handleChangeOrderStatus = (order) => {
     setSelectedOrder(order);
@@ -130,38 +94,35 @@ export const OrderList = () => {
     }
   };
 
-  if (isError) {
-    console.error(error);
+  if (isLoading) {
+    return <ContainerLoading />;
   }
 
   return (
     <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-4'>
-      <div className='mb-6 text-center'>
-        <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
-          Orders
-        </h1>
-      </div>
-      <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
-        {/* Search Input */}
-        <div className='relative w-full sm:w-64'>
-          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text h-4 w-4' />
-          <Input
-            type='text'
-            value={searchTerm}
-            onChange={handleSearch}
-            placeholder='Search Orders...'
-            className='pl-10 pr-4 py-2 rounded-full bg-secondary-bg text-primary-text border-accent-blue focus:border-accent-blue focus:ring focus:ring-accent-blue focus:ring-opacity-50 w-full'
-          />
+      <div className='flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6'>
+        <div className='flex items-center gap-2'>
+          <ShoppingBag className='h-5 w-5 text-accent-blue' />
+          <h1 className='text-2xl font-medium text-primary-text'>Orders</h1>
         </div>
       </div>
 
       {/* Table */}
       <div className='w-full overflow-x-auto flex-grow no-scrollbar'>
-        {filteredOrders?.length ? (
+        {responseGetOrders?.data?.orders?.length ? (
           <Table className='w-full table-fixed border-collapse min-w-full'>
             <TableHeader>
               <TableRow className='bg-secondary-bg/10 border-b-2 border-accent-blue'>
-                {tableHeaders.map((header, index) => (
+                {[
+                  'Order ID',
+                  'User',
+                  'Items',
+                  'Amount',
+                  'Payment',
+                  'Status',
+                  'Date',
+                  'Action',
+                ].map((header, index) => (
                   <TableHead
                     key={index}
                     className='px-2 md:px-4 py-3 text-xs md:text-sm text-center font-semibold text-primary-text uppercase tracking-wider'>
@@ -171,7 +132,7 @@ export const OrderList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order) => (
+              {responseGetOrders?.data?.orders?.map((order) => (
                 <TableRow
                   key={order._id}
                   className='transition-colors duration-200 even:bg-primary-bg/5 hover:bg-primary-bg/20'>
@@ -189,23 +150,25 @@ export const OrderList = () => {
                   <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     ₹{order.finalPrice.toFixed(2)}
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm border-b border-accent-blue/20'>
                     <Badge
-                      variant={
+                      className={`w-[110px] h-10 text-xs truncate text-center justify-center items-center flex ${
                         order.paymentStatus === 'Paid'
-                          ? 'success'
-                          : 'destructive'
-                      }>
+                          ? 'bg-green-500/20 text-green-600'
+                          : 'bg-red-500/20 text-red-600'
+                      }`}>
                       {order.paymentStatus}
                     </Badge>
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm border-b border-accent-blue/20'>
                     <Badge
-                      variant={
+                      className={`w-[110px] h-10 text-xs truncate text-center justify-center items-center flex ${
                         order.orderStatus === 'Delivered'
-                          ? 'success'
-                          : 'default'
-                      }>
+                          ? 'bg-green-500/20 text-green-600'
+                          : order.orderStatus === 'Cancelled'
+                          ? 'bg-red-500/20 text-red-600'
+                          : 'bg-primary-bg/40 text-white'
+                      }`}>
                       {order.orderStatus}
                     </Badge>
                   </TableCell>
@@ -388,7 +351,8 @@ export const OrderList = () => {
                                                 </span>
                                                 {item.discount > 0 && (
                                                   <span className='text-xs text-accent-red'>
-                                                    -₹{item.discount.toFixed(2)}
+                                                    -₹
+                                                    {item.discount.toFixed(2)}
                                                   </span>
                                                 )}
                                               </div>
@@ -541,7 +505,8 @@ export const OrderList = () => {
                                             Coupon ({order.couponCode}):
                                           </span>
                                           <span className='text-accent-red'>
-                                            -₹{order.couponDiscount.toFixed(2)}
+                                            -₹
+                                            {order.couponDiscount.toFixed(2)}
                                           </span>
                                         </div>
                                       )}
@@ -621,13 +586,11 @@ export const OrderList = () => {
             </TableBody>
           </Table>
         ) : (
-          <div className='w-full flex items-center justify-center'>
-            <EmptyState
-              icon={ShoppingBag}
-              title='No orders available'
-              description='There are no orders to display at the moment.'
-            />
-          </div>
+          <EmptyState
+            icon={ShoppingBag}
+            title='No orders available'
+            description='There are no orders to display at the moment.'
+          />
         )}
       </div>
 
@@ -641,17 +604,6 @@ export const OrderList = () => {
           />
         )}
       </div>
-
-      {/* Error message */}
-      {isError && (
-        <Alert
-          Icon={CircleX}
-          variant='destructive'
-          description={
-            error?.data?.message || 'Something went wrong! Please try again.'
-          }
-        />
-      )}
     </div>
   );
 };

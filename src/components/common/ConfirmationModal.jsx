@@ -36,7 +36,7 @@ export const ConfirmationModal = ({
             <Button
               variant='outline'
               onClick={onClose}
-              className='bg-primary-bg text-primary-text border rounded-md px-4 py-2'>
+              className='bg-primary-bg text-primary-text border border-primary-bg hover:border-white rounded-md px-4 py-2'>
               Cancel
             </Button>
           </AlertDialogCancel>

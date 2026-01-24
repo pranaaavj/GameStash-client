@@ -15,7 +15,7 @@ export const authRoutes = [
   {
     path: '',
     element: <UserLayout />,
-    errorElement: <NotFound />,
+  errorElement: <NotFound />,
     meta: { breadcrumb: 'Home' },
     children: [
       {

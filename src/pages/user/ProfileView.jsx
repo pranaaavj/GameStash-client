@@ -8,7 +8,7 @@ import {
 import { Button } from '@/shadcn/components/ui/button';
 import { Card, CardContent } from '@/shadcn/components/ui/card';
 
-import { User, Mail, Phone, Edit2 } from 'lucide-react';
+import { User, Mail, Phone, Edit2, TicketPercent } from 'lucide-react';
 
 import { InputField } from '@/components/common';
 import { useUsers } from '@/hooks';
@@ -214,6 +214,16 @@ export const ProfileView = () => {
                           Account Status:{' '}
                           <span className='font-medium text-accent-green'>
                             {responseUserDetails?.data?.status || 'Active'}
+                          </span>
+                        </p>
+                      </div>
+                      <div className='flex items-center gap-2 bg-primary-bg/30 p-3 rounded-lg'>
+                        <TicketPercent className='w-5 h-5 text-accent-blue shrink-0' />
+                        <p className='text-sm text-primary-text'>
+                          Referral Code:{' '}
+                          <span className='font-medium text-accent-red break-all'>
+                            {responseUserDetails?.data?.referralCode ||
+                              'Active'}
                           </span>
                         </p>
                       </div>

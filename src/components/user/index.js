@@ -18,3 +18,5 @@ export { GameCarousal } from './GameCarousal';
 export { ReferralModal } from './ReferralModal';
 
 export { RecommendedGames } from './RecommendedGames';
+export { AIRecommendationCard } from './AIRecommendationCard';
+export { AIRecommendations } from './AIRecommendations';

@@ -1,136 +1,174 @@
-import {
-  EditButton,
-  ToggleList,
-  ReuseableTable,
-  AdminPagination,
-} from '../../../components/admin';
+import { useState } from 'react';
 import {
   useGetAllBrandsQuery,
   useToggleBrandListMutation,
 } from '@/redux/api/admin/brandsApi';
-
-import { Alert, EmptyState } from '@/components/common';
+import { AdminPagination } from '@/components/admin';
+import { ConfirmationModal, EmptyState } from '@/components/common';
+import { handleApiError, showToast } from '@/utils';
 import { Button } from '@/shadcn/components/ui/button';
-import { useState } from 'react';
-import { handleApiError, mapTableData, showToast } from '@/utils';
-import { ConfirmationModal } from '@/components/common';
-import { Link, useNavigate } from 'react-router-dom';
-import { CircleX, Plus, Check, X, Tags } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shadcn/components/ui/card';
+import { Badge } from '@/shadcn/components/ui/badge';
+import { Plus, X, Check, Tags } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { ContainerLoading } from '@/components/error';
 
 export const BrandList = () => {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedBrandId, setSelectedBrandId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetching data through RTK
-  const {
-    data: responseGetBrands,
-    isSuccess,
-    isError,
-    error,
-  } = useGetAllBrandsQuery({
+  const { data: responseGetBrands, isLoading } = useGetAllBrandsQuery({
     page: currentPage,
     limit: 6,
   });
 
-  const [
-    toggleBrandList,
-    { isError: isBrandListError, error: brandListError },
-  ] = useToggleBrandListMutation();
+  const [toggleBrandList] = useToggleBrandListMutation();
 
-  const tableHeaders = ['name', 'description', 'isActive'];
-
-  const actions = [
-    ({ id: brandId }) => (
-      <EditButton onClick={() => navigate(`/admin/brands/edit/${brandId}`)} />
-    ),
-    ({ id: brandId, isActive }) => (
-      <ToggleList
-        onClick={() => handleListingModal(brandId)}
-        title={
-          isActive ? <X className='h-6 w-6' /> : <Check className='h-6 w-6' />
-        }
-      />
-    ),
-  ];
+  const brands = responseGetBrands?.data?.brands || [];
 
   const handleListingModal = (brandId) => {
-    setSelectedBrand(brandId);
+    setSelectedBrandId(brandId);
     setIsModalOpen(true);
   };
 
   const handleConfirmListing = async () => {
     try {
-      const responseBrandList = await toggleBrandList(selectedBrand).unwrap();
-
-      if (responseBrandList.success) {
-        showToast.success(responseBrandList.message);
-        navigate('/admin/brands');
+      const res = await toggleBrandList(selectedBrandId).unwrap();
+      if (res.success) {
+        showToast.success(res.message);
       }
-    } catch (error) {
-      handleApiError(error, 'There was some error loading brands');
+      setIsModalOpen(false);
+    } catch (err) {
+      handleApiError(err, 'There was some error listing brand');
     }
   };
 
   const handleCancelListing = () => {
-    setSelectedBrand(null);
+    setSelectedBrandId(null);
     setIsModalOpen(false);
   };
 
-  const tableData = isSuccess
-    ? mapTableData(responseGetBrands?.data?.brands, tableHeaders)
-    : [];
-  if (isError) {
-    console.log(error);
+  if (isLoading) {
+    return <ContainerLoading />;
   }
 
   return (
-    <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-4'>
-      <div className='mb-6 text-center'>
-        <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
-          Brands
-        </h1>
-      </div>
-      <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
-        {/* Add Brand Button */}
-        <Link to='/admin/brands/add'>
-          <Button className='w-full sm:w-auto bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>
-            <Plus className='mr-2 h-4 w-4' /> Add Brand
-          </Button>
-        </Link>
-      </div>
+    <Card className='w-full h-full shadow-sm border-0 bg-secondary-bg'>
+      <CardHeader className='pb-0'>
+        <div className='flex flex-col md:flex-row md:items-center justify-between gap-4'>
+          <CardTitle className='text-2xl font-medium text-primary-text flex items-center gap-2'>
+            <Tags className='h-5 w-5' />
+            Brands
+          </CardTitle>
 
-      {/* Table */}
-      <div className='w-full overflow-x-auto flex-grow no-scrollbar'>
-        {tableData.length ? (
-          <ReuseableTable
-            headers={tableHeaders}
-            data={tableData}
-            actions={actions}
-          />
-        ) : (
-          <EmptyState
-            icon={Tags}
-            title='No Brands Found'
-            description='No brands found. Please add a brand to list it here.'
-          />
-        )}
-      </div>
+          <Link to='/admin/brands/add'>
+            <Button className='bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>
+              <Plus className='mr-2 h-4 w-4' />
+              Add Brand
+            </Button>
+          </Link>
+        </div>
+      </CardHeader>
 
-      {/* Pagination */}
-      <div className='sticky bottom-0'>
-        {responseGetBrands?.data?.totalPages > 1 && (
-          <AdminPagination
-            currentPage={currentPage}
-            totalPages={responseGetBrands?.data?.totalPages || 0}
-            onPageChange={(page) => setCurrentPage(page)}
-          />
-        )}
-      </div>
+      <CardContent className='p-6'>
+        <div className='w-full space-y-4'>
+          {brands.length ? (
+            <div className='grid gap-4'>
+              {brands.map((brand) => (
+                <Card
+                  key={brand._id}
+                  className='overflow-hidden border-0 shadow-sm hover:shadow transition-shadow bg-primary-bg/20'>
+                  <CardContent className='p-0'>
+                    <div className='flex flex-col md:flex-row justify-between p-4 gap-4 md:items-center'>
+                      {/* Left: Brand Name + Description */}
+                      <div className='min-w-[200px]'>
+                        <p className='font-medium text-primary-text'>
+                          {brand.name}
+                        </p>
+                        <p className='text-sm text-secondary-text line-clamp-2'>
+                          {brand.description}
+                        </p>
+                      </div>
 
-      {/* Confirmation Modal */}
+                      {/* Right: Badges + Buttons */}
+                      <div className='ml-auto flex flex-col md:flex-row items-center gap-4'>
+                        <div className='flex gap-2'>
+                          <Badge
+                            variant={brand.isActive ? 'default' : 'secondary'}
+                            className={`w-[110px] h-10 text-xs truncate text-center justify-center items-center flex ${
+                              brand.isActive
+                                ? 'bg-green-500/20 text-green-600'
+                                : 'bg-red-500/20 text-red-600'
+                            }`}>
+                            {brand.isActive ? 'Listed' : 'Unlisted'}
+                          </Badge>
+                        </div>
+
+                        <div className='flex items-center gap-2'>
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            className='text-blue-600 hover:bg-accent-blue/10'
+                            onClick={() =>
+                              navigate(`/admin/brands/edit/${brand._id}`)
+                            }>
+                            Edit
+                          </Button>
+
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            className={`min-w-[100px] justify-center ${
+                              brand.isActive
+                                ? 'text-red-600 hover:bg-hover-red'
+                                : 'text-green-600 hover:bg-hover-green'
+                            }`}
+                            onClick={() => handleListingModal(brand._id)}>
+                            {brand.isActive ? (
+                              <>
+                                <X className='h-4 w-4 mr-1' /> Unlist
+                              </>
+                            ) : (
+                              <>
+                                <Check className='h-4 w-4 mr-1' /> List
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={Tags}
+              title='No Brands Found'
+              description='No brands found. Please add a brand to list it here.'
+            />
+          )}
+        </div>
+
+        <div className='mt-6 flex justify-center'>
+          {responseGetBrands?.data?.totalPages > 1 && (
+            <AdminPagination
+              currentPage={currentPage}
+              totalPages={responseGetBrands?.data?.totalPages || 0}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          )}
+        </div>
+      </CardContent>
+
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={handleCancelListing}
@@ -138,17 +176,6 @@ export const BrandList = () => {
         title='Confirm Action'
         description='Are you sure you want to proceed with this action?'
       />
-
-      {isBrandListError && (
-        <Alert
-          Icon={CircleX}
-          variant='destructive'
-          description={
-            brandListError?.data?.message ||
-            'Something went wrong! Please try again.'
-          }
-        />
-      )}
-    </div>
+    </Card>
   );
 };
