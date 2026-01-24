@@ -7,15 +7,15 @@ import {
 import {
   useGetOneProductQuery,
   useEditProductMutation,
-  // useUploadProductImageMutation,
-  // useDeleteProductImageMutation,
+  useUploadProductImageMutation,
+  useDeleteProductImageMutation,
 } from '@/redux/api/admin/productsApi';
 import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
 
 import { Button } from '@/shadcn/components/ui/button';
 import { Textarea } from '@/shadcn/components/ui/textarea';
-// import { ImageUploader } from '@/components/admin';
+import { ImageUploader } from '@/components/admin';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { InputField, SelectField } from '@/components/common';
@@ -59,8 +59,8 @@ export const EditProduct = () => {
     useGetAllGenresQuery({});
 
   const [editProduct, { isLoading }] = useEditProductMutation();
-  // const [uploadProductImage] = useUploadProductImageMutation();
-  // const [deleteProductImage] = useDeleteProductImageMutation();
+  const [uploadProductImage] = useUploadProductImageMutation();
+  const [deleteProductImage] = useDeleteProductImageMutation();
 
   const [images, setImages] = useState([]);
   const [productInput, setProductInput] = useState(initialProductState);
@@ -145,9 +145,9 @@ export const EditProduct = () => {
     return <ContainerLoading />;
   }
 
-  // const handleImagesChange = (images) => {
-  //   setImages(images);
-  // };
+  const handleImagesChange = (images) => {
+    setImages(images);
+  };
 
   return (
     <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-none text-primary-text border-0'>
@@ -299,12 +299,12 @@ export const EditProduct = () => {
             </div>
           </div>
 
-          {/* <ImageUploader
+          <ImageUploader
             onImagesChange={handleImagesChange}
             uploadProductImage={uploadProductImage}
             deleteProductImage={deleteProductImage}
             initialImages={images}
-          /> */}
+          />
 
           {imageValidation && (
             <span className='text-red-500 text-sm mt-0'>{imageValidation}</span>
