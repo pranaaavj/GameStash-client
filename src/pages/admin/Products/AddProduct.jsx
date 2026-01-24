@@ -9,12 +9,11 @@ import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
 
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ImageUploader } from '@/components/admin';
-import { Alert, InputField, SelectField } from '@/components/common';
+import { InputField, SelectField } from '@/components/common';
 import {
   validateProduct,
   mapOptionsData,
@@ -46,16 +45,14 @@ const initialProductState = {
 export const AddProduct = () => {
   const navigate = useNavigate();
 
-  // Fetching brands and genres
   const { data: responseBrands, isSuccess: brandQuerySuccess } =
     useGetAllBrandsQuery({});
   const { data: responseGenres, isSuccess: genreQuerySuccess } =
     useGetAllGenresQuery({});
-  const [addProduct, { isError, error }] = useAddProductMutation();
+  const [addProduct, { isLoading }] = useAddProductMutation();
   const [uploadProductImage] = useUploadProductImageMutation();
   const [deleteProductImage] = useDeleteProductImageMutation();
 
-  // Product state
   const [images, setImages] = useState([]);
   const [imageValidation, setImageValidation] = useState('');
   const [productInput, setProductInput] = useState(initialProductState);
@@ -69,7 +66,6 @@ export const AddProduct = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Handling system requirements separately
     if (name in productInput.systemRequirements) {
       setProductInput((prev) => ({
         ...prev,
@@ -83,7 +79,6 @@ export const AddProduct = () => {
     }
   };
 
-  // Mapping options from brands and genres
   const brandOptions = brandQuerySuccess
     ? mapOptionsData(responseBrands?.data?.brands)
     : [];
@@ -102,12 +97,12 @@ export const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const productValidation = validateProduct(productInput);
-    const imageValidation = validateImages(images);
+    const validation = validateProduct(productInput);
+    const imageError = validateImages(images);
 
-    if (Object.keys(productValidation).length > 0 || imageValidation) {
-      setProductValidation(productValidation);
-      setImageValidation(imageValidation);
+    if (Object.keys(validation).length > 0 || imageError) {
+      setProductValidation(validation);
+      setImageValidation(imageError);
       return;
     }
 
@@ -118,8 +113,8 @@ export const AddProduct = () => {
         showToast.success(response.message);
         navigate('/admin/products');
       }
-    } catch (error) {
-      handleApiError(error);
+    } catch (err) {
+      handleApiError(err);
     }
   };
 
@@ -128,12 +123,13 @@ export const AddProduct = () => {
   };
 
   return (
-    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-lg text-primary-text'>
-      <CardHeader className='bg-primary-bg/10'>
+    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg border-none text-primary-text '>
+      <CardHeader className='bg-primary-bg/20 rounded-xl'>
         <CardTitle className='text-2xl font-bold text-center text-primary-text'>
           Add New Product
         </CardTitle>
       </CardHeader>
+
       <CardContent className='pt-6'>
         <form
           onSubmit={handleSubmit}
@@ -148,6 +144,7 @@ export const AddProduct = () => {
             isInvalid={!!productValidation.name}
             errorMessage={productValidation.name}
           />
+
           <InputField
             type='text'
             value={productInput.price}
@@ -159,6 +156,7 @@ export const AddProduct = () => {
             errorMessage={productValidation.price}
             helperText={!productValidation.price ? 'Enter price in rupees' : ''}
           />
+
           <SelectField
             type='text'
             value={productInput.genre}
@@ -170,6 +168,7 @@ export const AddProduct = () => {
             isInvalid={!!productValidation.genre}
             errorMessage={productValidation.genre}
           />
+
           <SelectField
             type='text'
             value={productInput.platform}
@@ -181,6 +180,7 @@ export const AddProduct = () => {
             isInvalid={!!productValidation.platform}
             errorMessage={productValidation.platform}
           />
+
           <SelectField
             type='text'
             value={productInput.brand}
@@ -192,6 +192,7 @@ export const AddProduct = () => {
             isInvalid={!!productValidation.brand}
             errorMessage={productValidation.brand}
           />
+
           <InputField
             type='text'
             value={productInput.stock}
@@ -202,6 +203,7 @@ export const AddProduct = () => {
             isInvalid={!!productValidation.stock}
             errorMessage={productValidation.stock}
           />
+
           <div className='space-y-2'>
             <label
               htmlFor='description'
@@ -224,7 +226,7 @@ export const AddProduct = () => {
             )}
           </div>
 
-          {/* System Requirements Section */}
+          {/* System Requirements */}
           <div className='space-y-4'>
             <h3 className='text-lg font-semibold text-primary-text'>
               System Requirements
@@ -273,7 +275,6 @@ export const AddProduct = () => {
             </div>
           </div>
 
-          {/* Image Uploader */}
           <ImageUploader
             onImagesChange={handleImagesChange}
             uploadProductImage={uploadProductImage}
@@ -287,20 +288,11 @@ export const AddProduct = () => {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
-            Add Product
+            {isLoading ? 'Adding Product...' : 'Add Product'}
           </Button>
         </form>
-
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
-          />
-        )}
       </CardContent>
     </Card>
   );

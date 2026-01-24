@@ -8,12 +8,12 @@ import {
   useGetOneGenreQuery,
   useEditGenreMutation,
 } from '@/redux/api/admin/genresApi';
-
 import { Button } from '@/shadcn/components/ui/button';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { InputField } from '@/components/common';
+import { ContainerLoading } from '@/components/error';
 import { handleApiError, showToast, validateGenre } from '@/utils';
 
 const initialGenreState = {
@@ -25,12 +25,10 @@ export const EditGenre = () => {
   const navigate = useNavigate();
   const { genreId } = useParams();
 
-  // Fetching genre data
-  const { data: responseGenre } = useGetOneGenreQuery(genreId);
-
+  const { data: responseGenre, isLoading: isGenreLoading } =
+    useGetOneGenreQuery(genreId);
   const [editGenre, { isLoading }] = useEditGenreMutation();
 
-  // Genre state
   const [genreInput, setGenreInput] = useState(initialGenreState);
   const [genreValidation, setGenreValidation] = useState(initialGenreState);
 
@@ -53,7 +51,6 @@ export const EditGenre = () => {
     e.preventDefault();
 
     const genreValidation = validateGenre(genreInput);
-    // Setting validation errors
     if (Object.keys(genreValidation).length > 0) {
       setGenreValidation(genreValidation);
       return;
@@ -74,13 +71,18 @@ export const EditGenre = () => {
     }
   };
 
+  if (isGenreLoading || !responseGenre) {
+    return <ContainerLoading />;
+  }
+
   return (
-    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-lg text-primary-text'>
-      <CardHeader className='bg-primary-bg/10'>
+    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg border-none text-primary-text'>
+      <CardHeader className='bg-primary-bg/20 rounded-xl'>
         <CardTitle className='text-2xl font-bold text-center text-primary-text'>
           Edit Genre
         </CardTitle>
       </CardHeader>
+
       <CardContent className='pt-6'>
         <form
           onSubmit={handleSubmit}
@@ -95,6 +97,7 @@ export const EditGenre = () => {
             isInvalid={!!genreValidation.name}
             errorMessage={genreValidation.name}
           />
+
           <div className='space-y-2'>
             <label
               htmlFor='description'
@@ -116,7 +119,7 @@ export const EditGenre = () => {
             type='submit'
             disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
-            Confirm Edit
+            {isLoading ? 'Updating...' : 'Confirm Edit'}
           </Button>
         </form>
       </CardContent>

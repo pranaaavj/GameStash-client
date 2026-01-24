@@ -1,4 +1,5 @@
 export { Loading } from './Loading';
+export { ContainerLoading } from './ContainerLoading';
 export { NotFound } from './NotFound';
 export { AdminError } from './AdminError';
 

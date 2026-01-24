@@ -1,150 +1,192 @@
-import {
-  ToggleList,
-  EditButton,
-  ReuseableTable,
-  AdminPagination,
-} from '../../../components/admin';
+import { useState } from 'react';
 import {
   useGetAllProductsQuery,
   useToggleProductListMutation,
 } from '@/redux/api/admin/productsApi';
-
 import { Button } from '@/shadcn/components/ui/button';
-import { useState } from 'react';
-import { handleApiError, mapTableData, showToast } from '@/utils';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shadcn/components/ui/card';
+import { Badge } from '@/shadcn/components/ui/badge';
+import { ConfirmationModal, EmptyState } from '@/components/common';
 import { Link, useNavigate } from 'react-router-dom';
-import { Alert, ConfirmationModal, EmptyState } from '@/components/common';
-import { Check, CircleX, Plus, ShoppingCart, X } from 'lucide-react';
+import { Plus, Check, X, ShoppingCart, Gamepad2 } from 'lucide-react';
+import { AdminPagination } from '@/components/admin';
+import { handleApiError, showToast } from '@/utils';
+import { ContainerLoading } from '@/components/error';
 
 export const ProductList = () => {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProductId, setSelectedProductId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetching data through RTK
-  const {
-    data: responseGetProducts,
-    isSuccess,
-    isError,
-    error,
-  } = useGetAllProductsQuery(
-    {
-      page: currentPage,
-      limit: 6,
-    }
-    // { refetchOnMountOrArgChange: true, keepUnusedDataFor: 0 }
-  );
-  const [
-    toggleProductList,
-    { isError: isProductListError, error: productListError },
-  ] = useToggleProductListMutation();
+  const { data: responseGetProducts, isLoading } = useGetAllProductsQuery({
+    page: currentPage,
+    limit: 6,
+  });
 
-  const tableHeaders = [
-    'name',
-    'price',
-    'platform',
-    'genre',
-    'isActive',
-    'stock',
-  ];
+  const [toggleProductList] = useToggleProductListMutation();
 
-  const actions = [
-    ({ id: productId }) => (
-      <EditButton
-        onClick={() => navigate(`/admin/products/edit/${productId}`)}
-      />
-    ),
-    ({ id: productId, isActive }) => (
-      <ToggleList
-        onClick={() => handleListingModal(productId)}
-        title={
-          isActive ? <X className='h-6 w-6' /> : <Check className='h-6 w-6' />
-        }
-      />
-    ),
-  ];
+  const products = responseGetProducts?.data?.products || [];
 
   const handleListingModal = (productId) => {
-    setSelectedProduct(productId);
+    setSelectedProductId(productId);
     setIsModalOpen(true);
   };
 
   const handleConfirmListing = async () => {
     try {
-      const responseProductList = await toggleProductList(
-        selectedProduct
-      ).unwrap();
-
-      if (responseProductList?.success) {
-        showToast.success(responseProductList?.message);
+      const res = await toggleProductList(selectedProductId).unwrap();
+      if (res.success) {
+        showToast.success(res.message);
       }
-    } catch (error) {
-      handleApiError(error, 'There was some error listing product');
+      setIsModalOpen(false);
+    } catch (err) {
+      handleApiError(err, 'There was some error listing product');
     }
   };
 
   const handleCancelListing = () => {
-    setSelectedProduct(null);
+    setSelectedProductId(null);
     setIsModalOpen(false);
   };
 
-  const tableData = isSuccess
-    ? mapTableData(responseGetProducts?.data?.products, tableHeaders)
-    : [];
-
-  if (isError) {
-    console.log(error);
+  if (isLoading) {
+    return <ContainerLoading />;
   }
 
   return (
-    <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-4'>
-      <div className='mb-6 text-center'>
-        <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
-          Products
-        </h1>
-      </div>
-      <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
-        {/* Search Input */}
+    <Card className='w-full h-full shadow-sm border-0 bg-secondary-bg'>
+      <CardHeader className='pb-0'>
+        <div className='flex flex-col md:flex-row md:items-center justify-between gap-4'>
+          <CardTitle className='text-2xl font-medium text-primary-text flex items-center gap-2'>
+            <Gamepad2 className='h-5 w-5' />
+            Products
+          </CardTitle>
 
-        {/* Add Product Button */}
-        <Link to='/admin/products/add'>
-          <Button className='w-full sm:w-auto bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>
-            <Plus className='mr-2 h-4 w-4' /> Add Product
-          </Button>
-        </Link>
-      </div>
+          <Link to='/admin/products/add'>
+            <Button className='bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>
+              <Plus className='mr-2 h-4 w-4' />
+              Add Product
+            </Button>
+          </Link>
+        </div>
+      </CardHeader>
 
-      {/* Table */}
-      <div className='w-full overflow-x-auto flex-grow no-scrollbar'>
-        {tableData.length ? (
-          <ReuseableTable
-            headers={tableHeaders}
-            data={tableData}
-            actions={actions}
-          />
-        ) : (
-          <div className='w-full flex items-center justify-center'>
+      <CardContent className='p-6'>
+        <div className='w-full space-y-4'>
+          {products.length ? (
+            <div className='grid gap-4'>
+              {products.map((product) => (
+                <Card
+                  key={product._id}
+                  className='overflow-hidden border-0 shadow-sm hover:shadow transition-shadow bg-primary-bg/20'>
+                  <CardContent className='p-0'>
+                    <div className='flex flex-col md:flex-row justify-between p-4 gap-4 md:items-center'>
+                      {/* Left: Product Name + Price */}
+                      <div className='min-w-[200px]'>
+                        <p className='font-medium text-primary-text'>
+                          {product.name}
+                        </p>
+                        <p className='text-sm text-secondary-text'>
+                          ₹{product.price}
+                        </p>
+                      </div>
+
+                      {/* Middle: Fixed badge block */}
+                      {/* Right: Badge grid + action buttons */}
+                      <div className='ml-auto flex flex-col md:flex-row items-center gap-4'>
+                        <div className='grid grid-cols-2 md:grid-cols-4 gap-2 text-white'>
+                          <Badge
+                            variant='outline'
+                            className='w-[110px] h-10 text-xs truncate text-center justify-center items-center flex bg-primary-bg/60 border-accent-blue/20'>
+                            {product.genre?.name || 'N/A'}
+                          </Badge>
+                          <Badge
+                            variant='outline'
+                            className='w-[110px] h-10 text-xs truncate text-center justify-center items-center flex bg-primary-bg/60 border-accent-blue/20'>
+                            {product.platform || 'N/A'}
+                          </Badge>
+                          <Badge
+                            variant='outline'
+                            className='w-[110px] h-10 text-xs truncate text-center justify-center items-center flex bg-primary-bg/60 border-accent-blue/20'>
+                            {product.stock > 0
+                              ? `Stock: ${product.stock}`
+                              : 'Out of Stock'}
+                          </Badge>
+                          <Badge
+                            variant={product.isActive ? 'default' : 'secondary'}
+                            className={`w-[110px] h-10 text-xs truncate text-center justify-center items-center flex ${
+                              product.isActive
+                                ? 'bg-green-500/20 text-green-600'
+                                : 'bg-red-500/20 text-red-600'
+                            }`}>
+                            {product.isActive ? 'Listed' : 'Unlisted'}
+                          </Badge>
+                        </div>
+
+                        <div className='flex items-center gap-2'>
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            className='text-blue-600 hover:bg-hover-blue'
+                            onClick={() =>
+                              navigate(`/admin/products/edit/${product._id}`)
+                            }>
+                            Edit
+                          </Button>
+
+                          <Button
+                            variant='ghost'
+                            size='sm'
+                            className={`min-w-[100px] justify-center ${
+                              product.isActive
+                                ? 'text-red-600 hover:bg-hover-red'
+                                : 'text-green-600 hover:bg-hover-green'
+                            }`}
+                            onClick={() => handleListingModal(product._id)}>
+                            {product.isActive ? (
+                              <>
+                                <X className='h-4 w-4 mr-1' /> Unlist
+                              </>
+                            ) : (
+                              <>
+                                <Check className='h-4 w-4 mr-1' /> List
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
             <EmptyState
               icon={ShoppingCart}
-              title='No orders available'
-              description='There are no orders to display at the moment.'
+              title='No products available'
+              description='There are no products to display at the moment.'
             />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* Pagination */}
-      <div className='sticky bottom-0 mt-4'>
-        <AdminPagination
-          currentPage={currentPage}
-          totalPages={responseGetProducts?.data?.totalPages || 0}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      </div>
+        <div className='mt-6 flex justify-center text-white'>
+          {responseGetProducts?.data?.totalPages > 1 && (
+            <AdminPagination
+              currentPage={currentPage}
+              totalPages={responseGetProducts?.data?.totalPages || 0}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          )}
+        </div>
+      </CardContent>
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={handleCancelListing}
@@ -152,18 +194,6 @@ export const ProductList = () => {
         title='Confirm Action'
         description='Are you sure you want to proceed with this action?'
       />
-
-      {/* Error message */}
-      {isProductListError && (
-        <Alert
-          Icon={CircleX}
-          variant='destructive'
-          description={
-            productListError?.data?.message ||
-            'Something went wrong! Please try again.'
-          }
-        />
-      )}
-    </div>
+    </Card>
   );
 };

@@ -33,7 +33,7 @@ const Filters = ({ title, children, defaultOpen = true }) => {
           <ChevronDown className='h-5 w-5' />
         </motion.div>
       </button>
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -72,6 +72,10 @@ export const FilterSection = ({ onApplyFilters }) => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [sortingOption, setSortingOption] = useState('popularity:desc');
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
+  
+  // Add delay state to ensure minimum skeleton display time
+  const [showGenresSkeleton, setShowGenresSkeleton] = useState(true);
+  const [showBrandsSkeleton, setShowBrandsSkeleton] = useState(true);
 
   const {
     data: responseBrands,
@@ -85,10 +89,31 @@ export const FilterSection = ({ onApplyFilters }) => {
     isError: isGenresError,
   } = useGetAllGenresQuery({});
 
+  // Handle genres with minimum delay
   useEffect(() => {
-    if (responseBrands) setBrands(responseBrands?.data?.brands);
-    if (responseGenres) setGenres(responseGenres?.data?.genres);
-  }, [responseBrands, responseGenres]);
+    if (responseGenres) {
+      // Ensure skeleton shows for at least 500ms
+      const timer = setTimeout(() => {
+        setGenres(responseGenres?.data?.genres);
+        setShowGenresSkeleton(false);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [responseGenres]);
+
+  // Handle brands with minimum delay
+  useEffect(() => {
+    if (responseBrands) {
+      // Ensure skeleton shows for at least 500ms
+      const timer = setTimeout(() => {
+        setBrands(responseBrands?.data?.brands);
+        setShowBrandsSkeleton(false);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [responseBrands]);
 
   // Calculate active filters count
   useEffect(() => {
@@ -103,7 +128,6 @@ export const FilterSection = ({ onApplyFilters }) => {
     onApplyFilters({
       genres: selectedGenres,
       brands: selectedBrands,
-
       sort: sortingOption,
     });
   };
@@ -118,6 +142,10 @@ export const FilterSection = ({ onApplyFilters }) => {
       sort: 'popularity:desc',
     });
   };
+
+  // Check if we should show skeleton (either loading or enforcing minimum delay)
+  const shouldShowGenresSkeleton = isGenresLoading || showGenresSkeleton;
+  const shouldShowBrandsSkeleton = isBrandsLoading || showBrandsSkeleton;
 
   return (
     <div className='bg-secondary-bg/40 rounded-xl text-primary-text p-5 md:p-6 shadow-md sticky top-20'>
@@ -156,86 +184,146 @@ export const FilterSection = ({ onApplyFilters }) => {
 
       {/* Genres */}
       <Filters title='Genre'>
-        {isGenresLoading ? (
-          <FilterSkeleton />
-        ) : isGenresError ? (
-          <div className='flex items-center text-accent-red text-sm'>
-            <AlertCircle className='h-4 w-4 mr-2' />
-            Failed to load genres
-          </div>
-        ) : genres?.length > 0 ? (
-          <div className='max-h-48 overflow-y-auto pr-2 no-scrollbar'>
-            {genres.map((genre) => (
-              <div
-                key={genre._id}
-                className='flex items-center space-x-2 hover:bg-primary-bg/10 p-1 rounded transition-colors'>
-                <Checkbox
-                  id={`genre-${genre._id}`}
-                  checked={selectedGenres.includes(genre._id)}
-                  className='border-accent-blue data-[state=checked]:bg-accent-blue data-[state=checked]:text-white'
-                  onCheckedChange={() =>
-                    setSelectedGenres((prev) =>
-                      prev.includes(genre._id)
-                        ? prev.filter((id) => id !== genre._id)
-                        : [...prev, genre._id]
-                    )
-                  }
-                />
-                <label
-                  htmlFor={`genre-${genre._id}`}
-                  className='text-sm font-medium cursor-pointer flex-1'>
-                  {genre?.name}
-                </label>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className='text-sm text-secondary-text py-2'>
-            No genres available
-          </p>
-        )}
+        <AnimatePresence mode='wait'>
+          {shouldShowGenresSkeleton ? (
+            <motion.div
+              key='genres-skeleton'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}>
+              <FilterSkeleton />
+            </motion.div>
+          ) : isGenresError ? (
+            <motion.div
+              key='genres-error'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className='flex items-center text-accent-red text-sm'>
+              <AlertCircle className='h-4 w-4 mr-2' />
+              Failed to load genres
+            </motion.div>
+          ) : genres?.length > 0 ? (
+            <motion.div
+              key='genres-content'
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className='max-h-48 overflow-y-auto pr-2 no-scrollbar'>
+              {genres.map((genre, index) => (
+                <motion.div
+                  key={genre._id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.03, duration: 0.2 }}
+                  className='flex items-center space-x-2 hover:bg-primary-bg/10 p-1 rounded transition-colors'>
+                  <Checkbox
+                    id={`genre-${genre._id}`}
+                    checked={selectedGenres.includes(genre._id)}
+                    className='border-accent-blue data-[state=checked]:bg-accent-blue data-[state=checked]:text-white'
+                    onCheckedChange={() =>
+                      setSelectedGenres((prev) =>
+                        prev.includes(genre._id)
+                          ? prev.filter((id) => id !== genre._id)
+                          : [...prev, genre._id]
+                      )
+                    }
+                  />
+                  <label
+                    htmlFor={`genre-${genre._id}`}
+                    className='text-sm font-medium cursor-pointer flex-1'>
+                    {genre?.name}
+                  </label>
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.p
+              key='genres-empty'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className='text-sm text-secondary-text py-2'>
+              No genres available
+            </motion.p>
+          )}
+        </AnimatePresence>
       </Filters>
 
       {/* Brands */}
       <Filters title='Brand'>
-        {isBrandsLoading ? (
-          <FilterSkeleton />
-        ) : isBrandsError ? (
-          <div className='flex items-center text-accent-red text-sm py-2'>
-            <AlertCircle className='h-4 w-4 mr-2' />
-            Failed to load brands
-          </div>
-        ) : brands?.length > 0 ? (
-          <div className='max-h-48 overflow-y-auto pr-2 no-scrollbar'>
-            {brands.map((brand) => (
-              <div
-                key={brand._id}
-                className='flex items-center space-x-2 hover:bg-primary-bg/10 p-1 rounded transition-colors'>
-                <Checkbox
-                  id={`brand-${brand._id}`}
-                  checked={selectedBrands.includes(brand._id)}
-                  className='border-accent-blue data-[state=checked]:bg-accent-blue data-[state=checked]:text-white'
-                  onCheckedChange={() =>
-                    setSelectedBrands((prev) =>
-                      prev.includes(brand._id)
-                        ? prev.filter((id) => id !== brand._id)
-                        : [...prev, brand._id]
-                    )
-                  }
-                />
-                <label
-                  htmlFor={`brand-${brand._id}`}
-                  className='text-sm font-medium cursor-pointer flex-1'>
-                  {brand?.name}
-                </label>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className='text-sm text-secondary-text py-2'>
-            No brands available
-          </p>
-        )}
+        <AnimatePresence mode='wait'>
+          {shouldShowBrandsSkeleton ? (
+            <motion.div
+              key='brands-skeleton'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}>
+              <FilterSkeleton />
+            </motion.div>
+          ) : isBrandsError ? (
+            <motion.div
+              key='brands-error'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className='flex items-center text-accent-red text-sm py-2'>
+              <AlertCircle className='h-4 w-4 mr-2' />
+              Failed to load brands
+            </motion.div>
+          ) : brands?.length > 0 ? (
+            <motion.div
+              key='brands-content'
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className='max-h-48 overflow-y-auto pr-2 no-scrollbar'>
+              {brands.map((brand, index) => (
+                <motion.div
+                  key={brand._id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.03, duration: 0.2 }}
+                  className='flex items-center space-x-2 hover:bg-primary-bg/10 p-1 rounded transition-colors'>
+                  <Checkbox
+                    id={`brand-${brand._id}`}
+                    checked={selectedBrands.includes(brand._id)}
+                    className='border-accent-blue data-[state=checked]:bg-accent-blue data-[state=checked]:text-white'
+                    onCheckedChange={() =>
+                      setSelectedBrands((prev) =>
+                        prev.includes(brand._id)
+                          ? prev.filter((id) => id !== brand._id)
+                          : [...prev, brand._id]
+                      )
+                    }
+                  />
+                  <label
+                    htmlFor={`brand-${brand._id}`}
+                    className='text-sm font-medium cursor-pointer flex-1'>
+                    {brand?.name}
+                  </label>
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.p
+              key='brands-empty'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className='text-sm text-secondary-text py-2'>
+              No brands available
+            </motion.p>
+          )}
+        </AnimatePresence>
       </Filters>
 
       {/* Clear and apply filters */}

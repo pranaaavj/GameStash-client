@@ -8,19 +8,12 @@ import {
   useGetOneCouponQuery,
   useEditCouponMutation,
 } from '@/redux/api/admin/couponsApi';
-
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Alert,
-  DatePicker,
-  InputField,
-  SelectField,
-} from '@/components/common';
+import { DatePicker, InputField, SelectField } from '@/components/common';
 import { handleApiError, showToast, validateCoupon } from '@/utils';
-import { Loading } from '@/components/error';
+import { ContainerLoading } from '@/components/error';
 
 const initialCouponState = {
   code: '',
@@ -38,26 +31,16 @@ export const EditCoupon = () => {
   const navigate = useNavigate();
   const { couponId } = useParams();
 
-  // Fetching the specific coupon details
-  const {
-    data: responseCoupon,
-    isError,
-    error,
-    isLoading: isCouponLoading,
-  } = useGetOneCouponQuery(couponId);
-
-  const [
-    editCoupon,
-    { isError: isEditCouponError, error: editCouponError, isLoading },
-  ] = useEditCouponMutation();
+  const { data: responseCoupon, isLoading: isCouponLoading } =
+    useGetOneCouponQuery(couponId);
+  const [editCoupon, { isLoading }] = useEditCouponMutation();
 
   const [couponInput, setCouponInput] = useState(initialCouponState);
   const [couponValidation, setCouponValidation] = useState(initialCouponState);
 
   useEffect(() => {
     if (responseCoupon) {
-      setCouponInput((prevInput) => ({
-        ...prevInput,
+      setCouponInput({
         code: responseCoupon.data.code,
         discountType: responseCoupon.data.discountType,
         discountValue: responseCoupon.data.discountValue,
@@ -67,7 +50,7 @@ export const EditCoupon = () => {
         perUserLimit: responseCoupon.data.perUserLimit,
         startDate: new Date(responseCoupon.data.startDate),
         endDate: new Date(responseCoupon.data.endDate),
-      }));
+      });
     }
   }, [responseCoupon]);
 
@@ -107,16 +90,17 @@ export const EditCoupon = () => {
   };
 
   if (!responseCoupon || isCouponLoading) {
-    return <Loading />;
+    return <ContainerLoading />;
   }
 
   return (
     <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-none border-0 text-primary-text'>
-      <CardHeader className='bg-primary-bg/10'>
+      <CardHeader className='bg-primary-bg/20 rounded-xl'>
         <CardTitle className='text-2xl font-bold text-center text-primary-text'>
           Edit Coupon
         </CardTitle>
       </CardHeader>
+
       <CardContent className='pt-6'>
         <form
           onSubmit={handleSubmit}
@@ -263,25 +247,6 @@ export const EditCoupon = () => {
             {isLoading ? 'Updating...' : 'Update Coupon'}
           </Button>
         </form>
-
-        {isError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
-          />
-        ) : isEditCouponError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              editCouponError?.data?.message ||
-              'Something went wrong! Please try again.'
-            }
-          />
-        ) : null}
       </CardContent>
     </Card>
   );

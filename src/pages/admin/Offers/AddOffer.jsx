@@ -7,17 +7,10 @@ import {
 import { useAddOfferMutation } from '@/redux/api/admin/offersApi';
 import { useGetAllProductsQuery } from '@/redux/api/admin/productsApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
-
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Alert,
-  InputField,
-  SelectField,
-  DatePicker,
-} from '@/components/common';
+import { InputField, SelectField, DatePicker } from '@/components/common';
 import {
   validateOffer,
   mapOptionsData,
@@ -38,17 +31,10 @@ const initialOfferState = {
 export const AddOffer = () => {
   const navigate = useNavigate();
 
-  // Fetching products and brands
-  const { data: responseProducts, isSuccess: productsSuccess } =
-    useGetAllProductsQuery({ limit: 10000 });
+  const { data: responseProducts } = useGetAllProductsQuery({ limit: 10000 });
+  const { data: responseBrands } = useGetAllBrandsQuery({ limit: 10000 });
+  const [addOffer, { isLoading: isAddOfferLoading }] = useAddOfferMutation();
 
-  const { data: responseBrands, isSuccess: brandsSuccess } =
-    useGetAllBrandsQuery({ limit: 10000 });
-
-  const [addOffer, { isError, error, isLoading: isAddOfferLoading }] =
-    useAddOfferMutation();
-
-  // Offer state
   const [offerInput, setOfferInput] = useState(initialOfferState);
   const [offerValidation, setOfferValidation] = useState(initialOfferState);
 
@@ -61,13 +47,8 @@ export const AddOffer = () => {
     setOfferInput((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Mapping options for products and brands
-  const productOptions = productsSuccess
-    ? mapOptionsData(responseProducts?.data?.products)
-    : [];
-  const brandOptions = brandsSuccess
-    ? mapOptionsData(responseBrands?.data?.brands)
-    : [];
+  const productOptions = mapOptionsData(responseProducts?.data?.products || []);
+  const brandOptions = mapOptionsData(responseBrands?.data?.brands || []);
 
   const typeOptions = [
     { label: 'Product', value: 'Product' },
@@ -107,11 +88,12 @@ export const AddOffer = () => {
 
   return (
     <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-none border-0 text-primary-text'>
-      <CardHeader className='bg-primary-bg/10'>
+      <CardHeader className='bg-primary-bg/20 rounded-xl'>
         <CardTitle className='text-2xl font-bold text-center text-primary-text'>
           Add New Offer
         </CardTitle>
       </CardHeader>
+
       <CardContent className='pt-6'>
         <form
           onSubmit={handleSubmit}
@@ -214,21 +196,11 @@ export const AddOffer = () => {
 
           <Button
             type='submit'
-            className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'
-            disabled={isAddOfferLoading}>
-            Add Offer
+            disabled={isAddOfferLoading}
+            className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
+            {isAddOfferLoading ? 'Adding...' : 'Add Offer'}
           </Button>
         </form>
-
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
-          />
-        )}
       </CardContent>
     </Card>
   );

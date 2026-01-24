@@ -5,13 +5,11 @@ import {
   CardContent,
 } from '@/shadcn/components/ui/card';
 import { useAddGenreMutation } from '@/redux/api/admin/genresApi';
-
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, InputField } from '@/components/common';
+import { InputField } from '@/components/common';
 import { handleApiError, showToast, validateGenre } from '@/utils';
 
 const initialGenreState = {
@@ -21,9 +19,8 @@ const initialGenreState = {
 
 export const AddGenre = () => {
   const navigate = useNavigate();
-  const [addGenre, { isError, error, isLoading }] = useAddGenreMutation();
+  const [addGenre, { isLoading }] = useAddGenreMutation();
 
-  // Genre state
   const [genreInput, setGenreInput] = useState(initialGenreState);
   const [genreValidation, setGenreValidation] = useState(initialGenreState);
 
@@ -55,12 +52,13 @@ export const AddGenre = () => {
   };
 
   return (
-    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg shadow-lg text-primary-text'>
-      <CardHeader className='bg-primary-bg/10'>
+    <Card className='w-full max-w-2xl mx-auto bg-secondary-bg border-none text-primary-text'>
+      <CardHeader className='bg-primary-bg/20 rounded-xl'>
         <CardTitle className='text-2xl font-bold text-center text-primary-text'>
           Add New Genre
         </CardTitle>
       </CardHeader>
+
       <CardContent className='pt-6'>
         <form
           onSubmit={handleSubmit}
@@ -75,6 +73,7 @@ export const AddGenre = () => {
             isInvalid={!!genreValidation.name}
             errorMessage={genreValidation.name}
           />
+
           <div className='space-y-2'>
             <label
               htmlFor='description'
@@ -96,19 +95,9 @@ export const AddGenre = () => {
             type='submit'
             disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
-            Add Genre
+            {isLoading ? 'Adding...' : 'Add Genre'}
           </Button>
         </form>
-
-        {isError && (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
-          />
-        )}
       </CardContent>
     </Card>
   );

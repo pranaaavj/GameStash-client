@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useGetSalesDataQuery } from '@/redux/api/admin/salesApi';
-import { CircleX, DollarSign, Package } from 'lucide-react';
-import { Alert, EmptyState } from '@/components/common';
+import { DollarSign, Package } from 'lucide-react';
+import { EmptyState } from '@/components/common';
 import { Badge } from '@/shadcn/components/ui/badge';
 import {
   Table,
@@ -18,36 +18,17 @@ import {
   CardTitle,
 } from '@/shadcn/components/ui/card';
 import { Button } from '@/shadcn/components/ui/button';
+import { ContainerLoading } from '@/components/error';
 
 export const SalesDetails = ({ saleId, setSelectedSale }) => {
-  const {
-    data: responseSalesData,
-    isError,
-    error,
-    isLoading,
-  } = useGetSalesDataQuery({ page: 1, limit: 10 });
-
-  // Find the specific sale by ID
+  const { data: responseSalesData, isLoading } = useGetSalesDataQuery({
+    page: 1,
+    limit: 10,
+  });
   const sale = responseSalesData?.data?.sales?.find((s) => s._id === saleId);
 
   if (isLoading) {
-    return (
-      <div className='flex justify-center items-center h-64'>
-        <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-blue'></div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Alert
-        Icon={CircleX}
-        variant='destructive'
-        description={
-          error?.data?.message || 'Something went wrong! Please try again.'
-        }
-      />
-    );
+    return <ContainerLoading />;
   }
 
   if (!sale) {
@@ -62,6 +43,7 @@ export const SalesDetails = ({ saleId, setSelectedSale }) => {
 
   return (
     <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-4'>
+      {/* Header */}
       <div className='mb-6 flex justify-between'>
         <div>
           <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
@@ -74,11 +56,11 @@ export const SalesDetails = ({ saleId, setSelectedSale }) => {
         <Button
           className='bg-accent-red hover:bg-hover-red'
           onClick={() => setSelectedSale(null)}>
-          {' '}
-          Go Back{' '}
+          Go Back
         </Button>
       </div>
 
+      {/* Summary Cards */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
         <Card className='bg-secondary-bg border border-accent-blue/20'>
           <CardHeader className='pb-2'>
@@ -120,6 +102,7 @@ export const SalesDetails = ({ saleId, setSelectedSale }) => {
         </Card>
       </div>
 
+      {/* Shipping & Payment */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
         <Card className='bg-secondary-bg border border-accent-blue/20'>
           <CardHeader>
@@ -196,6 +179,7 @@ export const SalesDetails = ({ saleId, setSelectedSale }) => {
         </Card>
       </div>
 
+      {/* Order Items */}
       <Card className='bg-secondary-bg border border-accent-blue/20 mb-6'>
         <CardHeader>
           <CardTitle className='text-primary-text'>Order Items</CardTitle>

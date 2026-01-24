@@ -121,18 +121,18 @@ export const Sidebar = () => {
           variant='outline'
           size='sm'
           onClick={handleLogout}
-          className='bg-secondary-bg mb-10 text-primary-text hover:bg-secondary-bg/80 '>
-          <LogOut className='w-4 h-4 mr-2' />
-          Logout
+          className='bg-secondary-bg mb-5 text-primary-text border-none hover:bg-secondary-bg/80 hover:text-white'>
+          <LogOut className='w-4 h-4' />
+          {isOpen && <span>Logout</span>}
         </Button>
         <span
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-          className='w-full'>
+          className='w-full mb-3'>
           {isOpen ? (
-            <PanelLeftOpen className='h-6 w-6' />
+            <PanelLeftOpen className='h-7 w-7' />
           ) : (
-            <PanelRightOpen className='h-6 w-6' />
+            <PanelRightOpen className='h-7 w-7' />
           )}
         </span>
       </div>

@@ -7,11 +7,11 @@ import {
   TableRow,
 } from '@/shadcn/components/ui/table';
 import { useState } from 'react';
-import { Input } from '@/shadcn/components/ui/input';
 import { Button } from '@/shadcn/components/ui/button';
 import { AdminPagination } from '@/components/admin';
-import { Search, Edit, Plus, CircleX, X, Check, Ticket } from 'lucide-react';
-import { Alert, ConfirmationModal, EmptyState } from '@/components/common';
+import { Plus, X, Check, Ticket } from 'lucide-react';
+import { ConfirmationModal, EmptyState } from '@/components/common';
+import { ContainerLoading } from '@/components/error';
 import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { format } from 'date-fns';
@@ -26,17 +26,16 @@ export const CouponList = () => {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
-  const {
-    data: responseGetCoupons,
-    isError,
-    error,
-  } = useGetAllCouponsQuery({ page: currentPage, limit: 10 });
+  const { data: responseGetCoupons, isLoading } = useGetAllCouponsQuery({
+    page: currentPage,
+    limit: 10,
+  });
 
-  const [toggleCouponList] = useToggleCouponListMutation();
+  const [toggleCouponList, { isLoading: isToggleLoading }] =
+    useToggleCouponListMutation();
 
   const tableHeaders = [
     'Code',
@@ -47,19 +46,8 @@ export const CouponList = () => {
     'Start Date',
     'End Date',
     'Status',
-    'Actions',
+    'Action',
   ];
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const filteredCoupons = responseGetCoupons?.data?.coupons?.filter(
-    (coupon) =>
-      coupon._id.includes(searchTerm) ||
-      coupon.code.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleListingModal = (couponId) => {
     setSelectedCoupon(couponId);
@@ -71,12 +59,14 @@ export const CouponList = () => {
       const responseToggleCoupon = await toggleCouponList(
         selectedCoupon
       ).unwrap();
-
       if (responseToggleCoupon.success) {
         showToast.success(responseToggleCoupon.message);
       }
     } catch (error) {
       handleApiError(error, 'There was some error listing coupon');
+    } finally {
+      setIsModalOpen(false);
+      setSelectedCoupon(null);
     }
   };
 
@@ -87,35 +77,23 @@ export const CouponList = () => {
 
   return (
     <div className='w-full h-full flex flex-col overflow-auto bg-secondary-bg rounded-lg p-4'>
-      <div className='mb-6 text-center'>
-        <h1 className='text-2xl md:text-3xl font-bold text-primary-text mb-4'>
-          Coupons
-        </h1>
-      </div>
-      <div className='flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0'>
-        {/* Search Input */}
-        <div className='relative w-full sm:w-64'>
-          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text h-4 w-4' />
-          <Input
-            type='text'
-            value={searchTerm}
-            onChange={handleSearch}
-            placeholder='Search Coupons...'
-            className='pl-10 pr-4 py-2 rounded-full bg-secondary-bg text-primary-text border-accent-blue focus:border-accent-blue focus:ring focus:ring-accent-blue focus:ring-opacity-50 w-full'
-          />
+      <div className='flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6'>
+        <div className='flex items-center gap-2'>
+          <Ticket className='h-5 w-5 text-accent-blue' />
+          <h1 className='text-2xl font-medium text-primary-text'>Coupons</h1>
         </div>
 
-        {/* Add Coupon Button */}
         <Link to='/admin/coupons/add'>
-          <Button className='w-full sm:w-auto bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>
+          <Button className='bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2'>
             <Plus className='mr-2 h-4 w-4' /> Add Coupon
           </Button>
         </Link>
       </div>
 
-      {/* Table */}
       <div className='w-full overflow-x-auto flex-grow no-scrollbar'>
-        {filteredCoupons?.length ? (
+        {isLoading ? (
+          <ContainerLoading />
+        ) : responseGetCoupons?.data?.coupons?.length ? (
           <Table className='w-full table-fixed border-collapse min-w-full'>
             <TableHeader>
               <TableRow className='bg-secondary-bg/10 border-b-2 border-accent-blue'>
@@ -128,79 +106,87 @@ export const CouponList = () => {
                 ))}
               </TableRow>
             </TableHeader>
+
             <TableBody>
-              {filteredCoupons.map((coupon) => (
+              {responseGetCoupons?.data?.coupons?.map((coupon) => (
                 <TableRow
                   key={coupon._id}
                   className='transition-colors duration-200 even:bg-primary-bg/5 hover:bg-primary-bg/20'>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {coupon.code}
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {coupon.discountType === 'percentage'
                       ? 'Percentage'
                       : 'Fixed Amount'}
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {coupon.discountType === 'percentage'
                       ? `${coupon.discountValue}%`
                       : `₹${coupon.discountValue}`}
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     ₹{coupon.minOrderAmount}
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {coupon.maxDiscountAmount
                       ? `₹${coupon.maxDiscountAmount}`
                       : 'N/A'}
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {format(new Date(coupon.startDate), 'dd/MM/yyyy')}
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
                     {format(new Date(coupon.endDate), 'dd/MM/yyyy')}
                   </TableCell>
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20 truncate'>
+                  <TableCell className='text-center text-xs md:text-sm border-b border-accent-blue/20'>
                     <Badge
-                      variant={coupon.isActive ? 'success' : 'destructive'}>
+                      className={`w-[110px] h-10 text-xs truncate text-center justify-center items-center flex ${
+                        coupon.isActive
+                          ? 'bg-green-500/20 text-green-600'
+                          : 'bg-red-500/20 text-red-600'
+                      }`}>
                       {coupon.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
+                  <TableCell className='text-center text-xs md:text-sm border-b border-accent-blue/20'>
+                    <div className='flex gap-2 justify-center'>
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        disabled={
+                          new Date(coupon.endDate).getTime() < Date.now()
+                        }
+                        onClick={() =>
+                          navigate(`/admin/coupons/edit/${coupon._id}`)
+                        }
+                        className='text-blue-600 hover:bg-hover-blue'>
+                        Edit
+                      </Button>
 
-                  <TableCell className='px-2 md:px-4 py-3 text-center text-xs md:text-sm text-secondary-text border-b border-accent-blue/20'>
-                    <div className='flex gap-2'>
-                      <div className='transition-transform duration-200 hover:scale-105 active:scale-95'>
-                        <Button
-                          variant='outline'
-                          size='sm'
-                          disabled={
-                            new Date(coupon.endDate).getTime() <
-                            new Date().getTime()
-                          }
-                          onClick={() =>
-                            navigate(`/admin/coupons/edit/${coupon._id}`)
-                          }
-                          className='bg-accent-blue border-none px-3 py-5 text-primary-text hover:bg-accent-blue/90 transition'>
-                          <Edit className='h-6 w-6' />
-                        </Button>
-                      </div>
-                      <div className='transition-transform duration-200 hover:scale-105 active:scale-95'>
-                        <Button
-                          variant='outline'
-                          size='icon'
-                          onClick={() => handleListingModal(coupon._id)}
-                          disabled={
-                            new Date(coupon.endDate).getTime() <
-                            new Date().getTime()
-                          }
-                          className='bg-accent-red border-none h-8 w-8 px-5 py-5 text-primary-text hover:bg-accent-red/90 transition'>
-                          {coupon.isActive ? (
-                            <X className='h-4 w-4' />
-                          ) : (
-                            <Check className='h-4 w-4' />
-                          )}
-                        </Button>
-                      </div>
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        disabled={
+                          new Date(coupon.endDate).getTime() < Date.now() ||
+                          isToggleLoading
+                        }
+                        className={`min-w-[40px] justify-center ${
+                          coupon.isActive
+                            ? 'text-red-600 hover:bg-hover-red'
+                            : 'text-green-600 hover:bg-hover-green'
+                        }`}
+                        onClick={() => handleListingModal(coupon._id)}>
+                        {coupon.isActive ? (
+                          <>
+                            <X className='h-4 w-4' /> Unlist
+                          </>
+                        ) : (
+                          <>
+                            <Check className='h-4 w-4' /> List
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -218,7 +204,6 @@ export const CouponList = () => {
         )}
       </div>
 
-      {/* Pagination */}
       <div className='sticky bottom-0 mt-4'>
         {responseGetCoupons?.data?.totalPages > 1 && (
           <AdminPagination
@@ -229,7 +214,6 @@ export const CouponList = () => {
         )}
       </div>
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={handleCancelListing}
@@ -237,17 +221,6 @@ export const CouponList = () => {
         title='Confirm Action'
         description='Are you sure you want to proceed with this action?'
       />
-
-      {/* Error message */}
-      {isError && (
-        <Alert
-          Icon={CircleX}
-          variant='destructive'
-          description={
-            error?.data?.message || 'Something went wrong! Please try again.'
-          }
-        />
-      )}
     </div>
   );
 };

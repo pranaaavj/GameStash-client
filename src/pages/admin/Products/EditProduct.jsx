@@ -14,12 +14,11 @@ import { useGetAllGenresQuery } from '@/redux/api/admin/genresApi';
 import { useGetAllBrandsQuery } from '@/redux/api/admin/brandsApi';
 
 import { Button } from '@/shadcn/components/ui/button';
-import { CircleX } from 'lucide-react';
 import { Textarea } from '@/shadcn/components/ui/textarea';
 import { ImageUploader } from '@/components/admin';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, InputField, SelectField } from '@/components/common';
+import { InputField, SelectField } from '@/components/common';
 import {
   validateProduct,
   mapOptionsData,
@@ -27,7 +26,7 @@ import {
   showToast,
   handleApiError,
 } from '@/utils';
-import { Loading } from '@/components/error';
+import { ContainerLoading } from '@/components/error';
 
 const initialProductState = {
   name: '',
@@ -50,13 +49,8 @@ export const EditProduct = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
 
-  // Fetching brands and genres
-  const {
-    data: responseProduct,
-    isError,
-    error,
-    isLoading: isProductLoading,
-  } = useGetOneProductQuery(productId);
+  const { data: responseProduct, isLoading: isProductLoading } =
+    useGetOneProductQuery(productId);
 
   const { data: responseBrands, isSuccess: brandQuerySuccess } =
     useGetAllBrandsQuery({});
@@ -64,15 +58,10 @@ export const EditProduct = () => {
   const { data: responseGenres, isSuccess: genreQuerySuccess } =
     useGetAllGenresQuery({});
 
-  const [
-    editProduct,
-    { isError: isEditProductError, error: editProductError },
-  ] = useEditProductMutation();
-
+  const [editProduct, { isLoading }] = useEditProductMutation();
   const [uploadProductImage] = useUploadProductImageMutation();
   const [deleteProductImage] = useDeleteProductImageMutation();
 
-  // Product state
   const [images, setImages] = useState([]);
   const [productInput, setProductInput] = useState(initialProductState);
   const [productValidation, setProductValidation] =
@@ -81,8 +70,7 @@ export const EditProduct = () => {
 
   useEffect(() => {
     if (responseProduct && brandQuerySuccess && genreQuerySuccess) {
-      setProductInput((prevInput) => ({
-        ...prevInput,
+      setProductInput({
         name: responseProduct.data.name,
         price: responseProduct.data.price,
         genre: responseProduct.data.genre._id,
@@ -96,7 +84,7 @@ export const EditProduct = () => {
           ram: '',
           storage: '',
         },
-      }));
+      });
 
       setImages(responseProduct.data.images);
     }
@@ -128,14 +116,12 @@ export const EditProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const productValidation = validateProduct(productInput);
-    const imageValidation = validateImages(images);
+    const validation = validateProduct(productInput);
+    const imageError = validateImages(images);
 
-    console.log(productValidation, imageValidation);
-
-    if (Object.keys(productValidation).length > 0 || imageValidation) {
-      setProductValidation(productValidation);
-      setImageValidation(imageValidation);
+    if (Object.keys(validation).length > 0 || imageError) {
+      setProductValidation(validation);
+      setImageValidation(imageError);
       return;
     }
 
@@ -150,13 +136,13 @@ export const EditProduct = () => {
         showToast.success(response.message);
         navigate('/admin/products');
       }
-    } catch (error) {
-      handleApiError(error, 'There was some error editing product');
+    } catch (err) {
+      handleApiError(err, 'There was some error editing product');
     }
   };
 
   if (!responseProduct || isProductLoading) {
-    return <Loading />;
+    return <ContainerLoading />;
   }
 
   const handleImagesChange = (images) => {
@@ -184,6 +170,7 @@ export const EditProduct = () => {
             isInvalid={!!productValidation.name}
             errorMessage={productValidation.name}
           />
+
           <InputField
             type='text'
             value={productInput.price}
@@ -195,6 +182,7 @@ export const EditProduct = () => {
             errorMessage={productValidation.price}
             helperText={!productValidation.price && 'Enter price in rupees'}
           />
+
           <SelectField
             type='text'
             value={productInput.genre}
@@ -206,6 +194,7 @@ export const EditProduct = () => {
             isInvalid={!!productValidation.genre}
             errorMessage={productValidation.genre}
           />
+
           <InputField
             type='text'
             value={productInput.platform}
@@ -216,6 +205,7 @@ export const EditProduct = () => {
             isInvalid={!!productValidation.platform}
             errorMessage={productValidation.platform}
           />
+
           <SelectField
             type='text'
             value={productInput.brand}
@@ -238,6 +228,7 @@ export const EditProduct = () => {
             isInvalid={!!productValidation.stock}
             errorMessage={productValidation.stock}
           />
+
           <div className='space-y-2'>
             <label
               htmlFor='description'
@@ -253,14 +244,13 @@ export const EditProduct = () => {
               className='w-full bg-[#262626] hover:border border-transparent text-primary-text rounded-md'
               rows={4}
             />
-            {validateProduct?.description && (
+            {productValidation.description && (
               <span className='text-red-500 text-sm mt-0'>
-                {validateProduct?.description}
+                {productValidation.description}
               </span>
             )}
           </div>
 
-          {/* System Requirements Section */}
           <div className='space-y-4'>
             <h3 className='text-lg font-semibold text-primary-text'>
               System Requirements
@@ -309,11 +299,6 @@ export const EditProduct = () => {
             </div>
           </div>
 
-          {/* <ImageUploader
-            images={images}
-            setImages={setImages}
-          /> */}
-
           <ImageUploader
             onImagesChange={handleImagesChange}
             uploadProductImage={uploadProductImage}
@@ -327,28 +312,11 @@ export const EditProduct = () => {
 
           <Button
             type='submit'
+            disabled={isLoading}
             className='w-full bg-accent-blue text-primary-text hover:bg-accent-blue/90 transition-colors duration-200 px-6 py-2 rounded-md'>
-            Confirm Edit
+            {isLoading ? 'Updating Product...' : 'Confirm Edit'}
           </Button>
         </form>
-        {isError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              error?.data?.message || 'Something went wrong! Please try again.'
-            }
-          />
-        ) : isEditProductError ? (
-          <Alert
-            Icon={CircleX}
-            variant='destructive'
-            description={
-              editProductError?.data?.message ||
-              'Something went wrong! Please try again.'
-            }
-          />
-        ) : null}
       </CardContent>
     </Card>
   );

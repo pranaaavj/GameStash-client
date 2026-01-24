@@ -12,6 +12,7 @@ export const AuthorizeAdminRoute = () => {
       <Navigate
         to='/admin/login'
         replace
+        state={{ fromLogout: true }}
       />
     );
 
